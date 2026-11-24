@@ -1,31 +1,6 @@
 // Called by cron at 09:00 (reminders for dates, anniversaries, birthdays) and 18:00 Korea time (today's question).
-import { addDays, admin, coupleNames, cors, diffDays, fmtTime, json, sendToUser, todayKST, toUTC, trusted, type Role } from '../_shared/common.ts';
+import { addDays, admin, coupleNames, cors, diffDays, fmtTime, json, nextStart, sendToUser, todayKST, trusted, type Ev, type Role } from '../_shared/common.ts';
 
-type Ev = { title: string; kind: string; date: string; time?: string; repeat?: string; alerts?: number[] };
-
-function nextStart(ev: Ev, today: string): string | null {
-  const s0 = ev.date;
-  if (!s0 || !/^\d{4}-\d{2}-\d{2}$/.test(s0)) return null;
-  const r = ev.repeat || 'none';
-  if (s0 >= today || r === 'none') return s0 >= today ? s0 : null;
-  if (r === 'weekly') return addDays(s0, 7 * Math.ceil(diffDays(s0, today) / 7));
-  const d0 = new Date(toUTC(s0));
-  const t = new Date(toUTC(today));
-  if (r === 'monthly') {
-    for (let i = 0; i < 14; i++) {
-      const c = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + i, d0.getUTCDate()));
-      if (c.getUTCDate() !== d0.getUTCDate()) continue;
-      const s = c.toISOString().slice(0, 10);
-      if (s >= today) return s;
-    }
-    return null;
-  }
-  for (let i = 0; i < 2; i++) {
-    const s = new Date(Date.UTC(t.getUTCFullYear() + i, d0.getUTCMonth(), d0.getUTCDate())).toISOString().slice(0, 10);
-    if (s >= today) return s;
-  }
-  return null;
-}
 const dl = (n: number) => (n === 0 ? '오늘' : `D-${n}`);
 const sameMD = (a: string, b: string) => a.slice(5) === b.slice(5);
 

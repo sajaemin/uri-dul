@@ -134,6 +134,18 @@ try {
     await shot(B, '08-B-roulette');
   });
 
+  await step('B copies the widget code and the widget shows today', async () => {
+    await B.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(base).origin });
+    await B.click('#t-us');
+    await B.click('[data-act=wg-copy]');
+    const code = await B.evaluate(() => navigator.clipboard.readText());
+    const m = code.match(/const API = '([^']+)'/);
+    if (!m || !code.includes('ListWidget')) throw new Error('clipboard has no widget script');
+    const j = await (await fetch(m[1])).json();
+    if (!j.ready || j.me !== PT || j.partner !== ME || !j.next || j.next.title !== '테스트 데이트') throw new Error('widget data: ' + JSON.stringify(j).slice(0, 200));
+    await shot(B, '09-B-widget-card');
+  });
+
   await step('after a reload B is still signed in with everything there', async () => {
     await B.reload();
     await B.locator('.hero').filter({ hasText: ME }).waitFor();

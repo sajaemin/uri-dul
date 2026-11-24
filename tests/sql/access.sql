@@ -39,8 +39,16 @@ set role authenticated;
 select public.expect_error($q$select public.join_couple('ZZZZZZ')$q$, 'code_not_found');
 select public.join_couple('  ' || lower(:'code') || ' ');
 select public.my_info()->>'rc' as rc_b \gset
+do $$ declare k1 text := public.widget_token(); k2 text := public.widget_token(); k3 text := public.widget_token(true); begin
+  assert length(k1) = 24, 'widget key';
+  assert k1 = k2, 'widget key is stable';
+  assert k3 <> k1 and public.widget_token() = k3, 'reset makes a new key';
+end $$;
+select public.expect_error('select me_rc from public.couples', 'permission denied');
+select public.expect_error('select me_wt from public.couples', 'permission denied');
 do $$ declare i jsonb := public.my_info(); begin
   assert i->>'role' = 'partner', 'B is partner';
+  assert (select count(*) from public.couples where code is not null) = 1, 'B can read the safe couple columns';
   assert (i->>'partner_joined')::boolean, 'joined';
   assert (select count(*) from public.docs) = 1, 'B sees the couple doc';
   assert (select count(*) from public.couples) = 1, 'B sees the couple row';
@@ -70,6 +78,7 @@ end $$;
 select public.expect_error(format('insert into public.docs (couple_id, coll, id, data) values (%L, %L, %L, %L)', :'cid', 'answers', 'evil', '{}'), 'row-level security');
 select public.expect_error(format('insert into storage.objects (bucket_id, name) values (%L, %L)', 'photos', :'cid' || '/evil.jpg'), 'row-level security');
 select public.expect_error($q$select public.save_push('{"endpoint":"https://push.example/c"}')$q$, 'no_couple');
+select public.expect_error('select public.widget_token()', 'no_couple');
 select public.expect_error('select * from private.config', 'permission denied');
 select public.expect_error($q$update public.couples set partner = auth.uid()$q$, 'permission denied');
 reset role;

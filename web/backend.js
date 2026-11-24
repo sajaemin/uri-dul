@@ -35,6 +35,8 @@
   UDB.recover = (code, rc) => rpc('recover_couple', {p_code: code, p_rc: rc});
   UDB.savePush = sub => rpc('save_push', {p_sub: sub});
   UDB.dropPush = endpoint => rpc('drop_push', {p_endpoint: endpoint});
+  UDB.widgetToken = reset => rpc('widget_token', {p_reset: !!reset});
+  UDB.widgetUrl = t => C.url + '/functions/v1/widget?t=' + encodeURIComponent(t);
   UDB.vapid = async () => {
     const r = await fetch(C.url + '/functions/v1/config', {headers: {apikey: C.key}});
     const j = await r.json();

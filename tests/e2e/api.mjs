@@ -94,6 +94,17 @@ try {
   const jobs = await sql(REF, `select jobname from cron.job where jobname like 'uridul-%' order by 1`);
   ok(jobs.length === 2, 'daily reminder schedules exist');
 
+  // home-screen widget: a private key gives a read-only summary, no sign-in needed
+  const wt = (await rpc(B, 'widget_token')).data;
+  const wr = await fetch(`${URL0}/functions/v1/widget?t=${wt}`);
+  const wj = wr.ok ? await wr.json() : {};
+  ok(wj.ready && wj.me === '테스트B' && wj.partner === '테스트A' && wj.days > 600, `the widget summary works without signing in (${wr.status}, ${wj.days} days)`);
+  ok((await fetch(`${URL0}/functions/v1/widget?t=AAAAAAAAAAAAAAAAAAAAAAAA`)).status === 404, 'an unknown widget key gets nothing');
+  const wt2 = (await rpc(B, 'widget_token', { p_reset: true })).data;
+  ok(wt2 !== wt && (await fetch(`${URL0}/functions/v1/widget?t=${wt}`)).status === 404, 'resetting the widget key stops the old one');
+  const rcLeak = await B.c.from('couples').select('me_rc');
+  ok(!!rcLeak.error, 'B cannot read A\'s recovery code');
+
   // recovery: a new phone takes A's place with the code + A's recovery code
   ok(/bad_recovery/.test(errOf(await rpc(D, 'recover_couple', { p_code: a.code, p_rc: 'WRONG123' }))), 'a wrong recovery code is refused');
   const d = (await rpc(D, 'recover_couple', { p_code: a.code, p_rc: a.rc })).data;

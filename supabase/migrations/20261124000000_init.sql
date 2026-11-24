@@ -11,6 +11,8 @@ create table if not exists public.couples (
   partner uuid references auth.users(id) on delete set null,
   me_rc text,
   partner_rc text,
+  me_wt text unique,
+  partner_wt text unique,
   created_at timestamptz not null default now()
 );
 
@@ -90,6 +92,9 @@ create policy push_own on public.push_subs for all to authenticated
 -- the app changes couples and push rows only through the functions below
 revoke all on public.couples, public.docs, public.push_subs from anon;
 revoke insert, update, delete, truncate on public.couples, public.push_subs from authenticated;
+-- recovery codes and widget keys are read only through my_info / widget_token, never by the partner
+revoke select on public.couples from authenticated;
+grant select (id, code, me, partner, created_at) on public.couples to authenticated;
 revoke truncate on public.docs from authenticated;
 
 -- ---------- couple pairing (called from the app) ----------
@@ -146,13 +151,30 @@ begin
   delete from public.couples where me = auth.uid() and partner is null and id <> c.id;
   update public.couples set partner = null where partner = auth.uid() and id <> c.id;
   if c.me_rc = upper(trim(p_rc)) then
-    update public.couples set me = auth.uid(), me_rc = public.gen_code(8) where id = c.id;
+    update public.couples set me = auth.uid(), me_rc = public.gen_code(8), me_wt = null where id = c.id;
   elsif c.partner_rc = upper(trim(p_rc)) then
-    update public.couples set partner = auth.uid(), partner_rc = public.gen_code(8) where id = c.id;
+    update public.couples set partner = auth.uid(), partner_rc = public.gen_code(8), partner_wt = null where id = c.id;
   else
     raise exception 'bad_recovery';
   end if;
   return public.my_info();
+end $$;
+
+-- a private key for the home-screen widget (read-only summary); p_reset makes a new one
+create or replace function public.widget_token(p_reset boolean default false) returns text
+language plpgsql volatile security definer set search_path = public as $$
+declare c public.couples; t text;
+begin
+  if auth.uid() is null then raise exception 'not_signed_in'; end if;
+  select * into c from public.couples where me = auth.uid() or partner = auth.uid() limit 1 for update;
+  if not found then raise exception 'no_couple'; end if;
+  t := case when c.me = auth.uid() then c.me_wt else c.partner_wt end;
+  if t is null or p_reset then
+    t := public.gen_code(24);
+    if c.me = auth.uid() then update public.couples set me_wt = t where id = c.id;
+    else update public.couples set partner_wt = t where id = c.id; end if;
+  end if;
+  return t;
 end $$;
 
 create or replace function public.save_push(p_sub jsonb) returns void
@@ -169,8 +191,8 @@ language sql volatile security definer set search_path = public as $$
   delete from public.push_subs where endpoint = p_endpoint and user_id = auth.uid()
 $$;
 
-revoke all on function public.my_info(), public.create_couple(), public.join_couple(text), public.recover_couple(text, text), public.save_push(jsonb), public.drop_push(text) from public, anon;
-grant execute on function public.my_info(), public.create_couple(), public.join_couple(text), public.recover_couple(text, text), public.save_push(jsonb), public.drop_push(text) to authenticated;
+revoke all on function public.my_info(), public.create_couple(), public.join_couple(text), public.recover_couple(text, text), public.save_push(jsonb), public.drop_push(text), public.widget_token(boolean) from public, anon;
+grant execute on function public.my_info(), public.create_couple(), public.join_couple(text), public.recover_couple(text, text), public.save_push(jsonb), public.drop_push(text), public.widget_token(boolean) to authenticated;
 
 -- ---------- realtime ----------
 do $$
