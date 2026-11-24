@@ -52,6 +52,15 @@ Deno.serve(async (req) => {
       continue;
     }
 
+    // morning: letters that open today go to the person they were written for
+    const { data: letters } = await admin.from('docs').select('id, data').eq('couple_id', c.id).eq('coll', 'letters').eq('data->>openAt', today);
+    for (const l of letters ?? []) {
+      const from = (l.data as any).from as Role;
+      if (from !== 'me' && from !== 'partner') continue;
+      const to: Role = from === 'me' ? 'partner' : 'me';
+      sent += await sendToUser(c[to], { title: '편지가 도착했어요 💌', body: `${names[from]}님이 남긴 편지가 오늘 열렸어요`, tag: `letter-${l.id}`, url: './#mem' });
+    }
+
     // morning reminders
     const { data: docs } = await admin.from('docs').select('coll, id, data').eq('couple_id', c.id).in('coll', ['couple', 'events']);
     const main = (docs ?? []).find((d) => d.coll === 'couple' && d.id === 'main')?.data as any;

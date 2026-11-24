@@ -376,6 +376,45 @@ legend{font-size:13px;color:var(--mut);padding:0 2px;margin-bottom:2px;font-weig
 ol.steps.big li{margin:10px 0;font-size:16px}
 .pushc{display:flex;align-items:center;gap:12px;margin-bottom:4px}
 .pushc .btn{flex:none}
+/* mood */
+.mrow{display:flex;align-items:center;gap:10px;padding:6px 0}
+.mrow+.mrow{border-top:.5px solid var(--line)}
+.mrow .av{width:30px;height:30px;font-size:13px;background:var(--acc2);color:var(--acc);border:0}
+.mrow .mm{flex:1;min-width:0}
+.mrow .mm b{display:block;font-size:15px}
+.mrow .mm .note{overflow-wrap:anywhere}
+.mface{font-size:15px;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.mface i{font-style:normal;font-size:26px;line-height:1}
+.mchips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:12px}
+.mchip{border:0;background:var(--fill);border-radius:14px;min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:13px;font-weight:600;color:var(--ink);padding:4px 2px}
+.mchip span{font-size:24px;line-height:1.1}
+.mchip[aria-pressed=true]{background:var(--acc2);color:var(--acc);box-shadow:inset 0 0 0 2px var(--acc)}
+.mchip:active{transform:scale(.95)}
+/* letters */
+.seg4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.env{display:flex;align-items:center;gap:12px;width:100%;border:0;background:var(--card);border-radius:18px;padding:14px 16px;text-align:left;color:var(--ink)}
+.env+.env{margin-top:8px}
+.env .ei{width:46px;height:34px;flex:none;border-radius:6px;background:linear-gradient(160deg,#ffe3ec,#ffc7d8);position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(225,68,106,.18)}
+.env .ei::before{content:'';position:absolute;left:-2px;right:-2px;top:-17px;height:34px;background:#ffd2de;transform:rotate(45deg) scale(.72);transform-origin:center;border-radius:4px}
+.env .ei::after{content:'';position:absolute;left:50%;top:50%;width:12px;height:11px;margin:-4px 0 0 -6px;background:#ff4f82;clip-path:path('M6 11S0 7.5 0 3.6A3 3 0 0 1 6 2a3 3 0 0 1 6 1.6C12 7.5 6 11 6 11z')}
+.env.sealed .ei{filter:saturate(.55)}
+.env .em{flex:1;min-width:0}
+.env .em b{display:block;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.env .em span{font-size:14px;color:var(--mut)}
+.env .eb{font-size:13px;font-weight:700;color:var(--acc);white-space:nowrap}
+.env .eb.new{background:var(--acc);color:#fff;border-radius:999px;padding:1px 9px}
+.paper{background:light-dark(#fffaf3,#231b1e);border-radius:18px;padding:22px 20px;margin-top:6px;background-image:repeating-linear-gradient(180deg,transparent 0 31px,color-mix(in srgb,var(--acc) 12%,transparent) 31px 32px);line-height:32px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:16px}
+.paper .to{font-weight:700;display:block}
+.paper .fr{display:block;text-align:right;font-weight:600;margin-top:6px}
+.lhint{display:flex;align-items:center;gap:12px}
+.lhint .ei{width:40px;height:30px}
+/* roulette */
+.rbox{margin-top:12px;background:var(--fill);border-radius:16px;min-height:76px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:22px;font-weight:700;letter-spacing:-.03em;padding:10px 14px;color:var(--ink)}
+.rbox.spin{color:var(--mut)}
+.rbox.hit{background:var(--acc2);color:var(--acc)}
+.app[data-look=cute] .rbox,.app[data-look=cute] .env .em b,.app[data-look=cute] .mrow .mm b{font-family:Jua,sans-serif;font-weight:400}
+.app[data-look=cute] .env,.app[data-look=cute] .mchip{border:2px solid var(--line)}
+.app[data-look=cute] .env{box-shadow:0 4px 0 var(--line)}
 @media(prefers-reduced-motion:no-preference){.beat{animation:beat 2.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}.floaty{animation:fl 4s ease-in-out infinite}#view.in-l{animation:inl .3s cubic-bezier(.2,.8,.2,1)}#view.in-r{animation:inr .3s cubic-bezier(.2,.8,.2,1)}}
 @keyframes beat{0%,100%{transform:scale(1)}12%{transform:scale(1.16)}24%{transform:scale(1)}}
 @keyframes fl{50%{transform:translateY(-6px)}}
@@ -448,11 +487,25 @@ const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + 
 const WD = ['일','월','화','수','목','금','토'];
 const KL = {date:'데이트', plan:'일정', anniv:'기념일', bday:'생일', hol:'공휴일'};
 const HOL = [[1,1,'신정'],[3,1,'삼일절'],[5,5,'어린이날'],[6,6,'현충일'],[8,15,'광복절'],[10,3,'개천절'],[10,9,'한글날'],[12,25,'성탄절']];
+// 설날, 부처님오신날, 추석 (양력, 한국천문연구원 기준)
+const LUNAR = {2025: ['01-29', '05-05', '10-06'], 2026: ['02-17', '05-24', '09-25'], 2027: ['02-07', '05-13', '09-15'], 2028: ['01-27', '05-02', '10-03'], 2029: ['02-13', '05-20', '09-22'], 2030: ['02-03', '05-09', '09-12']};
+function holidays(y) {
+  const out = HOL.map(h => [new Date(y, h[0] - 1, h[1]), h[2]]);
+  if (y >= 2026) out.push([new Date(y, 4, 1), '노동절'], [new Date(y, 6, 17), '제헌절']);
+  const L = LUNAR[y];
+  if (L) {
+    const at = s => { const [m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+    const sl = at(L[0]), cs = at(L[2]);
+    out.push([addDays(sl, -1), '설날 연휴'], [sl, '설날'], [addDays(sl, 1), '설날 연휴'], [at(L[1]), '부처님오신날'], [addDays(cs, -1), '추석 연휴'], [cs, '추석'], [addDays(cs, 1), '추석 연휴']);
+  }
+  return out;
+}
 const whoL = w => (w === 'me' || w === 'partner') ? nm(w) : '같이';
 const dlab = d => { const n = diff(today(), d); return n === 0 ? '오늘' : n > 0 ? 'D-' + n : (-n) + '일 전'; };
 S.diAlways = ls.get('ud-di') !== '0'; S.diExp = false; S.look = ls.get('ud-look') === 'modern' ? 'modern' : 'cute';
 S.memories = []; S.bucket = []; S.memTab = 'tl'; S.mapView = 'kr'; S.mapSel = null; S.memFilter = ''; S.msheet = null; S.msheetDel = false; S.recap = null;
 S.events = []; S.calMode = 'month'; S.sheet = null; S.sheetDel = false;
+S.moods = {}; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
 { const t = today(); S.calMonth = new Date(t.getFullYear(), t.getMonth(), 1); S.calSel = ymd(t); }
 function starts(ev, s0, from, to) {
   const r = ev.repeat || 'none', res = [];
@@ -478,7 +531,7 @@ function occ(from, to) {
   for (let y = 1; ; y++) { const d = new Date(st.getFullYear() + y, st.getMonth(), st.getDate()); if (d > to) break; push(d, {kind: 'anniv', title: y + '주년', auto: true, alerts: [7, 1, 0]}); }
   for (let y = from.getFullYear(); y <= to.getFullYear(); y++) {
     for (const w of ['me', 'partner']) { const b = S.couple[w] && S.couple[w].birthday; if (b) { const p = parse(b); push(new Date(y, p.getMonth(), p.getDate()), {kind: 'bday', title: nm(w) + ' 생일', alerts: [7, 1, 0]}); } }
-    for (const h of HOL) push(new Date(y, h[0] - 1, h[1]), {kind: 'hol', title: h[2]});
+    for (const [d, t] of holidays(y)) push(d, {kind: 'hol', title: t});
   }
   for (const ev of S.events) {
     if (!ev.date || !/^\d{4}-\d{2}-\d{2}$/.test(ev.date)) continue;
@@ -515,7 +568,11 @@ const W = {
   bucket: (id, d) => guard(async () => { if (db) await db.doc('bucket/' + id).set(d); else { S.bucket = [...S.bucket.filter(x => x.id !== id), {...d, id}]; render(); } }),
   bucketUpd: (id, d) => guard(async () => { if (db) await db.doc('bucket/' + id).update(d); else { S.bucket = S.bucket.map(x => x.id === id ? {...x, ...d} : x); render(); } }),
   delBucket: id => guard(async () => { if (db) await db.doc('bucket/' + id).delete(); else { S.bucket = S.bucket.filter(x => x.id !== id); render(); } }),
-  poke: d => guard(async () => { if (db) await db.doc('pokes/latest').set(d); else { S.poke = d; render(); } })
+  poke: d => guard(async () => { if (db) await db.doc('pokes/latest').set(d); else { S.poke = d; render(); } }),
+  mood: (id, d) => guard(async () => { if (db) await db.doc('moods/' + id).set(d); else { S.moods = {...S.moods, [id]: d}; render(); } }),
+  letter: (id, d) => guard(async () => { if (db) await db.doc('letters/' + id).set(d); else { S.letters = [...S.letters.filter(x => x.id !== id), {...d, id}]; render(); } }),
+  letterUpd: (id, d) => guard(async () => { if (db) await db.doc('letters/' + id).update(d); else { S.letters = S.letters.map(x => x.id === id ? {...x, ...d} : x); render(); } }),
+  delLetter: id => guard(async () => { if (db) await db.doc('letters/' + id).delete(); else { S.letters = S.letters.filter(x => x.id !== id); render(); } })
 };
 
 /* ---------- views ---------- */
@@ -660,7 +717,7 @@ function vNext() {
   const past = occ(parse(S.couple.start), addDays(today(), -1)).filter(o => o.kind === 'date' && !o.cont).length;
   const stat = `<p class="note" style="margin-top:14px;text-align:center">지금까지 함께한 데이트 ${past}번</p>`;
   const nd = nextDate();
-  if (!nd) return `<div class="card"><p style="margin:0;font-weight:600;font-size:17px">아직 잡힌 데이트가 없어요</p><p class="note" style="margin-top:4px">날짜를 정하면 카운트다운과 다이나믹 아일랜드가 시작돼요.</p><div class="row"><button class="btn" type="button" data-act="ev-new" data-v="">데이트 잡기</button></div>${past ? stat : ''}</div>`;
+  if (!nd) return `<div class="card"><p style="margin:0;font-weight:600;font-size:17px">아직 잡힌 데이트가 없어요</p><p class="note" style="margin-top:4px">날짜를 정하면 카운트다운과 다이나믹 아일랜드가 시작돼요.</p><div class="row"><button class="btn" type="button" data-act="ev-new" data-v="">데이트 잡기</button><button class="btn ghost" type="button" data-act="roul-go">뭐 할지 룰렛</button></div>${past ? stat : ''}</div>`;
   const o = nd.o;
   return `<div class="card"><div class="nd-top"><div style="min-width:0"><div class="nd-t">${esc(o.title)}</div><p class="note" style="margin-top:2px">${esc(whenLabel(nd))}</p></div><span class="tagk k-date">${dlab(o.d) === '오늘' ? '오늘' : dlab(o.d)}</span></div>
   ${meetHTML()}<div class="nd-cd" data-cd="long"></div>
@@ -672,9 +729,9 @@ function vHome() {
   const pk = S.poke && S.poke.from === other() && S.poke.at > seen && Date.now() - S.poke.at < 864e5;
   const qs = mine && theirs ? '둘 다 답했어요. 서로의 답을 확인해 보세요' : mine ? `${esc(nm(other()))}님의 답을 기다리는 중` : theirs ? `${esc(nm(other()))}님이 먼저 답했어요` : '아직 아무도 답하지 않았어요';
   const rec = received().slice(0, 4), na = av[0];
-  return `${pk ? `<div class="banner">${esc(nm(other()))}님이 콕 찔렀어요 · ${ago(S.poke.at)}<button type="button" data-act="seen-poke">확인</button></div>` : ''}
+  return `${S.update ? '<div class="banner">새 버전이 나왔어요<button type="button" data-act="reload">새로고침</button></div>' : ''}${pk ? `<div class="banner">${esc(nm(other()))}님이 콕 찔렀어요 · ${ago(S.poke.at)}<button type="button" data-act="seen-poke">확인</button></div>` : ''}
   ${heroHTML()}
-  <div class="sec">${vInvite()}${vPushBanner()}${vRemind() ? `<p class="sh">미리 알림</p>${vRemind()}` : ''}
+  <div class="sec">${vInvite()}${vPushBanner()}${vLetterHome()}<p class="sh">오늘 우리 기분</p>${vMood()}${vRemind() ? `<p class="sh">미리 알림</p>${vRemind()}` : ''}
   <p class="sh">다음 데이트</p>${vNext()}
   ${memPrompt() ? `<p class="sh">기록할 데이트</p>${memPrompt()}` : ''}${vRecapCard()}
   <p class="sh">오늘의 질문</p><div class="card"><p class="q">${esc(Q[qIdx(td)])}</p><p class="note" style="margin-top:8px">${qs}</p>
@@ -685,6 +742,103 @@ function vHome() {
   <div class="row"><button class="btn ghost" type="button" data-act="tab" data-v="ph">${nc ? '받으러 가기' : '사진함 열기'}</button></div></div>
   <p class="sh">다가오는 기념일</p><div class="card"><ul class="list">${av.map(a => `<li><span><b>${esc(a.label)}</b> <span class="date">${dotd(ymd(a.d))}</span></span><span class="dd">${dlab(a.d) === '오늘' ? 'D-DAY' : dlab(a.d)}</span></li>`).join('')}</ul></div></div>`;
 }
+/* ---------- today's mood ---------- */
+const MOODS = [['love', '🥰', '설레'], ['happy', '😊', '좋아'], ['calm', '😌', '평온'], ['miss', '🥺', '보고 싶어'], ['tired', '😪', '피곤해'], ['busy', '🫠', '바빠'], ['sad', '🥲', '울적해'], ['grr', '😤', '짜증 나']];
+const moodOf = k => MOODS.find(m => m[0] === k);
+const moodAt = (ds, w) => S.moods[ds + '_' + w];
+function vMood() {
+  const td = ymd(today()), mine = moodAt(td, S.who);
+  const line = w => {
+    const m = moodAt(td, w), mo = m && moodOf(m.m);
+    return `<div class="mrow">${S.look === 'cute' ? mini(w, 30) : avHTML(w)}<div class="mm"><b>${esc(nm(w))}${w === S.who ? ' (나)' : ''}</b>${m && m.note ? `<span class="note">“${esc(m.note)}”</span>` : !mo ? `<span class="note">${w === S.who ? '아래에서 골라 주세요' : '아직 안 골랐어요'}</span>` : ''}</div>${mo ? `<span class="mface"><i>${mo[1]}</i>${esc(mo[2])}</span>` : ''}</div>`;
+  };
+  return `<div class="card mood">${line(other())}${line(S.who)}
+  <div class="mchips" role="group" aria-label="내 오늘 기분">${MOODS.map(m => `<button type="button" class="mchip" data-act="mood" data-v="${m[0]}" aria-pressed="${!!(mine && mine.m === m[0])}"><span aria-hidden="true">${m[1]}</span>${m[2]}</button>`).join('')}</div>
+  <form id="mnf" class="addrow"><input type="text" id="mood-note" maxlength="40" placeholder="오늘 한마디 (선택)" aria-label="오늘 한마디"><button class="btn line" type="submit">남기기</button></form></div>`;
+}
+
+/* ---------- letters that open on a chosen day ---------- */
+const lOpen = l => l.openAt <= ymd(today());
+const lIn = () => S.letters.filter(l => l.from === other());
+const lOut = () => S.letters.filter(l => l.from === S.who);
+const lUnread = () => lIn().filter(l => lOpen(l) && !l.readAt);
+const lSort = list => [...list].sort((a, b) => (lOpen(a) && !a.readAt ? 0 : 1) - (lOpen(b) && !b.readAt ? 0 : 1) || (a.openAt < b.openAt ? 1 : a.openAt > b.openAt ? -1 : (b.at || 0) - (a.at || 0)));
+const fmtD = ds => { const d = parse(ds); return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`; };
+function envHTML(l) {
+  const open = lOpen(l), mine = l.from === S.who, n = diff(today(), parse(l.openAt));
+  const sub = open ? `${dotd(l.openAt)}에 열렸어요` : `${dotd(l.openAt)}에 열려요`;
+  const badge = mine ? (open ? (l.readAt ? '읽었어요' : '안 읽음') : 'D-' + n) : open ? (l.readAt ? '' : '<span class="eb new">NEW</span>') : 'D-' + n;
+  return `<button type="button" class="env${open ? '' : ' sealed'}" data-act="l-read" data-v="${esc(l.id)}"><span class="ei" aria-hidden="true"></span><span class="em"><b>${esc(l.title || (mine ? nm(other()) + '에게' : nm(l.from) + '의 편지'))}</b><span>${sub}</span></span>${badge.startsWith('<') ? badge : badge ? `<span class="eb">${badge}</span>` : ''}</button>`;
+}
+function vLetters() {
+  const ins = lSort(lIn()), outs = lSort(lOut());
+  return `<div class="card"><h2>타임캡슐 편지</h2><p class="note">정한 날이 되어야 열리는 편지예요. 기념일이나 생일, 1년 뒤의 우리에게 남겨 보세요. 여는 날 아침에 알림이 가요.</p><div class="row"><button class="btn" type="button" data-act="l-new">편지 쓰기</button></div></div>
+  <p class="sh">받은 편지 ${ins.length}</p>${ins.length ? ins.map(envHTML).join('') : `<div class="empty" style="padding:14px">${esc(nm(other()))}님이 남긴 편지가 아직 없어요.</div>`}
+  <p class="sh">보낸 편지 ${outs.length}</p>${outs.length ? outs.map(envHTML).join('') : '<div class="empty" style="padding:14px">아직 보낸 편지가 없어요.</div>'}`;
+}
+function vLetterHome() {
+  const un = lUnread(), sealed = lIn().filter(l => !lOpen(l)).sort((a, b) => a.openAt < b.openAt ? -1 : 1);
+  if (un.length) return `<p class="sh">편지가 도착했어요</p>${un.slice(0, 2).map(envHTML).join('')}`;
+  if (!sealed.length) return '';
+  const n = diff(today(), parse(sealed[0].openAt));
+  return `<div class="card lhint" style="margin-top:12px"><span class="env sealed" style="padding:0;width:auto;background:none"><span class="ei" aria-hidden="true"></span></span><div style="flex:1"><b>${esc(nm(other()))}님의 편지 ${sealed.length}통이 잠겨 있어요</b><p class="note" style="margin-top:2px">가장 빠른 편지는 ${n === 1 ? '내일' : n + '일 뒤'} 열려요</p></div></div>`;
+}
+function vLetterView() {
+  const l = S.letters.find(x => x.id === S.letter);
+  if (!l) { S.letter = null; return ''; }
+  const mine = l.from === S.who, open = lOpen(l);
+  return `<div class="sheet-bg" data-act="l-close-bg"><div class="sheet" role="dialog" aria-label="편지"><h2>${esc(l.title || '편지')} <small>${open ? `${dotd(l.openAt)}에 열림` : `${dotd(l.openAt)}에 열려요`}</small></h2>
+  ${!mine && !open ? '' : `<div class="paper"><span class="to">${esc(nm(mine ? other() : S.who))}에게</span>${esc(l.text)}<span class="fr">${dotd(ymd(new Date(l.at)))} · ${esc(nm(l.from))}</span></div>`}
+  ${mine && !open ? `<p class="note" style="margin-top:10px">${esc(nm(other()))}님에게는 ${fmtD(l.openAt)}까지 봉투만 보여요.</p>` : ''}
+  ${mine && open ? `<p class="note" style="margin-top:10px">${l.readAt ? `${esc(nm(other()))}님이 ${when(l.readAt)}에 읽었어요` : `${esc(nm(other()))}님이 아직 안 읽었어요`}</p>` : ''}
+  ${S.letterDel ? `<p class="note" style="margin-top:12px">이 편지를 지울까요? 되돌릴 수 없어요.</p><div class="row"><button class="btn" type="button" data-act="l-del-yes">지우기</button><button class="btn line" type="button" data-act="l-del-no">취소</button></div>`
+    : `<div class="row"><button class="btn line" type="button" data-act="l-close" style="flex:1">닫기</button>${mine ? '<button class="btn ghost" type="button" data-act="l-del">삭제</button>' : ''}</div>`}</div></div>`;
+}
+function vLetterSheet() {
+  const t = today(), td = ymd(t), opts = [['오늘 바로', td]];
+  const na = annivs().find(a => diff(t, a.d) > 0);
+  if (na) opts.push([`${na.label} (${dlab(na.d)})`, ymd(na.d)]);
+  opts.push(['1년 뒤', ymd(new Date(t.getFullYear() + 1, t.getMonth(), t.getDate()))]);
+  const L = S.lsheet;
+  return `<div class="sheet-bg"><form class="sheet" id="lf" role="dialog" aria-label="편지 쓰기"><h2>${esc(nm(other()))}님에게 편지 쓰기</h2>
+  <label class="f" for="l-title" style="margin-top:4px">제목 (선택)</label><input type="text" id="l-title" maxlength="30" placeholder="예: 300일 축하해">
+  <label class="f" for="l-text">편지</label><textarea id="l-text" maxlength="3000" style="min-height:180px" placeholder="하고 싶은 말을 천천히 적어 보세요" required></textarea>
+  <label class="f" for="l-open">여는 날</label><input type="date" id="l-open" min="${td}" value="${esc(L.openAt || td)}" required>
+  <div class="chips" style="margin-top:8px">${opts.map(o => `<button type="button" class="chip" data-act="l-when" data-v="${o[1]}">${esc(o[0])}</button>`).join('')}</div>
+  <p class="note" style="margin-top:10px">여는 날 전까지 ${esc(nm(other()))}님에게는 봉투만 보이고, 그날 아침 9시에 알림이 가요.</p>
+  <div class="row"><button class="btn" type="submit" style="flex:1">편지 넣기</button><button class="btn line" type="button" data-act="l-cancel">취소</button></div></form></div>`;
+}
+
+/* ---------- date roulette ---------- */
+const FOODS = ['떡볶이','삼겹살','초밥','파스타','치킨','마라탕','쌀국수','수제버거','곱창','피자','돈까스','샤브샤브','냉면','타코','브런치','라멘','족발','김치찌개','양꼬치','닭갈비','훠궈','오마카세','칼국수','회'];
+function roulPool() {
+  if (S.roulKind === 'eat') return FOODS.map(t => ({t}));
+  const b = S.bucket.filter(x => !x.done).map(x => ({t: x.title, bid: x.id}));
+  const extra = IDEAS.filter(x => !b.some(y => y.t === x)).map(t => ({t}));
+  return [...b, ...extra];
+}
+function vRoulette() {
+  const r = S.roul;
+  return `<div class="card roul" style="margin-top:12px"><h2>오늘 뭐 할까? <small>${S.roulKind === 'eat' ? '메뉴 고르기' : '버킷리스트 + 추천'}</small></h2>
+  <div class="seg" role="group" aria-label="룰렛 종류" style="margin:4px 0 0"><button type="button" data-act="roul-kind" data-v="do" aria-pressed="${S.roulKind === 'do'}">할 것</button><button type="button" data-act="roul-kind" data-v="eat" aria-pressed="${S.roulKind === 'eat'}">먹을 것</button></div>
+  <div class="rbox${r ? ' hit' : ''}" id="rbox" aria-live="polite">${r ? esc(r.t) : '두근두근'}</div>
+  <div class="row"><button class="btn" type="button" data-act="roul-spin" style="flex:1">${r ? '다시 돌리기' : '룰렛 돌리기'}</button>${r && S.roulKind === 'do' ? '<button class="btn ghost" type="button" data-act="roul-plan">일정 잡기</button>' : ''}</div></div>`;
+}
+let spinning = false;
+async function spinRoulette() {
+  if (spinning) return;
+  const pool = roulPool(); if (!pool.length) return;
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  const box = $('#rbox');
+  if (box && !matchMedia('(prefers-reduced-motion: reduce)').matches && pool.length > 1) {
+    spinning = true; box.classList.remove('hit'); box.classList.add('spin');
+    let delay = 45;
+    for (let i = 0; i < 16; i++) { box.textContent = pool[Math.floor(Math.random() * pool.length)].t; await new Promise(r => setTimeout(r, delay)); delay *= 1.17; }
+    spinning = false;
+  }
+  S.roul = pick; render(); burst(10);
+}
+
 function vQ() {
   const td = ymd(today()), mine = ans(td, S.who), theirs = ans(td, other());
   const edit = !mine || S.editing;
@@ -721,8 +875,8 @@ function vUs() {
   <p class="note" style="margin:8px 6px 0">테마는 각자 폰에서 따로 골라요.</p>
   <p class="sh">홈 배경 사진</p><div class="card">${cv ? `<div class="thumbs" style="margin-top:0"><img src="${esc(cv)}" alt="지금 배경 사진"></div><div class="row"><button class="btn line" type="button" data-act="clear-cover">배경 사진 빼기</button></div>` : '<p class="note">사진함에서 사진을 열고 오른쪽 위 \'홈 배경으로\'를 누르면 홈 화면 맨 위에 크게 걸려요.</p><div class="row"><button class="btn ghost" type="button" data-act="tab" data-v="ph">사진함 열기</button></div>'}</div>
   <p class="sh">우리 정보</p><div class="card">${coupleForm('저장')}</div><p class="sh">안내</p>
-  ${S.real ? '' : `<div class="card"><h2>테스트하는 법</h2><ol class="steps"><li>오른쪽 위 '${esc(nm('me'))} / ${esc(nm('partner'))}'로 지금 어느 폰인지 바꿔요.</li><li>질문: 한쪽에서 답하고, 바꿔서 다른 쪽도 답하면 서로의 답이 열려요.</li><li>사진함: 한쪽에서 사진을 올리고, 바꿔서 '받은 사진'에서 저장해 보세요.</li><li>콕 찌르기는 상대 폰의 홈 화면 위에 표시돼요.</li><li>캘린더: 한쪽에서 일정을 넣고 바꿔 보면 상대 캘린더에도 똑같이 보여요.</li><li>추억 탭: 사진·한 줄·장소로 추억을 남기면 타임라인과 지도에 쌓여요. 버킷리스트는 '일정 잡기'로 데이트가 되고, '했어요'로 추억이 돼요.</li><li>질문 탭의 캐릭터는 둘 다 답한 날이 이어질수록 자라요 (3일 새싹, 7일 꽃봉오리, 14일 활짝, 30일 왕관).</li><li>설정(우리)은 오른쪽 위 톱니바퀴에 있어요. 화면을 좌우로 밀면 옆 탭으로 넘어가요. 캘린더 달력 위에서 밀면 달이 바뀌고, 사진을 크게 볼 때 밀면 다음 사진으로 가요.</li></ol></div>`}
-  <div class="card"><h2>캘린더 안내</h2><ol class="steps"><li>데이트·일정·기념일을 넣을 수 있고, 매주·매월·매년 반복과 여러 날 일정(여행)도 돼요.</li><li>생일을 넣으면 매년 자동으로 표시돼요. 100일 단위·주년 기념일도 자동이에요.</li><li>미리 알림(7일·3일·하루 전·당일)은 지금은 앱을 열었을 때 홈에 보여요. ${S.real ? '알림을 켜 두면 아침 9시에 푸시로도 와요.' : '진짜 푸시 알림은 앱 버전에서 가능해요.'}</li><li>공휴일은 날짜가 고정된 날만 빨갛게 표시돼요(설날·추석 등 음력 공휴일은 아직 빠져 있어요).</li></ol></div>
+  ${S.real ? '' : `<div class="card"><h2>테스트하는 법</h2><ol class="steps"><li>오른쪽 위 '${esc(nm('me'))} / ${esc(nm('partner'))}'로 지금 어느 폰인지 바꿔요.</li><li>질문: 한쪽에서 답하고, 바꿔서 다른 쪽도 답하면 서로의 답이 열려요.</li><li>사진함: 한쪽에서 사진을 올리고, 바꿔서 '받은 사진'에서 저장해 보세요.</li><li>콕 찌르기는 상대 폰의 홈 화면 위에 표시돼요.</li><li>캘린더: 한쪽에서 일정을 넣고 바꿔 보면 상대 캘린더에도 똑같이 보여요.</li><li>추억 탭: 사진·한 줄·장소로 추억을 남기면 타임라인과 지도에 쌓여요. 버킷리스트는 '일정 잡기'로 데이트가 되고, '했어요'로 추억이 돼요.</li><li>홈의 '오늘 우리 기분'에서 기분을 고르면 상대에게 바로 보여요. 추억 탭의 '편지'는 정한 날에만 열리고, 버킷리스트 아래 룰렛이 오늘 할 것·먹을 것을 골라 줘요.</li><li>질문 탭의 캐릭터는 둘 다 답한 날이 이어질수록 자라요 (3일 새싹, 7일 꽃봉오리, 14일 활짝, 30일 왕관).</li><li>설정(우리)은 오른쪽 위 톱니바퀴에 있어요. 화면을 좌우로 밀면 옆 탭으로 넘어가요. 캘린더 달력 위에서 밀면 달이 바뀌고, 사진을 크게 볼 때 밀면 다음 사진으로 가요.</li></ol></div>`}
+  <div class="card"><h2>캘린더 안내</h2><ol class="steps"><li>데이트·일정·기념일을 넣을 수 있고, 매주·매월·매년 반복과 여러 날 일정(여행)도 돼요.</li><li>생일을 넣으면 매년 자동으로 표시돼요. 100일 단위·주년 기념일도 자동이에요.</li><li>미리 알림(7일·3일·하루 전·당일)은 지금은 앱을 열었을 때 홈에 보여요. ${S.real ? '알림을 켜 두면 아침 9시에 푸시로도 와요.' : '진짜 푸시 알림은 앱 버전에서 가능해요.'}</li><li>공휴일은 빨갛게 표시돼요. 설날·추석·부처님오신날은 2030년까지 들어 있고, 대체공휴일은 빠져 있어요.</li></ol></div>
   <div class="card"><h2>다이나믹 아일랜드</h2><p class="note">다음 데이트가 잡히면 화면 위에 까만 알약 모양으로 카운트다운이 떠요. 누르면 펼쳐지고, 두 사람 동그라미가 만날 날을 향해 가까워져요. 진짜 아이폰 다이나믹 아일랜드·잠금화면 표시는 App Store 앱(Live Activity)에서만 되고, 여기서는 똑같이 보이게 보여드려요.</p><label class="chk" style="margin-top:6px"><input type="checkbox" id="di-always"${S.diAlways ? ' checked' : ''}>항상 보기 (끄면 데이트 하루 전부터만)</label></div>
   ${S.real ? '' : `<div class="card"><h2>아이폰 홈 화면에 추가</h2><p class="note">Safari에서 이 페이지를 열고 공유 버튼 → '홈 화면에 추가'를 누르면 앱처럼 아이콘이 생겨요.</p></div>
   <div class="card"><h2>저장 위치</h2><p class="note">${S.mode === 'db' ? '기록과 사진은 이 링크에 저장돼요. 폰과 PC 어디서 열어도 같은 내용이 보여요.' : '지금은 미리보기 화면이라 새로고침하면 사라져요. 게시된 링크에서 열면 저장돼요.'}</p></div>`}</div>`;
@@ -892,13 +1046,13 @@ function vBucket() {
   return `<div class="card"><h2>함께 한 것 <small>${done} / ${all.length}</small></h2><div class="pbar"><i style="width:${all.length ? Math.round(done / all.length * 100) : 0}%"></i></div></div>
   <form id="bf" class="addrow"><input type="text" id="b-new" maxlength="40" placeholder="같이 하고 싶은 것"><button class="btn" type="submit">추가</button></form>
   ${ideas.length ? `<div class="chips">${ideas.map(x => `<button type="button" class="chip" data-act="b-idea" data-v="${esc(x)}">+ ${esc(x)}</button>`).join('')}</div>` : ''}
-  ${all.length ? `<div class="card" style="margin-top:12px"><ul class="list">${all.map(bItem).join('')}</ul></div>` : emptyArt() + '<div class="empty" style="padding-top:4px">같이 하고 싶은 걸 적어 보세요. \'일정 잡기\'를 누르면 바로 데이트로 잡혀요.</div>'}`;
+  ${all.length ? `<div class="card" style="margin-top:12px"><ul class="list">${all.map(bItem).join('')}</ul></div>` : emptyArt() + '<div class="empty" style="padding-top:4px">같이 하고 싶은 걸 적어 보세요. \'일정 잡기\'를 누르면 바로 데이트로 잡혀요.</div>'}${vRoulette()}`;
 }
 function vMem() {
   const Y = recapYear();
-  const seg = `<div class="seg seg3" role="group" aria-label="추억 보기"><button type="button" data-act="mem-tab" data-v="tl" aria-pressed="${S.memTab === 'tl'}">타임라인</button><button type="button" data-act="mem-tab" data-v="map" aria-pressed="${S.memTab === 'map'}">지도</button><button type="button" data-act="mem-tab" data-v="bk" aria-pressed="${S.memTab === 'bk'}">버킷리스트</button></div>`;
+  const seg = `<div class="seg seg4" role="group" aria-label="추억 보기"><button type="button" data-act="mem-tab" data-v="tl" aria-pressed="${S.memTab === 'tl'}">타임라인</button><button type="button" data-act="mem-tab" data-v="map" aria-pressed="${S.memTab === 'map'}">지도</button><button type="button" data-act="mem-tab" data-v="bk" aria-pressed="${S.memTab === 'bk'}">버킷리스트</button><button type="button" data-act="mem-tab" data-v="lt" aria-pressed="${S.memTab === 'lt'}">편지${lUnread().length ? ' ' + lUnread().length : ''}</button></div>`;
   const head = `<div class="row" style="margin:0 0 2px"><button class="btn" type="button" data-act="mem-new" data-v="" style="flex:1">추억 남기기</button><button class="btn ink" type="button" data-act="rc-open">${Y} 결산</button></div>`;
-  return `<div class="sec">${head}${seg}${S.memTab === 'map' ? vMap() : S.memTab === 'bk' ? vBucket() : vTimeline()}</div>`;
+  return `<div class="sec">${head}${seg}${S.memTab === 'map' ? vMap() : S.memTab === 'bk' ? vBucket() : S.memTab === 'lt' ? vLetters() : vTimeline()}</div>`;
 }
 function geoLabel(g, sel) {
   if (sel === '-') return '지도에 넣지 않아요';
@@ -1071,7 +1225,7 @@ function vViewer() {
 
 function render() {
   $('.app').dataset.look = S.look;
-  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap) ? 'hidden' : '';
+  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter) ? 'hidden' : '';
   const a = document.activeElement, aid = a && a.id, ss = a && a.selectionStart;
   for (const w of ['me', 'partner']) { const b = $('#who-' + w); b.innerHTML = (S.look === 'cute' ? mini(w, 22) : '') + `<span>${esc(nm(w))}</span>`; b.setAttribute('aria-pressed', String(S.who === w)); }
   $('.brand').innerHTML = (S.look === 'cute' ? duo(22) : '<i></i>') + '우리 둘';
@@ -1082,13 +1236,15 @@ function render() {
     if (nc) $('#t-ph').insertAdjacentHTML('beforeend', `<span class="dot">${nc > 99 ? '99+' : nc}</span>`);
     const rt = reminders().filter(o => o.ds === td).length;
     if (rt) $('#t-cal').insertAdjacentHTML('beforeend', `<span class="dot">${rt}</span>`);
+    const lu = lUnread().length;
+    if (lu) $('#t-mem').insertAdjacentHTML('beforeend', `<span class="dot">${lu}</span>`);
   }
   const keep = {};
-  document.querySelectorAll('#view input:not([type=file]), #view select, #ov input:not([type=file]), #ov select, #ov textarea').forEach(el => { if (el.id) keep[el.id] = el.type === 'checkbox' ? el.checked : el.value; });
+  document.querySelectorAll('#view input:not([type=file]), #view select, #ov input:not([type=file]), #ov select, #ov textarea, #view textarea:not(#ans)').forEach(el => { if (el.id) keep[el.id] = el.type === 'checkbox' ? el.checked : el.value; });
   if (S.clearNote) { delete keep.pnote; S.clearNote = false; }
   $('.app').classList.toggle('gated', !!S.gate);
   $('#view').innerHTML = S.gate ? vGate() : !S.loaded ? vLoading() : S.err ? `<div class="empty">${esc(S.err)}</div>` : !S.couple ? vSetup() : ({home: vHome, q: vQ, cal: vCal, mem: vMem, ph: vPh, us: vUs})[S.tab]();
-  $('#ov').innerHTML = S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.recap ? vRecap() : vViewer();
+  $('#ov').innerHTML = S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
   if (S.recap && S.recap.jump != null) { const tr = $('#rct'); if (tr) tr.scrollLeft = S.recap.jump * tr.clientWidth; S.recap.jump = null; }
   for (const k in keep) { const el = document.getElementById(k); if (el) { if (el.type === 'checkbox') el.checked = keep[k]; else el.value = keep[k]; } }
   tick();
@@ -1148,7 +1304,7 @@ document.addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
   const act = b.dataset.act, v = b.dataset.v;
   if (act === 'tab') go(v);
-  else if (act === 'who') { S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
+  else if (act === 'who') { S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
   else if (act === 'save-ans') {
     const text = (S.draft || '').trim(); if (!text) { toast('답을 먼저 적어 주세요'); return; }
     const td = ymd(today());
@@ -1197,6 +1353,29 @@ document.addEventListener('click', async e => {
     render();
   }
   else if (act === 'b-idea') { const id = 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); await W.bucket(id, {title: v, done: false, doneAt: '', eventId: '', memoryId: '', by: S.who, at: Date.now()}); }
+  else if (act === 'reload') { location.reload(); }
+  else if (act === 'mood') {
+    const td = ymd(today()), id = td + '_' + S.who, cur = S.moods[id];
+    if (cur && cur.m === v) return;
+    if (await W.mood(id, {date: td, who: S.who, m: v, note: (cur && cur.note) || '', at: Date.now()})) { burst(6); toast(`${nm(other())}님에게 내 기분을 알렸어요`); }
+  }
+  else if (act === 'roul-go') { S.memTab = 'bk'; go('mem'); setTimeout(() => { const r = $('.roul'); if (r) r.scrollIntoView({block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }, 60); }
+  else if (act === 'roul-kind') { S.roulKind = v; S.roul = null; render(); }
+  else if (act === 'roul-spin') { spinRoulette(); }
+  else if (act === 'roul-plan') { const r = S.roul; if (r) { S.sheetDel = false; S.sheet = {title: r.t, date: ymd(addDays(today(), 7)), kind: 'date', who: 'both', repeat: 'none', alerts: [1, 0], ...(r.bid ? {bucketId: r.bid} : {})}; render(); } }
+  else if (act === 'l-new') { S.viewer = null; S.lsheet = {openAt: ''}; render(); const t = $('#l-text'); if (t) t.focus(); }
+  else if (act === 'l-cancel') { S.lsheet = null; render(); }
+  else if (act === 'l-when') { const el = $('#l-open'); if (el) el.value = v; if (S.lsheet) S.lsheet.openAt = v; }
+  else if (act === 'l-read') {
+    const l = S.letters.find(x => x.id === v); if (!l) return;
+    if (l.from !== S.who && !lOpen(l)) { const n = diff(today(), parse(l.openAt)); toast(`${fmtD(l.openAt)}에 열려요 · ${n === 1 ? '내일이에요' : n + '일 남았어요'}`); burst(4); return; }
+    S.letter = v; S.letterDel = false; render();
+    if (l.from !== S.who && !l.readAt) { burst(18); W.letterUpd(l.id, {readAt: Date.now()}); }
+  }
+  else if (act === 'l-close' || (act === 'l-close-bg' && e.target === b)) { S.letter = null; S.letterDel = false; render(); }
+  else if (act === 'l-del') { S.letterDel = true; render(); }
+  else if (act === 'l-del-no') { S.letterDel = false; render(); }
+  else if (act === 'l-del-yes') { const id = S.letter; S.letter = null; S.letterDel = false; render(); if (id && await W.delLetter(id)) toast('편지를 지웠어요'); }
   else if (act === 'b-del') { if (await W.delBucket(v)) toast('버킷리스트에서 뺐어요'); }
   else if (act === 'b-plan') { const b = S.bucket.find(x => x.id === v); if (b) { S.sheetDel = false; S.sheet = {title: b.title, date: ymd(addDays(today(), 7)), kind: 'date', who: 'both', repeat: 'none', alerts: [1, 0], bucketId: b.id}; render(); } }
   else if (act === 'b-done' || act === 'b-mem') {
@@ -1262,6 +1441,7 @@ document.addEventListener('keydown', e => {
   if (e.target.matches && e.target.matches('label[for=m-file]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#m-file').click(); return; }
   if (S.sheet && e.key === 'Escape') { S.sheet = null; S.sheetDel = false; render(); return; }
   if (S.msheet && e.key === 'Escape') { S.msheet = null; S.msheetDel = false; render(); return; }
+  if ((S.lsheet || S.letter) && e.key === 'Escape') { S.lsheet = null; S.letter = null; S.letterDel = false; render(); return; }
   if (S.recap && !S.recap.img) { if (e.key === 'Escape') { S.recap = null; render(); return; } if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const b = $(e.key === 'ArrowRight' ? '[data-act=rc-next]' : '[data-act=rc-prev]'); if (b) b.click(); return; } }
   if (!S.viewer) return;
   if (e.key === 'Escape') { S.viewer = null; render(); }
@@ -1272,6 +1452,22 @@ const isDate = s => /^\d{4}-\d{2}-\d{2}$/.test(s);
 document.addEventListener('submit', async e => {
   if (e.target.id === 'jf') { e.preventDefault(); const code = $('#j-code').value.trim().toUpperCase(); if (code.length < 6) { toast('초대 코드 6자리를 넣어 주세요'); return; } await gateDo(() => UDB.join(code), '연결됐어요!'); return; }
   if (e.target.id === 'rf') { e.preventDefault(); const code = $('#r-code').value.trim().toUpperCase(), rc = $('#r-rc').value.trim().toUpperCase(); if (code.length < 6 || rc.length < 8) { toast('초대 코드와 복구 코드를 모두 넣어 주세요'); return; } await gateDo(() => UDB.recover(code, rc), '기록을 되찾았어요'); return; }
+  if (e.target.id === 'mnf') {
+    e.preventDefault(); const el = $('#mood-note'), note = el.value.trim(), td = ymd(today()), id = td + '_' + S.who, cur = S.moods[id];
+    if (!cur) { toast('먼저 오늘 기분을 골라 주세요'); return; }
+    if (!note) { toast('한마디를 적어 주세요'); el.focus(); return; }
+    if (await W.mood(id, {...cur, note, at: Date.now()})) { const x = $('#mood-note'); if (x) x.value = ''; toast('한마디를 남겼어요'); }
+    return;
+  }
+  if (e.target.id === 'lf') {
+    e.preventDefault(); const g = id => document.getElementById(id);
+    const text = g('l-text').value.trim(), openAt = g('l-open').value, title = g('l-title').value.trim(), td = ymd(today());
+    if (!text) { toast('편지 내용을 적어 주세요'); g('l-text').focus(); return; }
+    if (!isDate(openAt) || openAt < td) { toast('여는 날은 오늘이나 그 뒤로 골라 주세요'); return; }
+    const id = 'l' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    if (await W.letter(id, {from: S.who, title, text, openAt, at: Date.now(), readAt: 0})) { S.lsheet = null; S.memTab = 'lt'; if (S.tab !== 'mem') go('mem'); else render(); burst(18); toast(openAt === td ? '편지를 보냈어요' : `${fmtD(openAt)}에 열리는 편지를 넣었어요`); }
+    return;
+  }
   if (e.target.id === 'bf') {
     e.preventDefault(); const t = $('#b-new'), title = t.value.trim(); if (!title) { toast('하고 싶은 걸 적어 주세요'); return; }
     const id = 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
@@ -1319,7 +1515,7 @@ let sw = null;
 document.addEventListener('touchstart', e => {
   if (e.touches.length !== 1) { sw = null; return; }
   const t = e.touches[0], el = e.target;
-  if (S.sheet || S.msheet || S.recap || el.closest('input,textarea,select,.di,.mstrip,.mpl,.kmap')) { sw = null; return; }
+  if (S.sheet || S.msheet || S.recap || S.lsheet || S.letter || el.closest('input,textarea,select,.di,.mstrip,.mpl,.kmap')) { sw = null; return; }
   if (!S.viewer && !el.closest('#view')) { sw = null; return; }
   sw = {x: t.clientX, y: t.clientY, t: Date.now(), cal: !!el.closest('.calbox')};
 }, {passive: true});
@@ -1366,6 +1562,20 @@ async function disablePush() {
 }
 const inviteUrl = () => location.origin + location.pathname + '?join=' + encodeURIComponent(S.info.code);
 async function copyText(t, ok) { try { await navigator.clipboard.writeText(t); toast(ok); } catch (e) { toast('복사하지 못했어요. 길게 눌러 복사해 주세요'); } }
+/* new versions: check when the app comes back to the screen, reload when nothing is being typed */
+async function checkUpdate() {
+  if (!S.real || !window.UD_VERSION) return;
+  try {
+    const r = await fetch('version.json?t=' + Date.now(), {cache: 'no-store'}); if (!r.ok) return;
+    const v = (await r.json()).v;
+    if (!v || v === window.UD_VERSION) return;
+    const a = document.activeElement, busy = S.sheet || S.msheet || S.lsheet || S.letter || S.recap || S.viewer || S.busy || (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
+    if (!busy && ls.get('ud-reloaded-for') !== v) { ls.set('ud-reloaded-for', v); location.reload(); return; }
+    if (!S.update) { S.update = true; render(); }
+  } catch (e) {}
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkUpdate(); });
+setInterval(() => { if (document.visibilityState === 'visible') checkUpdate(); }, 15 * 60e3);
 function vInstall() {
   return `${S.look === 'cute' ? `<div class="hero cute">${scene(1)}<div class="hin"><p class="hl">둘만의 기록장</p><div class="n" style="font-size:clamp(38px,11vw,52px)">우리 둘</div></div></div>` : `<div class="hero"><div class="hin"><div class="pair"><span class="av">우</span><span class="av">둘</span></div><p class="hl">둘만의 기록장</p><div class="n" style="font-size:clamp(44px,13vw,64px);font-weight:300">우리 둘</div></div></div>`}
   <div class="sec">${joinParam ? `<p class="sh">초대를 받았어요</p><div class="card"><p class="note">앱을 연 뒤 이 초대 코드를 넣어 주세요</p><div class="bigcode">${esc(joinParam)}</div><div class="row"><button class="btn ghost" type="button" data-act="copy-join">코드 복사</button></div></div>` : ''}
@@ -1397,13 +1607,14 @@ function vPushBanner() {
 function vRealSettings() {
   if (!S.real || !S.info) return '';
   const st = {on: '이 폰에서 알림을 받고 있어요', off: '알림이 꺼져 있어요', denied: '설정 앱 → 알림 → 우리 둘에서 알림을 허용해 주세요', 'need-install': '홈 화면에 추가한 앱에서만 알림을 켤 수 있어요', unsupported: '이 기기에서는 알림을 지원하지 않아요'}[S.push] || '확인하는 중…';
-  return `<p class="sh">알림</p><div class="card"><p style="margin:0">${st}</p><div class="row">${S.push === 'on' ? '<button class="btn ghost" type="button" data-act="push-test">테스트 알림 보내기</button><button class="btn line" type="button" data-act="push-off">끄기</button>' : S.push === 'off' ? '<button class="btn" type="button" data-act="push-on">알림 켜기</button>' : ''}</div><p class="note" style="margin-top:10px">받는 알림: 상대의 답·사진·콕·일정·추억, 아침 9시 기념일/데이트 알림, 저녁 6시 오늘의 질문</p></div>
+  return `<p class="sh">알림</p><div class="card"><p style="margin:0">${st}</p><div class="row">${S.push === 'on' ? '<button class="btn ghost" type="button" data-act="push-test">테스트 알림 보내기</button><button class="btn line" type="button" data-act="push-off">끄기</button>' : S.push === 'off' ? '<button class="btn" type="button" data-act="push-on">알림 켜기</button>' : ''}</div><p class="note" style="margin-top:10px">받는 알림: 상대의 답·기분·사진·콕·일정·추억·편지, 아침 9시 기념일/데이트/열리는 편지, 저녁 6시 오늘의 질문</p></div>
   <p class="sh">연결</p><div class="card"><p style="margin:0">${S.info.partner_joined ? `${esc(nm('me'))}님과 ${esc(nm('partner'))}님이 연결되어 있어요` : '아직 상대가 들어오지 않았어요'}</p><p class="note" style="margin-top:8px">초대 코드</p><div class="bigcode sm">${esc(S.info.code)}</div>${S.info.partner_joined ? '' : '<div class="row"><button class="btn" type="button" data-act="invite-share">초대 링크 보내기</button></div>'}</div>
   <p class="sh">내 복구 코드</p><div class="card"><div class="bigcode sm">${esc(S.info.rc || '')}</div><p class="note" style="margin-top:8px">폰을 바꾸거나 앱을 지웠을 때, 초대 코드와 이 코드로 내 기록을 되찾아요. 캡처해서 보관해 두세요. 다른 사람에게는 보여 주지 마세요.</p><div class="row"><button class="btn line" type="button" data-act="rc-copy">복구 코드 복사</button></div></div>`;
 }
 async function realBoot() {
   S.real = true; $('.app').classList.add('real');
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(r => r.update()).catch(() => {});
+  setTimeout(checkUpdate, 4000);
   if (!isStandalone() && ls.get('ud-browser-ok') !== '1') { S.gate = 'install'; S.loaded = true; render(); return; }
   await realStart();
 }
@@ -1460,6 +1671,8 @@ function attachDB(timer) {
   db.collection('bucket').onSnapshot(s => { S.bucket = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
   db.collection('events').onSnapshot(s => { S.events = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
   db.doc('pokes/latest').onSnapshot(s => { S.poke = s.exists ? s.data() : null; render(); }, () => {});
+  db.collection('moods').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.moods = m; render(); }, () => {});
+  db.collection('letters').onSnapshot(s => { S.letters = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
 }
 boot();
 setInterval(tick, 1000);

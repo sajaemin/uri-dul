@@ -1,5 +1,7 @@
 // Called by the docs table trigger. Tells the other person what just happened.
-import { admin, coupleNames, cors, fmtDate, fmtTime, json, sendToUser, trusted, type Msg, type Role } from '../_shared/common.ts';
+import { admin, coupleNames, cors, fmtDate, fmtTime, json, sendToUser, todayKST, trusted, type Msg, type Role } from '../_shared/common.ts';
+
+const MOODS: Record<string, string> = { love: '🥰 설레', happy: '😊 좋아', calm: '😌 평온', miss: '🥺 보고 싶어', tired: '😪 피곤해', busy: '🫠 바빠', sad: '🥲 울적해', grr: '😤 짜증 나' };
 
 type Row = { couple_id: string; coll: string; id: string; data: Record<string, any>; by_user: string | null };
 
@@ -47,6 +49,20 @@ Deno.serve(async (req) => {
     case 'bucket':
       if (isInsert) msg = { title: `${n}님이 버킷리스트를 추가했어요`, body: d.title, tag: `bk-${r.id}`, url: './#mem' };
       else if (d.done && !old?.data?.done) msg = { title: '버킷리스트 하나 완료!', body: d.title, tag: `bk-${r.id}`, url: './#mem' };
+      break;
+    case 'moods': {
+      const mo = MOODS[d.m as string];
+      if (!mo) break;
+      const changed = isInsert || old?.data?.m !== d.m;
+      if (changed) msg = { title: `${n}님의 오늘 기분 ${mo}`, body: d.note ? `“${d.note}”` : '나도 오늘 기분을 남겨 볼까요?', tag: `mood-${d.date}`, url: './#home' };
+      else if (d.note && d.note !== old?.data?.note) msg = { title: `${n}님이 한마디 남겼어요 ${mo.split(' ')[0]}`, body: `“${d.note}”`, tag: `mood-${d.date}`, url: './#home' };
+      break;
+    }
+    case 'letters':
+      if (!isInsert) break;
+      msg = d.openAt <= todayKST()
+        ? { title: `${n}님이 편지를 보냈어요 💌`, body: d.title || '지금 열어 볼 수 있어요', tag: `letter-${r.id}`, url: './#mem' }
+        : { title: `${n}님이 편지를 남겼어요 💌`, body: `${fmtDate(d.openAt)}에 열려요. 그날 아침에 알려 드릴게요`, tag: `letter-${r.id}`, url: './#mem' };
       break;
     case 'pings':
       to = r.by_user;

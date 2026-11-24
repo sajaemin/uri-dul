@@ -2,29 +2,30 @@
 // Works in Deno (Supabase Edge Functions) and Node 20+.
 
 export type Sub = { endpoint: string; keys: { p256dh: string; auth: string } };
+type Bytes = Uint8Array<ArrayBuffer>;
 
 const enc = new TextEncoder();
-const b64uToBytes = (s: string): Uint8Array => {
+const b64uToBytes = (s: string): Bytes => {
   const b = atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4));
   return Uint8Array.from(b, (c) => c.charCodeAt(0));
 };
-const bytesToB64u = (b: Uint8Array): string => {
+const bytesToB64u = (b: Bytes): string => {
   let s = '';
   for (const x of b) s += String.fromCharCode(x);
   return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 };
-const concat = (...parts: Uint8Array[]): Uint8Array => {
+const concat = (...parts: Bytes[]): Bytes => {
   const out = new Uint8Array(parts.reduce((n, p) => n + p.length, 0));
   let o = 0;
   for (const p of parts) { out.set(p, o); o += p.length; }
   return out;
 };
-async function hkdf(salt: Uint8Array, ikm: Uint8Array, info: Uint8Array, bytes: number): Promise<Uint8Array> {
+async function hkdf(salt: Bytes, ikm: Bytes, info: Bytes, bytes: number): Promise<Bytes> {
   const key = await crypto.subtle.importKey('raw', ikm, 'HKDF', false, ['deriveBits']);
   return new Uint8Array(await crypto.subtle.deriveBits({ name: 'HKDF', hash: 'SHA-256', salt, info }, key, bytes * 8));
 }
 
-export async function encrypt(sub: Sub, payload: Uint8Array): Promise<Uint8Array> {
+export async function encrypt(sub: Sub, payload: Bytes): Promise<Bytes> {
   const uaPublic = b64uToBytes(sub.keys.p256dh);
   const authSecret = b64uToBytes(sub.keys.auth);
   const as = await crypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, true, ['deriveBits']) as CryptoKeyPair;

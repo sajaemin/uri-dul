@@ -87,6 +87,11 @@ create policy push_own on public.push_subs for all to authenticated
   using (user_id = auth.uid())
   with check (user_id = auth.uid() and couple_id = public.my_couple());
 
+-- the app changes couples and push rows only through the functions below
+revoke all on public.couples, public.docs, public.push_subs from anon;
+revoke insert, update, delete, truncate on public.couples, public.push_subs from authenticated;
+revoke truncate on public.docs from authenticated;
+
 -- ---------- couple pairing (called from the app) ----------
 create or replace function public.my_info() returns jsonb
 language plpgsql stable security definer set search_path = public as $$
@@ -164,13 +169,6 @@ language sql volatile security definer set search_path = public as $$
   delete from public.push_subs where endpoint = p_endpoint and user_id = auth.uid()
 $$;
 
-create or replace function public.admin_set_config(p_k text, p_v text) returns void
-language sql volatile security definer set search_path = private as $$
-  insert into private.config (k, v) values (p_k, p_v) on conflict (k) do update set v = excluded.v
-$$;
-
-revoke all on function public.admin_set_config(text, text) from public, anon, authenticated;
-grant execute on function public.admin_set_config(text, text) to service_role;
 revoke all on function public.my_info(), public.create_couple(), public.join_couple(text), public.recover_couple(text, text), public.save_push(jsonb), public.drop_push(text) from public, anon;
 grant execute on function public.my_info(), public.create_couple(), public.join_couple(text), public.recover_couple(text, text), public.save_push(jsonb), public.drop_push(text) to authenticated;
 
@@ -219,7 +217,7 @@ end $$;
 
 drop trigger if exists docs_notify on public.docs;
 create trigger docs_notify after insert or update on public.docs
-  for each row when (new.coll in ('answers', 'photos', 'pokes', 'events', 'memories', 'bucket', 'pings'))
+  for each row when (new.coll in ('answers', 'photos', 'pokes', 'events', 'memories', 'bucket', 'pings', 'moods', 'letters'))
   execute function private.on_doc_change();
 
 -- ---------- daily reminders (09:00 and 18:00 Korea time) ----------

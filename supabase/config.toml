@@ -8,6 +8,3 @@ verify_jwt = false
 
 [functions.config]
 verify_jwt = false
-
-[functions.setup]
-verify_jwt = false
