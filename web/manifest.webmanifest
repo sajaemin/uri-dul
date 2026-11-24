@@ -1,0 +1,17 @@
+{
+  "name": "우리 둘",
+  "short_name": "우리 둘",
+  "description": "둘만의 기록장: 오늘의 질문, 사진함, 캘린더, 추억",
+  "lang": "ko",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff4f7",
+  "theme_color": "#fff4f7",
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

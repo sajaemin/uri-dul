@@ -1,0 +1,29 @@
+name: keepalive
+
+# Supabase pauses free projects after a quiet week. This touches the database every 3 days.
+on:
+  schedule:
+    - cron: '17 3 */3 * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Query the database once
+        run: |
+          supabase projects api-keys --project-ref "$REF" -o json > keys.json
+          KEY=$(node scripts/write-config.mjs "$REF" keys.json --key-only)
+          rm -f keys.json
+          echo "::add-mask::$KEY"
+          curl -s -o /dev/null -w '%{http_code}\n' "https://$REF.supabase.co/rest/v1/couples?select=id&limit=1" -H "apikey: $KEY" -H "Authorization: Bearer $KEY"

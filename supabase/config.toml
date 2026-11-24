@@ -1,0 +1,13 @@
+project_id = "uri-dul"
+
+[functions.notify]
+verify_jwt = false
+
+[functions.daily]
+verify_jwt = false
+
+[functions.config]
+verify_jwt = false
+
+[functions.setup]
+verify_jwt = false

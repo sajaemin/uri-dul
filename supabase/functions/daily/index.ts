@@ -1,0 +1,95 @@
+// Called by cron at 09:00 (reminders for dates, anniversaries, birthdays) and 18:00 Korea time (today's question).
+import { addDays, admin, coupleNames, cors, diffDays, fmtTime, json, sendToUser, todayKST, toUTC, trusted, type Role } from '../_shared/common.ts';
+
+type Ev = { title: string; kind: string; date: string; time?: string; repeat?: string; alerts?: number[] };
+
+function nextStart(ev: Ev, today: string): string | null {
+  const s0 = ev.date;
+  if (!s0 || !/^\d{4}-\d{2}-\d{2}$/.test(s0)) return null;
+  const r = ev.repeat || 'none';
+  if (s0 >= today || r === 'none') return s0 >= today ? s0 : null;
+  if (r === 'weekly') return addDays(s0, 7 * Math.ceil(diffDays(s0, today) / 7));
+  const d0 = new Date(toUTC(s0));
+  const t = new Date(toUTC(today));
+  if (r === 'monthly') {
+    for (let i = 0; i < 14; i++) {
+      const c = new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth() + i, d0.getUTCDate()));
+      if (c.getUTCDate() !== d0.getUTCDate()) continue;
+      const s = c.toISOString().slice(0, 10);
+      if (s >= today) return s;
+    }
+    return null;
+  }
+  for (let i = 0; i < 2; i++) {
+    const s = new Date(Date.UTC(t.getUTCFullYear() + i, d0.getUTCMonth(), d0.getUTCDate())).toISOString().slice(0, 10);
+    if (s >= today) return s;
+  }
+  return null;
+}
+const dl = (n: number) => (n === 0 ? '오늘' : `D-${n}`);
+const sameMD = (a: string, b: string) => a.slice(5) === b.slice(5);
+
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
+  if (!trusted(req)) return json({ error: 'forbidden' }, 403);
+  const slot = new URL(req.url).searchParams.get('slot') || 'morning';
+  const today = todayKST();
+  const { data: couples } = await admin.from('couples').select('id, me, partner');
+  let sent = 0;
+
+  for (const c of couples ?? []) {
+    const names = await coupleNames(c.id);
+    if (slot === 'evening') {
+      if (!c.me || !c.partner) continue;
+      const { data: ans } = await admin.from('docs').select('id').eq('couple_id', c.id).eq('coll', 'answers').like('id', `${today}_%`);
+      const has = new Set((ans ?? []).map((a) => a.id));
+      for (const role of ['me', 'partner'] as Role[]) {
+        if (has.has(`${today}_${role}`)) continue;
+        const other: Role = role === 'me' ? 'partner' : 'me';
+        const body = has.has(`${today}_${other}`) ? `${names[other]}님은 벌써 답했어요. 내 답을 쓰면 열려요` : '오늘의 질문이 기다리고 있어요';
+        sent += await sendToUser(c[role], { title: '오늘의 질문', body, tag: `q-${today}`, url: './#q' });
+      }
+      continue;
+    }
+
+    // morning reminders
+    const { data: docs } = await admin.from('docs').select('coll, id, data').eq('couple_id', c.id).in('coll', ['couple', 'events']);
+    const main = (docs ?? []).find((d) => d.coll === 'couple' && d.id === 'main')?.data as any;
+    if (!main?.start) continue;
+    const items: string[] = [];
+    let dateToday: string | null = null;
+    let dateIdx = -1;
+
+    for (const d of (docs ?? []).filter((x) => x.coll === 'events')) {
+      const ev = d.data as Ev;
+      const s = nextStart(ev, today);
+      if (!s) continue;
+      const k = diffDays(today, s);
+      if (!(ev.alerts ?? []).includes(k)) continue;
+      items.push(`${dl(k)} ${ev.title}${ev.time ? ` (${fmtTime(ev.time)})` : ''}`);
+      if (k === 0 && ev.kind === 'date' && !dateToday) { dateToday = `${ev.title}${ev.time ? ' ' + fmtTime(ev.time) : ''}`; dateIdx = items.length - 1; }
+    }
+    const dayNo = diffDays(main.start, today) + 1;
+    for (const k of [0, 1, 7]) {
+      const n = dayNo + k;
+      if (main.autoAnniv !== false && n > 0 && n % 100 === 0) items.push(`${dl(k)} ${n.toLocaleString('ko-KR')}일`);
+      const day = addDays(today, k);
+      const years = Number(day.slice(0, 4)) - Number(main.start.slice(0, 4));
+      if (years > 0 && sameMD(day, main.start)) items.push(`${dl(k)} ${years}주년`);
+      for (const role of ['me', 'partner'] as Role[]) {
+        const b = main[role]?.birthday;
+        if (b && sameMD(day, b)) items.push(`${dl(k)} ${names[role]} 생일`);
+      }
+    }
+    if (!items.length) continue;
+    const msg = {
+      title: dateToday ? '오늘은 데이트 날!' : '오늘의 알림',
+      body: dateToday ? [dateToday, ...items.filter((_, i) => i !== dateIdx)].join(' · ') : items.join(' · '),
+      tag: `daily-${today}`,
+      url: './#cal',
+    };
+    sent += await sendToUser(c.me, msg);
+    sent += await sendToUser(c.partner, msg);
+  }
+  return json({ slot, today, sent });
+});

@@ -1,0 +1,96 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the three secrets
+        run: |
+          missing=0
+          [ -n "$SUPABASE_ACCESS_TOKEN" ] || { echo "::error::SUPABASE_ACCESS_TOKEN secret is missing"; missing=1; }
+          [ -n "$SUPABASE_DB_PASSWORD" ] || { echo "::error::SUPABASE_DB_PASSWORD secret is missing"; missing=1; }
+          [ -n "$REF" ] || { echo "::error::SUPABASE_PROJECT_REF secret is missing"; missing=1; }
+          exit $missing
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Link the Supabase project
+        run: supabase link --project-ref "$REF" -p "$SUPABASE_DB_PASSWORD"
+
+      - name: Database tables, rules and schedules
+        run: yes | supabase db push --include-all -p "$SUPABASE_DB_PASSWORD"
+
+      - name: Function secrets (push keys are made once and kept)
+        run: |
+          NOTIFY=$(printf '%s' "$SUPABASE_DB_PASSWORD:uridul-notify" | sha256sum | cut -c1-48)
+          echo "::add-mask::$NOTIFY"
+          supabase secrets list --project-ref "$REF" > secrets.txt || true
+          printf 'NOTIFY_SECRET=%s\nVAPID_SUBJECT=mailto:uridul@users.noreply.github.com\n' "$NOTIFY" > fn.env
+          if ! grep -q VAPID_PUBLIC_KEY secrets.txt; then node scripts/gen-vapid.mjs >> fn.env; echo "made new push keys"; fi
+          supabase secrets set --env-file fn.env --project-ref "$REF"
+          rm -f fn.env secrets.txt
+
+      - name: Deploy functions
+        run: |
+          for f in notify daily config setup; do
+            supabase functions deploy "$f" --project-ref "$REF" --no-verify-jwt
+          done
+
+      - name: Connect the database to the functions
+        run: |
+          NOTIFY=$(printf '%s' "$SUPABASE_DB_PASSWORD:uridul-notify" | sha256sum | cut -c1-48)
+          echo "::add-mask::$NOTIFY"
+          code=0
+          for i in 1 2 3 4 5 6; do
+            code=$(curl -s -o out.json -w '%{http_code}' -X POST "https://$REF.supabase.co/functions/v1/setup" \
+              -H "x-notify-secret: $NOTIFY" -H 'Content-Type: application/json' -d '{}')
+            [ "$code" = "200" ] && break
+            sleep 10
+          done
+          cat out.json; echo
+          [ "$code" = "200" ]
+
+      - name: Write the app's public config
+        run: |
+          supabase projects api-keys --project-ref "$REF" -o json > keys.json
+          node scripts/write-config.mjs "$REF" keys.json > web/config.js
+          rm -f keys.json
+          grep -q "supabase.co" web/config.js
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+      - id: pages
+        uses: actions/deploy-pages@v4
