@@ -381,7 +381,9 @@ ol.steps.big li{margin:10px 0;font-size:16px}
 .mrow+.mrow{border-top:.5px solid var(--line)}
 .mrow .av{width:30px;height:30px;font-size:13px;background:var(--acc2);color:var(--acc);border:0}
 .mrow .mm{flex:1;min-width:0}
-.mrow .mm b{display:block;font-size:15px}
+.mrow .mm b{font-size:15px}
+.mtop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mnote{display:block;margin-top:2px}
 .mrow .mm .note{overflow-wrap:anywhere}
 .mface{font-size:15px;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
 .mface i{font-style:normal;font-size:26px;line-height:1}
@@ -751,7 +753,7 @@ function vMood() {
   const td = ymd(today()), mine = moodAt(td, S.who);
   const line = w => {
     const m = moodAt(td, w), mo = m && moodOf(m.m);
-    return `<div class="mrow">${S.look === 'cute' ? mini(w, 30) : avHTML(w)}<div class="mm"><b>${esc(nm(w))}${w === S.who ? ' (나)' : ''}</b>${m && m.note ? `<span class="note">“${esc(m.note)}”</span>` : !mo ? `<span class="note">${w === S.who ? '아래에서 골라 주세요' : paired() ? '아직 안 골랐어요' : '초대를 기다리는 중이에요'}</span>` : ''}</div>${mo ? `<span class="mface"><i>${mo[1]}</i>${esc(mo[2])}</span>` : ''}</div>`;
+    return `<div class="mrow">${S.look === 'cute' ? mini(w, 30) : avHTML(w)}<div class="mm"><div class="mtop"><b>${esc(nm(w))}${w === S.who ? ' (나)' : ''}</b>${mo ? `<span class="mface"><i>${mo[1]}</i>${esc(mo[2])}</span>` : ''}</div>${m && m.note ? `<span class="note mnote">“${esc(m.note)}”</span>` : !mo ? `<span class="note">${w === S.who ? '아래에서 골라 주세요' : paired() ? '아직 안 골랐어요' : '초대를 기다리는 중이에요'}</span>` : ''}</div></div>`;
   };
   return `<div class="card mood">${line(other())}${line(S.who)}
   <div class="mchips" role="group" aria-label="내 오늘 기분">${MOODS.map(m => `<button type="button" class="mchip" data-act="mood" data-v="${m[0]}" aria-pressed="${!!(mine && mine.m === m[0])}"><span aria-hidden="true">${m[1]}</span>${m[2]}</button>`).join('')}</div>
@@ -1302,7 +1304,10 @@ async function savePhoto(p) {
 
 /* ---------- events ---------- */
 function go(tab) { S.tab = tab; S.viewer = null; ls.set('ud-tab', tab); try { history.replaceState(null, '', '#' + tab); } catch (e) {} render(); window.scrollTo(0, 0); const v = $('#view'); v.classList.remove('in-l', 'in-r'); if (S.slide) { void v.offsetWidth; v.classList.add('in-' + S.slide); S.slide = null; } }
+let diTimer = 0;
 document.addEventListener('click', async e => {
+  // an opened island folds back when anything else is tapped, so it never covers the controls under it
+  if (S.diExp && !e.target.closest('.di')) { S.diExp = false; tick(); }
   const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
   const act = b.dataset.act, v = b.dataset.v;
   if (act === 'tab') go(v);
@@ -1426,8 +1431,8 @@ document.addEventListener('click', async e => {
   else if (act === 'look') { S.look = v; ls.set('ud-look', v); render(); if (v === 'cute') burst(14); toast(v === 'cute' ? '러블리 테마로 바꿨어요' : '모던 테마로 바꿨어요'); }
   else if (act === 'set-cover') { const p = S.photos.find(x => x.id === S.viewer); if (p && S.couple && await W.couple({...S.couple, cover: {assetId: p.assetId || null, url: p.url || ''}})) { S.viewer = null; render(); toast('홈 배경으로 걸었어요'); } }
   else if (act === 'clear-cover') { if (S.couple) { const c = {...S.couple}; delete c.cover; if (await W.couple(c)) toast('배경 사진을 뺐어요'); } }
-  else if (act === 'di-toggle') { S.diExp = !S.diExp; tick(); }
-  else if (act === 'di-open') { S.diExp = true; tick(); window.scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }
+  else if (act === 'di-toggle') { S.diExp = !S.diExp; tick(); clearTimeout(diTimer); if (S.diExp) diTimer = setTimeout(() => { if (S.diExp) { S.diExp = false; tick(); } }, 8000); }
+  else if (act === 'di-open') { S.diExp = true; tick(); clearTimeout(diTimer); diTimer = setTimeout(() => { if (S.diExp) { S.diExp = false; tick(); } }, 8000); window.scrollTo({top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }
   else if (act === 'cal-prev' || act === 'cal-next') { const m = S.calMonth; S.calMonth = new Date(m.getFullYear(), m.getMonth() + (act === 'cal-next' ? 1 : -1), 1); render(); }
   else if (act === 'cal-today') { const t = today(); S.calMonth = new Date(t.getFullYear(), t.getMonth(), 1); S.calSel = ymd(t); render(); }
   else if (act === 'cal-day') { S.calSel = v; const d = parse(v); if (d.getMonth() !== S.calMonth.getMonth() || d.getFullYear() !== S.calMonth.getFullYear()) S.calMonth = new Date(d.getFullYear(), d.getMonth(), 1); render(); }
