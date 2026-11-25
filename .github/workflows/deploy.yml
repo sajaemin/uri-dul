@@ -47,7 +47,7 @@ jobs:
         run: node scripts/provision.mjs
 
       - name: Deploy the push functions
-        run: supabase functions deploy --project-ref "$UD_REF" --no-verify-jwt
+        run: supabase functions deploy --project-ref "$UD_REF" --no-verify-jwt --yes
 
       - name: Stamp the version
         run: |
