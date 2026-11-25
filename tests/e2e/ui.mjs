@@ -34,7 +34,8 @@ async function phone(name) {
 }
 const shot = (p, n) => p.screenshot({ path: SHOTS + n + '.png', fullPage: false }).catch(() => {});
 const tab = (p, t) => p.click(`#t-${t}`);
-const step = async (label, fn) => { try { await fn(); ok(true, label); } catch (e) { ok(false, `${label} — ${e.message.split('\n')[0]}`); } };
+let nfail = 0;
+const step = async (label, fn) => { try { await fn(); ok(true, label); } catch (e) { ok(false, `${label} — ${e.message.split('\n')[0]}`); nfail++; await shot(A, `fail-${nfail}-A`); await shot(B, `fail-${nfail}-B`); } };
 
 const A = await phone('A'), B = await phone('B');
 let code = '';
@@ -147,7 +148,11 @@ try {
   });
 
   await step('after a reload B is still signed in with everything there', async () => {
+    if (!(await B.evaluate(() => !!navigator.serviceWorker && !!navigator.serviceWorker.controller))) await B.reload();
     await B.reload();
+    if (!(await B.evaluate(() => !!(navigator.serviceWorker && navigator.serviceWorker.controller)))) throw new Error('the service worker is not running');
+    await B.locator('#t-home').waitFor();
+    await tab(B, 'home');
     await B.locator('.hero').filter({ hasText: ME }).waitFor();
     await tab(B, 'q');
     await B.locator('.bub', { hasText: 'A가 쓴 답이에요' }).waitFor();

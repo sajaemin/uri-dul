@@ -9,7 +9,8 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
   e.respondWith((async () => {
     try {
-      const res = await fetch(req, {cache: 'no-cache'});
+      // a navigation Request can't be re-used with options, so fetch by URL (same-origin GETs only)
+      const res = await fetch(req.url, {cache: 'no-cache', credentials: 'same-origin'});
       if (res.ok && !req.url.includes('version.json')) { const c = await caches.open(CACHE); c.put(req, res.clone()).catch(() => {}); }
       return res;
     } catch (err) {
