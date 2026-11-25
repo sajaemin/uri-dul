@@ -428,7 +428,7 @@ ol.steps.big li{margin:10px 0;font-size:16px}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="app gated">
   <header>
     <span class="brand"><i></i>우리 둘</span><span class="tag">테스트 모드</span>
     <div class="who" role="group" aria-label="어느 쪽 폰으로 볼지 고르기">
@@ -585,12 +585,13 @@ function coupleForm(btn) {
   <label class="chk" style="margin-top:8px"><input type="checkbox" id="n-auto"${c.autoAnniv === false ? '' : ' checked'}>100일 단위 기념일을 캘린더에 자동 표시</label>
   <button class="btn wide" style="margin-top:16px" type="submit">${btn}</button></form>`;
 }
+const paired = () => !S.real || !S.info || !!S.info.partner_joined;
 function vSetup() {
   const hero = S.look === 'cute'
     ? `<div class="hero cute">${scene()}<div class="hin"><p class="hl">둘만의 기록장</p><div class="n" style="font-size:clamp(40px,12vw,56px)">시작해요</div><p class="hs">이름과 사귄 날만 있으면 돼요</p></div></div>`
     : `<div class="hero"><div class="hin"><div class="pair"><span class="av">재</span><span class="av">은</span></div><p class="hl">둘만의 기록장</p><div class="n" style="font-size:clamp(44px,13vw,64px);font-weight:300">시작해요</div><p class="hs">이름과 사귄 날만 있으면 돼요</p></div></div>`;
   return `${hero}<div class="sec"><p class="sh">우리 정보</p><div class="card">${coupleForm('시작하기')}</div>
-  <p class="note" style="margin:12px 6px 0">테스트 모드예요. 오른쪽 위에서 두 사람을 바꾸면 두 폰을 번갈아 써볼 수 있어요.</p></div>`;
+  <p class="note" style="margin:12px 6px 0">${!S.real ? '테스트 모드예요. 오른쪽 위에서 두 사람을 바꾸면 두 폰을 번갈아 써볼 수 있어요.' : S.who === 'partner' ? '아직 상대가 우리 정보를 넣지 않아서 여기서 정해요. 나중에 설정에서 둘 다 바꿀 수 있어요.' : '시작하면 홈에서 초대 링크를 보낼 수 있어요. 정보는 나중에 설정에서 바꿀 수 있어요.'}</p></div>`;
 }
 function mini(w, sz) {
   const me = w === 'me', body = me ? '#ffd9b3' : '#ffc7d8', z = sz || 24;
@@ -735,7 +736,7 @@ function vHome() {
   <p class="sh">다음 데이트</p>${vNext()}
   ${memPrompt() ? `<p class="sh">기록할 데이트</p>${memPrompt()}` : ''}${vRecapCard()}
   <p class="sh">오늘의 질문</p><div class="card"><p class="q">${esc(Q[qIdx(td)])}</p><p class="note" style="margin-top:8px">${qs}</p>
-  <div class="row"><button class="btn" type="button" data-act="tab" data-v="q">${mine ? '답 보러 가기' : '답하러 가기'}</button>${!theirs ? `<button class="btn ghost" type="button" data-act="poke">콕 찌르기</button>` : ''}</div></div>
+  <div class="row"><button class="btn" type="button" data-act="tab" data-v="q">${mine ? '답 보러 가기' : '답하러 가기'}</button>${!theirs && paired() ? `<button class="btn ghost" type="button" data-act="poke">콕 찌르기</button>` : ''}</div></div>
   <p class="sh">다가오는 일정</p>${vPlans()}
   <p class="sh">사진함</p><div class="card"><h2>${nc ? `새 사진 ${nc}장` : '새 사진 없음'} <small>${esc(nm(other()))}님이 올린 사진</small></h2>
   ${rec.length ? `<div class="thumbs">${rec.map(p => `<img src="${esc(src(p))}" alt="" loading="lazy">`).join('')}</div>` : `<p class="note">아직 받은 사진이 없어요.</p>`}
@@ -750,7 +751,7 @@ function vMood() {
   const td = ymd(today()), mine = moodAt(td, S.who);
   const line = w => {
     const m = moodAt(td, w), mo = m && moodOf(m.m);
-    return `<div class="mrow">${S.look === 'cute' ? mini(w, 30) : avHTML(w)}<div class="mm"><b>${esc(nm(w))}${w === S.who ? ' (나)' : ''}</b>${m && m.note ? `<span class="note">“${esc(m.note)}”</span>` : !mo ? `<span class="note">${w === S.who ? '아래에서 골라 주세요' : '아직 안 골랐어요'}</span>` : ''}</div>${mo ? `<span class="mface"><i>${mo[1]}</i>${esc(mo[2])}</span>` : ''}</div>`;
+    return `<div class="mrow">${S.look === 'cute' ? mini(w, 30) : avHTML(w)}<div class="mm"><b>${esc(nm(w))}${w === S.who ? ' (나)' : ''}</b>${m && m.note ? `<span class="note">“${esc(m.note)}”</span>` : !mo ? `<span class="note">${w === S.who ? '아래에서 골라 주세요' : paired() ? '아직 안 골랐어요' : '초대를 기다리는 중이에요'}</span>` : ''}</div>${mo ? `<span class="mface"><i>${mo[1]}</i>${esc(mo[2])}</span>` : ''}</div>`;
   };
   return `<div class="card mood">${line(other())}${line(S.who)}
   <div class="mchips" role="group" aria-label="내 오늘 기분">${MOODS.map(m => `<button type="button" class="mchip" data-act="mood" data-v="${m[0]}" aria-pressed="${!!(mine && mine.m === m[0])}"><span aria-hidden="true">${m[1]}</span>${m[2]}</button>`).join('')}</div>
@@ -848,7 +849,7 @@ function vQ() {
   ${edit ? `<textarea id="ans" maxlength="500" placeholder="솔직하게 적어 보세요. 둘 다 답하면 서로의 답이 열려요">${esc(S.draft)}</textarea><div class="row"><button class="btn" type="button" data-act="save-ans">${mine ? '수정 저장' : '답 저장하기'}</button>${mine ? '<button class="btn line" type="button" data-act="cancel-edit">취소</button>' : ''}</div>`
     : `<div class="bub me">${esc(mine.text)}</div><div class="row"><button class="btn line" type="button" data-act="edit-ans">수정</button></div>`}
   <span class="who-l">${S.look === 'cute' ? mini(other(), 24) : ''}${esc(nm(other()))}</span>
-  ${mine && theirs ? `<div class="bub">${esc(theirs.text)}</div>` : theirs ? `<div class="lock">${esc(nm(other()))}님은 답했어요. 내 답을 저장하면 열려요.</div>` : `<div class="lock">아직 답하지 않았어요.<div class="row"><button class="btn ghost" type="button" data-act="poke">콕 찌르기</button></div></div>`}
+  ${mine && theirs ? `<div class="bub">${esc(theirs.text)}</div>` : theirs ? `<div class="lock">${esc(nm(other()))}님은 답했어요. 내 답을 저장하면 열려요.</div>` : `<div class="lock">${paired() ? '아직 답하지 않았어요.<div class="row"><button class="btn ghost" type="button" data-act="poke">콕 찌르기</button></div>' : `${esc(nm(other()))}님이 들어오면 여기서 답을 볼 수 있어요.`}</div>`}
   </div>
   <p class="sh">지난 질문</p><div class="card">${past.length ? `<ul class="list">${past.map(d => { const a = ans(d, S.who), b = ans(d, other()); const both = a && b; return `<li style="display:block"><span class="date">${dotd(d)}</span><div style="font-weight:600;margin-top:2px">${esc(Q[qIdx(d)])}</div>${both ? `<div class="bub me">${esc(a.text)}</div><div class="bub">${esc(b.text)}</div>` : `<p class="note" style="margin-top:4px">${a ? '나만 답했어요' : '상대만 답했어요'} · 둘 다 답한 질문만 열려요</p>`}</li>`; }).join('')}</ul>` : '<p class="note">답한 질문이 쌓이면 여기에 모여요.</p>'}</div></div>`;
 }
@@ -866,7 +867,7 @@ function vPh() {
   <input type="file" id="file" accept="image/*" multiple hidden></div>
   <div class="seg" role="group" aria-label="사진 종류"><button type="button" data-act="seg" data-v="in" aria-pressed="${S.phTab === 'in'}">받은 사진 ${rin.length}${nc ? ` · 새 ${nc}` : ''}</button><button type="button" data-act="seg" data-v="out" aria-pressed="${S.phTab === 'out'}">보낸 사진 ${rout.length}</button></div>
   ${S.phTab === 'in' && nc ? `<button class="btn wide" type="button" data-act="save-all" style="margin-bottom:12px">새 사진 ${nc}장 모두 저장</button>` : ''}
-  ${list.length ? tiles(list, S.phTab) : `<div class="empty">${emptyArt()}${S.phTab === 'in' ? `${esc(nm(other()))}님이 올린 사진이 아직 없어요.<br>테스트하려면 오른쪽 위에서 '${esc(nm(other()))}'로 바꿔 사진을 올려 보세요.` : '아직 올린 사진이 없어요.'}</div>`}
+  ${list.length ? tiles(list, S.phTab) : `<div class="empty">${emptyArt()}${S.phTab === 'in' ? `${esc(nm(other()))}님이 올린 사진이 아직 없어요.${S.real ? `<br>${esc(nm(other()))}님이 사진을 올리면 여기 모이고 알림이 가요.` : `<br>테스트하려면 오른쪽 위에서 '${esc(nm(other()))}'로 바꿔 사진을 올려 보세요.`}` : '아직 올린 사진이 없어요.'}</div>`}
   ${!dl && S.loaded ? '<p class="note" style="margin-top:12px">이 화면에서는 저장 버튼이 막혀 있어요. 사진을 열고 길게 눌러 저장할 수 있어요.</p>' : ''}</div>`;
 }
 function vUs() {
@@ -1243,7 +1244,7 @@ function render() {
   const keep = {};
   document.querySelectorAll('#view input:not([type=file]), #view select, #ov input:not([type=file]), #ov select, #ov textarea, #view textarea:not(#ans)').forEach(el => { if (el.id) keep[el.id] = el.type === 'checkbox' ? el.checked : el.value; });
   if (S.clearNote) { delete keep.pnote; S.clearNote = false; }
-  $('.app').classList.toggle('gated', !!S.gate);
+  $('.app').classList.toggle('gated', !!S.gate || !S.loaded || !S.couple);
   $('#view').innerHTML = S.gate ? vGate() : !S.loaded ? vLoading() : S.err ? `<div class="empty">${esc(S.err)}</div>` : !S.couple ? vSetup() : ({home: vHome, q: vQ, cal: vCal, mem: vMem, ph: vPh, us: vUs})[S.tab]();
   $('#ov').innerHTML = S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
   if (S.recap && S.recap.jump != null) { const tr = $('#rct'); if (tr) tr.scrollLeft = S.recap.jump * tr.clientWidth; S.recap.jump = null; }
@@ -1355,6 +1356,7 @@ document.addEventListener('click', async e => {
   }
   else if (act === 'b-idea') { const id = 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); await W.bucket(id, {title: v, done: false, doneAt: '', eventId: '', memoryId: '', by: S.who, at: Date.now()}); }
   else if (act === 'reload') { location.reload(); }
+  else if (act === 'copy-url') { copyText(location.origin + location.pathname + (joinParam ? '?join=' + joinParam : ''), '주소를 복사했어요. Safari에 붙여넣어 주세요'); }
   else if (act === 'wg-copy') {
     if (!S.wgCode) { toast('위젯 코드를 준비하는 중이에요. 잠시 뒤 다시 눌러 주세요'); prepWidget(); return; }
     try { await navigator.clipboard.writeText(S.wgCode); burst(10); toast('복사했어요. Scriptable에 붙여넣어 주세요'); }
@@ -1583,10 +1585,24 @@ async function checkUpdate() {
 }
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkUpdate(); });
 setInterval(() => { if (document.visibilityState === 'visible') checkUpdate(); }, 15 * 60e3);
+function inApp() {
+  const u = navigator.userAgent;
+  if (/KAKAOTALK/i.test(u)) return '카카오톡';
+  if (/Instagram/i.test(u)) return '인스타그램';
+  if (/NAVER\(inapp|NAVER/i.test(u)) return '네이버 앱';
+  if (/FBAN|FBAV/i.test(u)) return '페이스북';
+  if (/Line\//i.test(u)) return '라인';
+  if (/CriOS/i.test(u)) return '크롬';
+  if (/FxiOS/i.test(u)) return '파이어폭스';
+  if (/EdgiOS/i.test(u)) return '엣지';
+  if (/iPhone|iPad/.test(u) && !/Safari\//.test(u)) return '다른 앱';
+  return '';
+}
 function vInstall() {
   return `${S.look === 'cute' ? `<div class="hero cute">${scene(1)}<div class="hin"><p class="hl">둘만의 기록장</p><div class="n" style="font-size:clamp(38px,11vw,52px)">우리 둘</div></div></div>` : `<div class="hero"><div class="hin"><div class="pair"><span class="av">우</span><span class="av">둘</span></div><p class="hl">둘만의 기록장</p><div class="n" style="font-size:clamp(44px,13vw,64px);font-weight:300">우리 둘</div></div></div>`}
   <div class="sec">${joinParam ? `<p class="sh">초대를 받았어요</p><div class="card"><p class="note">앱을 연 뒤 이 초대 코드를 넣어 주세요</p><div class="bigcode">${esc(joinParam)}</div><div class="row"><button class="btn ghost" type="button" data-act="copy-join">코드 복사</button></div></div>` : ''}
-  <p class="sh">홈 화면에 추가해 주세요</p><div class="card"><ol class="steps big"><li>아래쪽 <b>공유 버튼</b>(네모에서 화살표가 나오는 아이콘)을 눌러요.</li><li>목록에서 <b>'홈 화면에 추가'</b>를 고르고 <b>추가</b>를 눌러요.</li><li>홈 화면에 생긴 <b>'우리 둘'</b> 아이콘으로 열어요.</li></ol><p class="note" style="margin-top:10px">홈 화면 앱으로 열어야 알림을 받을 수 있어요. 아이폰 iOS 16.4 이상이 필요해요.</p></div>
+  ${inApp() ? `<div class="card" style="margin-top:12px;border:2px solid var(--acc)"><b>Safari로 열어 주세요</b><p class="note" style="margin-top:4px">지금은 ${esc(inApp())} 안에서 열려 있어서 홈 화면에 추가할 수 없어요. 오른쪽 아래(또는 위) 메뉴에서 <b>'Safari로 열기'</b> 또는 <b>'다른 브라우저로 열기'</b>를 눌러 주세요.</p><div class="row"><button class="btn ghost" type="button" data-act="copy-url">주소 복사</button></div></div>` : ''}
+  <p class="sh">홈 화면에 추가해 주세요</p><div class="card"><ol class="steps big"><li>Safari 오른쪽 아래 <b>⋯</b>(점 세 개) → <b>공유</b>를 눌러요. <span class="note">(iOS 18 이하: 아래쪽 공유 버튼)</span></li><li>목록을 위로 올려 <b>'홈 화면에 추가'</b>를 눌러요.</li><li><b>'웹 앱으로 열기'</b>가 켜진 채로 오른쪽 위 <b>추가</b>를 눌러요.</li><li>아이폰 바탕화면(앱 아이콘들 있는 곳)에 생긴 <b>'우리 둘'</b> 아이콘으로 열어요.</li></ol><p class="note" style="margin-top:10px">홈 화면 앱으로 열어야 알림을 받을 수 있어요. 아이폰 iOS 16.4 이상이 필요해요.</p></div>
   <div class="row" style="justify-content:center"><button class="btn line" type="button" data-act="gate-browser">알림 없이 브라우저에서 쓰기</button></div></div>`;
 }
 function vPair() {
