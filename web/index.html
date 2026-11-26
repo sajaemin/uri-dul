@@ -532,6 +532,43 @@ ol.steps.big li{margin:10px 0;font-size:16px}
 .app[data-look=cute] nav.tabs button{color:var(--mut)}
 .app[data-look=cute] nav.tabs button[aria-current=page]{background:linear-gradient(180deg,#ff86ad,#ff5c8d);color:#fff;box-shadow:0 6px 14px -6px rgba(255,92,141,.8)}
 .app[data-look=cute] nav.tabs .dot{box-shadow:0 0 0 2px #fff}
+
+/* ratings and regulars */
+.mrate{margin-top:12px;padding-top:10px;border-top:1.5px dashed var(--line)}
+.mr-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mr-l{font-size:13px;font-weight:700;color:var(--mut)}
+.stars{display:inline-flex;gap:0}
+.st{border:0;background:none;padding:0;width:34px;height:36px;display:inline-flex;align-items:center;justify-content:center}
+.st svg{width:24px;height:24px;fill:none;stroke:#ffc0d3;stroke-width:1.8;stroke-linejoin:round;transition:transform .15s}
+.st.on svg{fill:#ffc53d;stroke:#f5a700}
+.st:active svg{transform:scale(1.25)}
+.again{margin-left:auto;border:0;border-radius:999px;min-height:34px;padding:0 12px;font-size:13px;font-weight:700;background:var(--fill);color:var(--mut);box-shadow:inset 0 0 0 1.5px var(--line)}
+.again.on{background:#ffe1eb;color:var(--acc);box-shadow:inset 0 0 0 1.5px #ffb3c9}
+.mr-pt{margin:6px 0 0;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mr-both{margin:8px 0 0;font-size:13px;font-weight:700;color:var(--acc);background:linear-gradient(90deg,#ffe1eb,#fff0e4);border-radius:12px;padding:7px 10px}
+.sts{display:inline-flex}
+.sts i{display:inline-flex;width:14px;height:14px}
+.sts svg{width:14px;height:14px;fill:#ffe3ec}
+.sts i.on svg{fill:#ffc53d}
+.agt{font-weight:700;color:var(--acc)}
+.regs li{display:flex;align-items:center;gap:10px}
+.rgi{font-size:20px;flex:none;width:26px;text-align:center}
+.rgm{flex:1;display:flex;flex-direction:column;min-width:0}
+.rgm b{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rgm .note{font-size:12.5px}
+.rgb{display:flex;gap:6px;flex:none}
+/* on this day */
+.otd{position:relative;background:linear-gradient(180deg,#fffaf2,#fff);overflow:hidden}
+.otd-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.otd-tag{background:#ffd36b;color:#6b4300;font-weight:800;font-size:13px;border-radius:999px;padding:3px 10px;transform:rotate(-2deg);box-shadow:0 2px 0 #f0b93a}
+.app[data-look=cute] .otd-tag{font-family:Jua,sans-serif;font-weight:400;font-size:14px}
+.otd-t{margin:10px 0 0;font-size:18px;font-weight:700}
+.app[data-look=cute] .otd-t{font-family:Jua,sans-serif;font-weight:400}
+.otd-x{margin:4px 0 0;color:var(--ink);font-size:15px}
+.otd-ph{display:flex;gap:10px;margin-top:12px;align-items:center}
+.otd-pi{flex:0 0 auto;width:calc((100% - 30px) / 4);max-width:92px;background:#fff;padding:4px 4px 12px;border-radius:4px;box-shadow:0 4px 10px rgba(90,43,64,.16);transform:rotate(var(--r))}
+.otd-pi img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:2px}
+.otd-more{font-weight:800;color:var(--mut);font-size:14px}
 </style>
 </head>
 <body>
@@ -620,7 +657,7 @@ function holidays(y) {
 const whoL = w => (w === 'me' || w === 'partner') ? nm(w) : '같이';
 const dlab = d => { const n = diff(today(), d); return n === 0 ? '오늘' : n > 0 ? 'D-' + n : (-n) + '일 전'; };
 S.diAlways = ls.get('ud-di') !== '0'; S.diExp = false; S.look = 'cute';
-S.memories = []; S.bucket = []; S.memTab = 'tl'; S.mapView = 'kr'; S.mapSel = null; S.memFilter = ''; S.msheet = null; S.msheetDel = false; S.recap = null;
+S.memories = []; S.bucket = []; S.memTab = 'tl'; S.mapView = 'kr'; S.mapSel = null; S.memFilter = ''; S.memPlace = ''; S.msheet = null; S.msheetDel = false; S.recap = null;
 S.events = []; S.calMode = 'month'; S.sheet = null; S.sheetDel = false;
 S.moods = {}; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
 { const t = today(); S.calMonth = new Date(t.getFullYear(), t.getMonth(), 1); S.calSel = ymd(t); }
@@ -681,6 +718,7 @@ const W = {
   event: (id, d) => guard(async () => { if (db) await db.doc('events/' + id).set(d); else { S.events = [...S.events.filter(x => x.id !== id), {...d, id}]; render(); } }),
   delEvent: id => guard(async () => { if (db) await db.doc('events/' + id).delete(); else { S.events = S.events.filter(x => x.id !== id); render(); } }),
   mem: (id, d) => guard(async () => { if (db) await db.doc('memories/' + id).set(d); else { S.memories = [...S.memories.filter(x => x.id !== id), {...d, id}]; render(); } }),
+  memUpd: (id, d) => guard(async () => { if (db) await db.doc('memories/' + id).update(d); else { S.memories = S.memories.map(x => x.id === id ? {...x, ...d} : x); render(); } }),
   delMem: id => guard(async () => { if (db) await db.doc('memories/' + id).delete(); else { S.memories = S.memories.filter(x => x.id !== id); render(); } }),
   bucket: (id, d) => guard(async () => { if (db) await db.doc('bucket/' + id).set(d); else { S.bucket = [...S.bucket.filter(x => x.id !== id), {...d, id}]; render(); } }),
   bucketUpd: (id, d) => guard(async () => { if (db) await db.doc('bucket/' + id).update(d); else { S.bucket = S.bucket.map(x => x.id === id ? {...x, ...d} : x); render(); } }),
@@ -860,7 +898,7 @@ function vHome() {
   const rec = received().slice(0, 4), na = av[0];
   return `${S.update ? '<div class="banner">새 버전이 나왔어요<button type="button" data-act="reload">새로고침</button></div>' : ''}${pk ? `<div class="banner">${esc(nm(other()))}님이 콕 찔렀어요 · ${ago(S.poke.at)}<button type="button" data-act="seen-poke">확인</button></div>` : ''}
   ${vGreet()}${heroHTML()}
-  <div class="sec">${vInvite()}${vPushBanner()}${vLetterHome()}<p class="sh">오늘 우리 기분</p>${vMood()}${vRemind() ? `<p class="sh">미리 알림</p>${vRemind()}` : ''}
+  <div class="sec">${vInvite()}${vPushBanner()}${vLetterHome()}<p class="sh">오늘 우리 기분</p>${vMood()}${vOnThisDay()}${vRemind() ? `<p class="sh">미리 알림</p>${vRemind()}` : ''}
   <p class="sh">다음 데이트</p>${vNext()}
   ${memPrompt() ? `<p class="sh">기록할 데이트</p>${memPrompt()}` : ''}${vRecapCard()}
   <p class="sh">오늘의 질문</p><div class="card"><p class="q">${esc(qOf(td))}</p><p class="note" style="margin-top:8px">${qs}</p>
@@ -904,6 +942,41 @@ function vLetters() {
   return `<div class="card"><h2>타임캡슐 편지</h2><p class="note">정한 날이 되어야 열리는 편지예요. 기념일이나 생일, 1년 뒤의 우리에게 남겨 보세요. 여는 날 아침에 알림이 가요.</p><div class="row"><button class="btn" type="button" data-act="l-new">편지 쓰기</button></div></div>
   <p class="sh">받은 편지 ${ins.length}</p>${ins.length ? ins.map(envHTML).join('') : `<div class="empty" style="padding:14px">${esc(nm(other()))}님이 남긴 편지가 아직 없어요.</div>`}
   <p class="sh">보낸 편지 ${outs.length}</p>${outs.length ? outs.map(envHTML).join('') : '<div class="empty" style="padding:14px">아직 보낸 편지가 없어요.</div>'}`;
+}
+/* ---------- on this day: a year (or years) ago, or a month ago ---------- */
+function lookbacks() {
+  const t = today(), out = [], start = S.couple ? S.couple.start : '';
+  for (let y = 1; y <= 30; y++) {
+    const d = new Date(t.getFullYear() - y, t.getMonth(), t.getDate());
+    if (d.getMonth() !== t.getMonth()) continue;
+    out.push([y + '년 전 오늘', ymd(d)]);
+    if (start && ymd(d) < start) break;
+  }
+  const m1 = new Date(t.getFullYear(), t.getMonth() - 1, t.getDate());
+  if (m1.getDate() === t.getDate()) out.push(['한 달 전 오늘', ymd(m1)]);
+  return out;
+}
+function dayStuff(ds) {
+  const mems = S.memories.filter(m => m.date === ds);
+  const seen = new Set(), phs = [];
+  for (const p of [...mems.flatMap(m => m.photos || []), ...S.photos.filter(p => p.at && ymd(new Date(p.at)) === ds)]) { const k = p.assetId || p.url; if (k && !seen.has(k)) { seen.add(k); phs.push(p); } }
+  const a = ans(ds, 'me'), b = ans(ds, 'partner');
+  return {mems, phs, qa: a && b ? {q: qOf(ds), a, b} : null};
+}
+function vOnThisDay() {
+  if (!S.couple) return '';
+  const hits = [];
+  for (const [label, ds] of lookbacks()) { const x = dayStuff(ds); if (x.mems.length || x.phs.length || x.qa) hits.push({label, ds, ...x}); if (hits.length === 2) break; }
+  if (!hits.length) return '';
+  const one = h => {
+    const dn = diff(parse(S.couple.start), parse(h.ds)) + 1, m = h.mems[0];
+    return `<div class="card otd"><div class="otd-h"><span class="otd-tag">${h.label}</span><span class="note">${dotd(h.ds)} (${WD[parse(h.ds).getDay()]})${dn > 0 ? ` · ${dn.toLocaleString('ko-KR')}일째` : ''}</span></div>
+    ${m ? `<p class="otd-t">${esc(m.title)}${m.place ? ` <span class="note">· ${esc(m.place)}</span>` : ''}</p>${m.text ? `<p class="otd-x">“${esc(m.text)}”</p>` : ''}` : ''}
+    ${h.phs.length ? `<div class="otd-ph">${h.phs.slice(0, 4).map((p, i) => `<span class="otd-pi" style="--r:${[-4, 3, -2, 5][i]}deg"><img src="${esc(src(p))}" alt="" loading="lazy"></span>`).join('')}${h.phs.length > 4 ? `<span class="otd-more">+${h.phs.length - 4}</span>` : ''}</div>` : ''}
+    ${h.qa ? `<p class="note" style="margin-top:10px">그날의 질문 · ${esc(h.qa.q)}</p><div class="bub me">${esc(nm('me'))}: ${esc(h.qa.a.text)}</div><div class="bub">${esc(nm('partner'))}: ${esc(h.qa.b.text)}</div>` : ''}
+    ${m ? `<div class="row"><button class="btn ghost" type="button" data-act="mem-edit" data-v="${esc(m.id)}">추억 열어 보기</button></div>` : ''}</div>`;
+  };
+  return `<p class="sh">그날의 우리</p>${hits.map(one).join('')}`;
 }
 function vLetterHome() {
   const un = lUnread(), sealed = lIn().filter(l => !lOpen(l)).sort((a, b) => a.openAt < b.openAt ? -1 : 1);
@@ -1147,17 +1220,56 @@ function vMap() {
   return `<div class="mapbox">${svg}</div>
   <p class="note" style="margin:10px 6px 0">가본 곳 ${kr.length}곳${abroad.length ? ` · 해외 ${abroad.length}곳` : ''}${loose ? ` · 위치 없는 추억 ${loose}개` : ''}</p>
   ${sel ? `<p class="sh">${esc(sel.g.n)}에서의 추억 ${sel.n}개</p><div class="card"><ul class="list">${sel.ms.sort((a, b) => b.date.localeCompare(a.date)).map(m => `<li><span><b>${esc(m.title)}</b> <span class="date">${dotd(m.date)}</span></span><button class="ib sm" type="button" data-act="mem-edit" data-v="${esc(m.id)}">보기</button></li>`).join('')}</ul><div class="row"><button class="btn ghost" type="button" data-act="mem-filter" data-v="${esc(sel.g.n)}">타임라인에서 보기</button></div></div>` : ''}
+  <p class="sh">우리 단골</p>${vRegulars()}
   <p class="sh">가본 곳 순위</p>${list.length ? `<div class="card"><ul class="list">${list.map((a, i) => `<li><button class="plb${S.mapSel === a.g.n ? ' on' : ''}" type="button" data-act="map-pin" data-v="${esc(a.g.n)}"><span class="rk">${i + 1}</span><b>${esc(a.g.n)}</b> <span class="date">${esc(a.g.r)}</span></button><span class="dd">${a.n}번</span></li>`).join('')}</ul></div>` : emptyArt() + '<div class="empty" style="padding-top:4px">장소를 넣어 추억을 남기면 지도에 핀이 꽂혀요.</div>'}`;
 }
 
 /* ---------- memories ---------- */
 const hue = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+/* ---------- place ratings: each person gives stars and can say '또 갈래' ---------- */
+const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.4L12 17.4l-5.8 3 1.1-6.4-4.7-4.6 6.5-.9z"/></svg>';
+const rateOf = (m, w) => Number(m['rate_' + w] || 0);
+const againOf = (m, w) => !!m['again_' + w];
+const starsStatic = n => `<span class="sts" role="img" aria-label="별 ${n}개">${[1, 2, 3, 4, 5].map(k => `<i class="${k <= n ? 'on' : ''}">${STAR}</i>`).join('')}</span>`;
+function rateRow(m) {
+  const me = S.who, pt = other(), mine = rateOf(m, me), theirs = rateOf(m, pt), am = againOf(m, me), ap = againOf(m, pt);
+  const stars = [1, 2, 3, 4, 5].map(k => `<button type="button" class="st${k <= mine ? ' on' : ''}" data-act="mem-rate" data-v="${esc(m.id)}|${k}" aria-label="별 ${k}개${k === mine ? ' (다시 누르면 지워요)' : ''}" aria-pressed="${k <= mine}">${STAR}</button>`).join('');
+  const ptLine = !paired() ? '' : theirs || ap ? `${esc(nm(pt))}님 ${theirs ? starsStatic(theirs) : ''}${ap ? '<span class="agt">또 가고 싶대요</span>' : ''}` : `${esc(nm(pt))}님은 아직 별점을 안 줬어요`;
+  return `<div class="mrate"><div class="mr-row"><span class="mr-l">내 별점</span><span class="stars" role="group" aria-label="내 별점">${stars}</span><button type="button" class="again${am ? ' on' : ''}" data-act="mem-again" data-v="${esc(m.id)}" aria-pressed="${am}">${am ? '💗' : '🤍'} 또 갈래</button></div>
+  ${am && ap ? `<p class="mr-both">둘 다 또 가고 싶은 곳이에요. 지도 탭 '우리 단골'에 모였어요</p>` : ptLine ? `<p class="note mr-pt">${ptLine}</p>` : ''}</div>`;
+}
+const placeKey = p => String(p || '').trim().replace(/\s+/g, ' ').toLowerCase();
+function regulars() {
+  const by = new Map();
+  for (const m of S.memories) {
+    const k = placeKey(m.place); if (!k || !m.date) continue;
+    if (!by.has(k)) by.set(k, {name: m.place.trim(), ms: []});
+    by.get(k).ms.push(m);
+  }
+  const out = [];
+  for (const [k, a] of by) {
+    const ms = a.ms.sort((x, y) => y.date.localeCompare(x.date));
+    const rs = ms.flatMap(m => ['me', 'partner'].map(w => rateOf(m, w))).filter(Boolean);
+    const avg = rs.length ? rs.reduce((x, y) => x + y, 0) / rs.length : 0;
+    const again = {me: ms.some(m => againOf(m, 'me')), partner: ms.some(m => againOf(m, 'partner'))};
+    const both = again.me && again.partner;
+    if (!(both || again.me || again.partner || avg >= 4 || ms.length >= 2)) continue;
+    out.push({k, name: ms[0].place.trim(), ms, n: ms.length, avg, again, both, last: ms[0].date});
+  }
+  return out.sort((a, b) => (b.both - a.both) || ((b.again.me || b.again.partner) - (a.again.me || a.again.partner)) || (b.avg - a.avg) || (b.n - a.n) || b.last.localeCompare(a.last));
+}
+function vRegulars() {
+  const list = regulars();
+  if (!list.length) return `<div class="card"><p class="note" style="margin:0">추억에 장소를 적고 별점이나 '또 갈래'를 누르면 여기에 우리 단골이 모여요. 별점 4점 이상, 두 번 넘게 간 곳도 자동으로 들어와요.</p></div>`;
+  return `<div class="card"><ul class="list regs">${list.map((a, i) => `<li><span class="rgi">${a.both ? '💞' : a.again.me || a.again.partner ? '💗' : i < 3 ? '⭐' : '📍'}</span><span class="rgm"><b>${esc(a.name)}</b><span class="note">${a.avg ? `★ ${a.avg.toFixed(1)} · ` : ''}${a.n}번 · 마지막 ${dotd(a.last)}${a.both ? ' · 둘 다 또 갈래' : a.again.me || a.again.partner ? ` · ${esc(nm(a.again.me ? 'me' : 'partner'))}님이 또 갈래` : ''}</span></span>
+  <span class="rgb"><button class="ib sm" type="button" data-act="reg-mems" data-v="${esc(a.k)}">추억 ${a.n}</button><button class="ib sm" type="button" data-act="reg-plan" data-v="${esc(a.k)}">또 가기</button></span></li>`).join('')}</ul></div>`;
+}
 function memCard(m) {
   const ph = m.photos || [], g = memGeo(m), dn = S.couple ? diff(parse(S.couple.start), parse(m.date)) + 1 : 0;
   return `<article class="mem">${ph.length ? `<div class="mstrip">${ph.map(p => `<img src="${esc(src(p))}" alt="" loading="lazy">`).join('')}</div>${ph.length > 1 ? `<span class="mcount">${ph.length}장 · 옆으로 넘겨 보기</span>` : ''}` : `<div class="mph" style="--h:${hue(m.title + m.date)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.4 7-12a7 7 0 0 0-14 0c0 5.6 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg><span>${esc(m.place || m.title)}</span></div>`}
   <div class="mbody"><div class="mt"><b>${esc(m.title)}</b><button class="ib sm" type="button" data-act="mem-edit" data-v="${esc(m.id)}">수정</button></div>
   <p class="note">${dotd(m.date)} (${WD[parse(m.date).getDay()]})${dn > 0 ? ` · ${dn.toLocaleString('ko-KR')}일째` : ''}${m.place ? ` · ${esc(m.place)}` : ''}${g && g.lat ? '' : (m.place && !g ? '' : '')}</p>
-  ${m.text ? `<p class="mtext">${esc(m.text)}</p>` : ''}<p class="note" style="margin-top:6px">${esc(nm(m.by))} 기록</p></div></article>`;
+  ${m.text ? `<p class="mtext">${esc(m.text)}</p>` : ''}<p class="note" style="margin-top:6px">${esc(nm(m.by))} 기록</p>${rateRow(m)}</div></article>`;
 }
 function memPrompt() {
   const t = today(), list = occ(addDays(t, -14), addDays(t, -1)).filter(o => o.kind === 'date' && !o.cont);
@@ -1170,8 +1282,10 @@ function memPrompt() {
 function vTimeline() {
   let ms = S.memories.filter(m => m.date).sort((a, b) => b.date.localeCompare(a.date) || (b.at || 0) - (a.at || 0));
   if (S.memFilter) ms = ms.filter(m => { const g = memGeo(m); return g && g.n === S.memFilter; });
-  const pr = S.memFilter ? '' : memPrompt();
-  let out = (S.memFilter ? `<div class="banner" style="border-radius:14px;margin-bottom:4px">${esc(S.memFilter)} 추억만 보는 중<button type="button" data-act="mem-filter" data-v="">전체 보기</button></div>` : '') + (pr ? `<p class="sh">기록할 데이트</p>${pr}` : '');
+  if (S.memPlace) ms = ms.filter(m => placeKey(m.place) === S.memPlace);
+  const pr = S.memFilter || S.memPlace ? '' : memPrompt();
+  const pn = S.memPlace && (S.memories.find(m => placeKey(m.place) === S.memPlace) || {}).place;
+  let out = (pn ? `<div class="banner" style="border-radius:14px;margin-bottom:4px">${esc(pn)} 추억만 보는 중<button type="button" data-act="reg-mems" data-v="">전체 보기</button></div>` : '') + (S.memFilter ? `<div class="banner" style="border-radius:14px;margin-bottom:4px">${esc(S.memFilter)} 추억만 보는 중<button type="button" data-act="mem-filter" data-v="">전체 보기</button></div>` : '') + (pr ? `<p class="sh">기록할 데이트</p>${pr}` : '');
   if (!ms.length) return out + emptyArt() + '<div class="empty" style="padding-top:4px">아직 남긴 추억이 없어요.<br>위의 \'추억 남기기\'로 첫 추억을 만들어 보세요.</div>';
   let cur = '';
   for (const m of ms) { const k = m.date.slice(0, 7); if (k !== cur) { cur = k; out += `<p class="sh">${k.slice(0, 4)}년 ${Number(k.slice(5))}월</p>`; } out += memCard(m); }
@@ -1498,10 +1612,20 @@ document.addEventListener('click', async e => {
   }
   else if (act === 'save-all') { const list = received().filter(isNew); let n = 0; for (const p of list) { if (!(await savePhoto(p))) break; n++; } if (n) toast(`${n}장 저장했어요`); }
   else if (act === 'mem-tab') { S.memTab = v; render(); }
+  else if (act === 'mem-rate') {
+    const [id, k] = v.split('|'), m = S.memories.find(x => x.id === id);
+    if (m) { const n = Number(k) === rateOf(m, S.who) ? 0 : Number(k); const patch = {['rate_' + S.who]: n}; Object.assign(m, patch); render(); await W.memUpd(id, patch); if (n) toast(n >= 4 ? `별 ${n}개! 또 가고 싶으면 '또 갈래'도 눌러 보세요` : `별 ${n}개를 줬어요`); }
+  }
+  else if (act === 'mem-again') {
+    const m = S.memories.find(x => x.id === v);
+    if (m) { const on = !againOf(m, S.who), patch = {['again_' + S.who]: on}; Object.assign(m, patch); render(); await W.memUpd(v, patch); if (on) { burst(againOf(m, other()) ? 18 : 6); toast(againOf(m, other()) ? '둘 다 또 가고 싶은 곳! 우리 단골에 넣었어요' : '또 가고 싶은 곳으로 표시했어요'); } }
+  }
+  else if (act === 'reg-mems') { S.memPlace = v; S.memFilter = ''; S.memTab = 'tl'; render(); window.scrollTo(0, 0); }
+  else if (act === 'reg-plan') { const a = regulars().find(x => x.k === v); if (a) { S.sheetDel = false; S.sheet = {title: a.name + ' 또 가기', place: a.name, date: ymd(addDays(today(), 7)), kind: 'date', who: 'both', repeat: 'none', alerts: [1, 0]}; render(); } }
   else if (act === 'map-view') { S.mapView = v; render(); }
   else if (act === 'map-seoul') { S.mapView = 'seoul'; render(); }
   else if (act === 'map-pin') { S.mapSel = S.mapSel === v ? null : v; render(); }
-  else if (act === 'mem-filter') { S.memFilter = v; S.memTab = 'tl'; render(); window.scrollTo(0, 0); }
+  else if (act === 'mem-filter') { S.memFilter = v; S.memPlace = ''; S.memTab = 'tl'; render(); window.scrollTo(0, 0); }
   else if (act === 'mem-new') { S.viewer = null; S.msheetDel = false; S.msheet = {date: ymd(today()), photos: [], geo: ''}; render(); }
   else if (act === 'mem-from') {
     const [ds, eid] = v.split('|'), ev = eid && S.events.find(e => e.id === eid);
@@ -1664,7 +1788,9 @@ document.addEventListener('submit', async e => {
     if (!isDate(date)) { toast('날짜를 골라 주세요'); return; }
     if (S.busy) { toast('사진을 다 올린 뒤 저장해 주세요'); return; }
     const id = m.id || ('m' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6));
-    const body = {title, date, place: g('m-place').value.trim(), geo: g('m-geo').value, text: g('m-text').value.trim(), photos: (m.photos || []).slice(0, 30), by: m.by || S.who, at: m.at || Date.now(), eventId: m.eventId || '', bucketId: m.bucketId || ''};
+    const live = S.memories.find(x => x.id === id) || m, keep = {};
+    for (const w of ['me', 'partner']) { if (live['rate_' + w]) keep['rate_' + w] = live['rate_' + w]; if (live['again_' + w]) keep['again_' + w] = true; }
+    const body = {...keep, title, date, place: g('m-place').value.trim(), geo: g('m-geo').value, text: g('m-text').value.trim(), photos: (m.photos || []).slice(0, 30), by: m.by || S.who, at: m.at || Date.now(), eventId: m.eventId || '', bucketId: m.bucketId || ''};
     if (await W.mem(id, body)) {
       if (m.bucketId) await W.bucketUpd(m.bucketId, {done: true, doneAt: date, memoryId: id});
       S.msheet = null; S.msheetDel = false; if (S.tab !== 'mem' && S.tab !== 'cal') { S.memTab = 'tl'; go('mem'); } else render();

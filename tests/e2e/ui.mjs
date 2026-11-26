@@ -135,6 +135,30 @@ try {
     await shot(B, '08-B-roulette');
   });
 
+  await step('a memory from a year ago shows on home; stars and 또 갈래 make it a 단골', async () => {
+    const d = new Date(Date.now() + 9 * 3600e3); d.setUTCFullYear(d.getUTCFullYear() - 1); const yago = d.toISOString().slice(0, 10);
+    await tab(A, 'mem'); await A.click('[data-act=mem-tab][data-v=tl]');
+    await A.click('[data-act=mem-new]');
+    await A.fill('#m-title', '1년 전 테스트 추억'); await A.fill('#m-date', yago); await A.fill('#m-place', '연남동 테스트카페');
+    await A.click('#mf button[type=submit]');
+    await tab(B, 'home');
+    await B.locator('.otd', { hasText: '1년 전 테스트 추억' }).waitFor();
+    await shot(B, '09-B-on-this-day');
+    const card = p => p.locator('article.mem', { hasText: '1년 전 테스트 추억' });
+    await tab(A, 'mem'); await A.click('[data-act=mem-tab][data-v=tl]');
+    await card(A).locator('[data-act=mem-rate]').nth(4).click();
+    await card(A).locator('[data-act=mem-again]').click();
+    await tab(B, 'mem'); await B.click('[data-act=mem-tab][data-v=tl]');
+    await card(B).locator('.agt').waitFor();
+    await card(B).locator('[data-act=mem-again]').click();
+    await card(B).locator('.mr-both').waitFor();
+    await B.click('[data-act=mem-tab][data-v=map]');
+    await B.locator('.regs li', { hasText: '연남동 테스트카페' }).filter({ hasText: '둘 다 또 갈래' }).waitFor();
+    await shot(B, '10-B-regulars');
+    await A.click('[data-act=mem-tab][data-v=map]');
+    await A.locator('.regs li', { hasText: '★ 5.0' }).waitFor();
+  });
+
   await step('B copies the widget code and the widget shows today', async () => {
     await B.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(base).origin });
     await B.click('#t-us');

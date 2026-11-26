@@ -22,6 +22,7 @@ const srv = http.createServer((q, r) => {
 
 const kst = n => new Date(Date.now() + 9 * 3600e3 + n * 864e5).toISOString().slice(0, 10);
 const XSS = '<img src=x onerror="window.__xss=1">';
+const yago = (() => { const d = new Date(Date.now() + 9 * 3600e3); d.setUTCFullYear(d.getUTCFullYear() - 1); return d.toISOString().slice(0, 10); })();
 const docs = {
   'couple/main': { autoAnniv: true, me: { name: '재민', birthday: '1997-05-21' }, partner: { name: '은지', birthday: '1998-11-28' }, start: '2025-03-14' },
   'events/e1': { alerts: [1, 0], at: 1, by: 'me', date: kst(2), endDate: '', kind: 'date', memo: '은지가 찾아둔 브런치 카페', place: '성수동', repeat: 'none', time: '14:00', title: '성수 카페 데이트', who: 'both' },
@@ -30,6 +31,9 @@ const docs = {
   'events/e4': { alerts: [7, 1], at: 4, by: 'me', date: kst(40), endDate: kst(42), kind: 'date', memo: 'KTX 예매하기', place: '강릉', repeat: 'none', time: '09:00', title: '아주아주아주 긴 제목의 강릉 바다 여행 일출 보고 회 먹기', who: 'both' },
   'memories/m1': { at: 1741900000000, bucketId: '', by: 'partner', date: '2025-03-14', eventId: '', geo: '', photos: [], place: '합정 카페', text: '어색하게 웃던 재민이 ' + XSS, title: '처음 만난 날' },
   'memories/m2': { at: 1749200000000, bucketId: '', by: 'me', date: '2025-06-07', eventId: '', geo: '', photos: [], place: '부산 해운대', text: '바다에 해 지는 거 끝까지 봤다', title: '첫 여행' },
+  'memories/m3': { at: 1764100000000, bucketId: '', by: 'me', date: yago, eventId: '', geo: '', photos: [], place: '합정  카페', text: '두 번째로 간 날 ' + XSS, title: '단골 카페 ' + XSS, rate_partner: 5, again_partner: true, rate_me: 4 },
+  [`answers/${yago}_me`]: { date: yago, text: '붕어빵 ' + XSS, at: 7 },
+  [`answers/${yago}_partner`]: { date: yago, text: '호떡', at: 8 },
   'bucket/b1': { at: 1, by: 'partner', done: true, doneAt: '2026-04-26', eventId: '', memoryId: '', title: '한강 피크닉' },
   'bucket/b2': { at: 2, by: 'me', done: false, doneAt: '', eventId: '', memoryId: '', title: '강릉 바다 일출 보기 ' + XSS },
   [`answers/${kst(-1)}_me`]: { date: kst(-1), text: '떡볶이!', at: 1 },
@@ -72,6 +76,15 @@ async function run(label, device, scheme, look) {
     await p.click('#t-' + t);
     await p.waitForTimeout(250);
     await p.screenshot({ path: `${out}/${label}-${t}.png`, fullPage: !process.env.VIEWPORT });
+    if (t === 'mem') { // the map tab holds 우리 단골
+      await p.click('[data-act=mem-tab][data-v=map]'); await p.waitForTimeout(200);
+      await p.screenshot({ path: `${out}/${label}-mem-map.png`, fullPage: !process.env.VIEWPORT });
+      if (!process.env.SHOTS_ONLY) await check('mem-map');
+      await p.click('[data-act=mem-tab][data-v=tl]'); await p.waitForTimeout(200);
+      await p.evaluate(() => document.querySelectorAll('nav.tabs,.toast').forEach(e => { e.style.visibility = 'hidden'; }));
+      await p.locator('article.mem').first().screenshot({ path: `${out}/${label}-mem-card.png` }).catch(() => {});
+      await p.evaluate(() => document.querySelectorAll('nav.tabs,.toast').forEach(e => { e.style.visibility = ''; }));
+    }
     if (process.env.SHOTS_ONLY) continue;
     await check(t);
     // press every button on this screen once

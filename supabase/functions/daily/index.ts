@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
     }
 
     // morning reminders
-    const { data: docs } = await admin.from('docs').select('coll, id, data').eq('couple_id', c.id).in('coll', ['couple', 'events']);
+    const { data: docs } = await admin.from('docs').select('coll, id, data').eq('couple_id', c.id).in('coll', ['couple', 'events', 'memories']);
     const main = (docs ?? []).find((d) => d.coll === 'couple' && d.id === 'main')?.data as any;
     if (!main?.start) continue;
     const items: string[] = [];
@@ -66,12 +66,18 @@ Deno.serve(async (req) => {
         if (b && sameMD(day, b)) items.push(`${dl(k)} ${names[role]} 생일`);
       }
     }
-    if (!items.length) continue;
+    // 1년 전 오늘: a memory from this day in an earlier year
+    const past = (docs ?? []).filter((x) => x.coll === 'memories').map((x) => x.data as any)
+      .filter((m) => typeof m?.date === 'string' && m.date < today && sameMD(m.date, today))
+      .sort((a, b) => b.date.localeCompare(a.date))[0];
+    const memLine = past ? `📸 ${Number(today.slice(0, 4)) - Number(past.date.slice(0, 4))}년 전 오늘: ${past.title}` : '';
+    if (!items.length && !memLine) continue;
+    const body = dateToday ? [dateToday, ...items.filter((_, i) => i !== dateIdx)].join(' · ') : items.join(' · ');
     const msg = {
-      title: dateToday ? '오늘은 데이트 날!' : '오늘의 알림',
-      body: dateToday ? [dateToday, ...items.filter((_, i) => i !== dateIdx)].join(' · ') : items.join(' · '),
+      title: dateToday ? '오늘은 데이트 날!' : items.length ? '오늘의 알림' : `${memLine.split(':')[0].slice(3)}의 우리`,
+      body: [body, memLine].filter(Boolean).join('\n'),
       tag: `daily-${today}`,
-      url: './#cal',
+      url: items.length ? './#cal' : './#home',
     };
     sent += await sendToUser(c.me, msg);
     sent += await sendToUser(c.partner, msg);

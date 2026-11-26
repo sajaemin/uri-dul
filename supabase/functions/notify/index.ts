@@ -45,6 +45,7 @@ Deno.serve(async (req) => {
       break;
     case 'memories':
       if (isInsert) msg = { title: `${n}님이 추억을 남겼어요`, body: d.title || '새 추억', tag: `mem-${r.id}`, url: './#mem' };
+      else if (d.again_me && d.again_partner && !(old?.data?.again_me && old?.data?.again_partner)) msg = { title: '둘 다 또 가고 싶대요 💞', body: `${d.place || d.title} · 우리 단골에 넣었어요`, tag: `again-${r.id}`, url: './#mem' };
       break;
     case 'bucket':
       if (isInsert) msg = { title: `${n}님이 버킷리스트를 추가했어요`, body: d.title, tag: `bk-${r.id}`, url: './#mem' };
