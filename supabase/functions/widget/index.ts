@@ -1,5 +1,5 @@
 // Read-only summary for the home-screen / lock-screen widget (Scriptable), unlocked by a per-person widget key.
-import { admin, cors, diffDays, json, nextStart, todayKST, type Ev, type Role } from '../_shared/common.ts';
+import { addDays, admin, cors, diffDays, json, nextStart, todayKST, type Ev, type Role } from '../_shared/common.ts';
 
 const MOODS: Record<string, [string, string]> = { love: ['🥰', '설레'], happy: ['😊', '좋아'], calm: ['😌', '평온'], miss: ['🥺', '보고 싶어'], tired: ['😪', '피곤해'], busy: ['🫠', '바빠'], sad: ['🥲', '울적해'], grr: ['😤', '짜증 나'] };
 
@@ -49,8 +49,24 @@ Deno.serve(async (req) => {
   const unread = letters.filter((d) => (d.data as any).openAt <= today && !(d.data as any).readAt).length;
   const sealed = letters.filter((d) => (d.data as any).openAt > today).map((d) => (d.data as any).openAt as string).sort();
 
+  // what's coming up: dates, plans, anniversaries and birthdays, soonest first
+  const upcoming: { title: string; days: number; date: string; kind: string; time: string }[] = [];
+  for (const d of docs.filter((x) => x.coll === 'events')) {
+    const ev = d.data as Ev;
+    const s = nextStart(ev, today);
+    if (s && diffDays(today, s) <= 60) upcoming.push({ title: ev.title, days: diffDays(today, s), date: s, kind: ev.kind, time: ev.time || '' });
+  }
+  for (const a of cands) if (a.label !== '0주년' && a.days <= 60) upcoming.push({ title: a.label, days: a.days, date: addDays(today, a.days), kind: 'anniv', time: '' });
+  upcoming.sort((a, b) => a.days - b.days || (a.time < b.time ? -1 : 1));
+
+  // how far along to the next 100-day mark
+  const nextHundred = Math.ceil(dayNo / 100) * 100 || 100;
+  const progress = { label: `${nextHundred.toLocaleString('ko-KR')}일`, left: nextHundred - dayNo, pct: Math.round(((dayNo - (nextHundred - 100)) / 100) * 100) / 100 };
+  const cover = typeof main.cover?.url === 'string' && main.cover.url.startsWith('https://') ? main.cover.url : null;
+
   return json({
     ready: true,
+    upcoming: upcoming.slice(0, 4), progress, cover,
     me: name(role), partner: name(other),
     days: dayNo, start: main.start,
     next, anniv,

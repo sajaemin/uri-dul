@@ -71,7 +71,8 @@ async function run(label, device, scheme, look) {
   for (const t of tabs) {
     await p.click('#t-' + t);
     await p.waitForTimeout(250);
-    await p.screenshot({ path: `${out}/${label}-${t}.png`, fullPage: true });
+    await p.screenshot({ path: `${out}/${label}-${t}.png`, fullPage: !process.env.VIEWPORT });
+    if (process.env.SHOTS_ONLY) continue;
     await check(t);
     // press every button on this screen once
     const acts = await p.$$eval('#view [data-act]', els => els.filter(e => e.offsetParent !== null).map((e, i) => ({ i, act: e.dataset.act, v: e.dataset.v || '' })));
@@ -100,6 +101,7 @@ async function run(label, device, scheme, look) {
       if ((await p.locator('#t-' + t).getAttribute('aria-current').catch(() => null)) !== 'page') await p.click('#t-' + t).catch(() => {});
     }
   }
+  if (process.env.SHOTS_ONLY) { await ctx.close(); return; }
   // empty forms: nothing should throw
   await p.click('#t-cal'); await p.click('#view [data-act="ev-new"]').catch(() => {}); await p.locator('#e-title').fill('').catch(() => {}); await p.click('#ef button[type=submit]').catch(() => {}); await check('empty event form'); await p.keyboard.press('Escape');
   await p.click('#t-q'); await p.click('[data-act=save-ans]').catch(() => {}); await check('empty answer');

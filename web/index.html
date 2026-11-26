@@ -7,7 +7,20 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="우리 둘">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#fff4f7">
+<meta name="theme-color" content="#fff4f7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1320x2868.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1290x2796.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1284x2778.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 420px) and (device-height: 912px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1260x2736.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1242x2688.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/splash-828x1792.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1206x2622.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1179x2556.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1170x2532.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1125x2436.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/splash-1242x2208.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/splash-750x1334.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" href="icons/icon-192.png">
@@ -42,7 +55,8 @@ header{display:flex;align-items:center;gap:10px;padding:calc(10px + env(safe-are
 .who{margin-left:auto;display:flex;background:var(--fill);border-radius:999px;padding:2px}
 .who button{border:0;background:none;font-size:14px;padding:0 13px;border-radius:999px;color:var(--mut);min-height:36px;max-width:9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
 .who button[aria-pressed=true]{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12)}
-main{flex:1;position:relative;padding-bottom:8px}
+main{flex:1;position:relative;padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+.app.gated main{padding-bottom:24px}
 .app.has-di main{padding-top:50px}
 nav.tabs{position:sticky;bottom:0;z-index:6;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:.5px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);background:color-mix(in srgb,var(--card) 84%,transparent);-webkit-backdrop-filter:saturate(1.8) blur(20px);backdrop-filter:saturate(1.8) blur(20px)}
 nav.tabs button{border:0;background:none;font-size:13px;color:var(--mut);min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;position:relative;font-weight:500}
@@ -370,6 +384,31 @@ legend{font-size:13px;color:var(--mut);padding:0 2px;margin-bottom:2px;font-weig
 .app.real .who,.app.real .tag{display:none}
 .app.real .gear{margin-left:auto}
 .app.gated nav.tabs,.app.gated .gear{display:none}
+/* floating tab bar */
+nav.tabs{position:fixed;left:0;right:0;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:min(536px,calc(100% - 20px));margin:0 auto;border:0;border-radius:30px;padding:5px;gap:2px;background:color-mix(in srgb,var(--card) 70%,transparent);box-shadow:0 10px 30px rgba(70,20,45,.16),0 1px 3px rgba(70,20,45,.08),inset 0 0 0 .5px color-mix(in srgb,var(--ink) 12%,transparent);padding-bottom:5px}
+nav.tabs button{min-height:52px;border-radius:25px;font-size:11.5px;gap:2px;transition:background .25s,color .25s}
+nav.tabs button[aria-current=page]{background:color-mix(in srgb,var(--acc) 13%,transparent);font-weight:700}
+nav.tabs button:active{transform:scale(.94)}
+nav.tabs svg{width:24px;height:24px}
+nav.tabs .dot{top:2px;left:calc(50% + 6px);font-size:11.5px;min-width:17px;height:17px;line-height:17px;border-radius:9px;box-shadow:0 0 0 2px var(--card)}
+.app[data-look=cute] nav.tabs button[aria-current=page] svg{background:none;padding:0;width:24px;height:24px}
+.app[data-look=cute] nav.tabs button[aria-current=page]::after{display:none}
+.app[data-look=cute] nav.tabs{box-shadow:0 10px 30px rgba(255,79,130,.18),0 0 0 2px color-mix(in srgb,var(--acc) 18%,transparent)}
+.toast{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
+.app.gated .toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+/* greeting */
+.greet{padding:14px 20px 2px;display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.greet b{font-size:22px;letter-spacing:-.03em;font-weight:800;line-height:1.25}
+.greet span{font-size:14px;color:var(--mut);white-space:nowrap}
+.greet+.hero,.greet+*{margin-top:8px}
+.app[data-look=cute] .greet b{font-family:Jua,sans-serif;font-weight:400;font-size:23px}
+.greet .sp{display:block;font-size:14px;color:var(--acc);font-weight:700;margin-top:2px;white-space:normal}
+/* screen change */
+@media(prefers-reduced-motion:no-preference){#view.in-f{animation:inf .28s cubic-bezier(.2,.8,.3,1)}#view.in-f .card,#view.in-f .sh{animation:inf .34s cubic-bezier(.2,.8,.3,1) both}#view.in-f .card:nth-of-type(2){animation-delay:.03s}#view.in-f .card:nth-of-type(3){animation-delay:.06s}#view.in-f .card:nth-of-type(n+4){animation-delay:.09s}}
+@keyframes inf{from{opacity:0;transform:translateY(8px)}}
+.card,.btn,.chip,.mchip,.env{-webkit-tap-highlight-color:transparent}
+.btn:active,.chip:active{transform:scale(.97)}
+
 .bigcode{font-size:34px;font-weight:700;letter-spacing:.18em;font-variant-numeric:tabular-nums;color:var(--acc);margin:2px 0 0;user-select:all;-webkit-user-select:all}
 .bigcode.sm{font-size:24px}
 .app[data-look=cute] .bigcode{font-family:Jua,sans-serif;font-weight:400}
@@ -726,6 +765,17 @@ function vNext() {
   ${meetHTML()}<div class="nd-cd" data-cd="long"></div>
   <div class="row"><button class="btn ink" type="button" data-act="di-open" style="flex:1">다이나믹 아일랜드로 보기</button>${o.ev ? `<button class="btn line" type="button" data-act="ev-edit" data-v="${esc(o.ev.id)}">수정</button>` : ''}</div>${past ? stat : ''}</div>`;
 }
+function vGreet() {
+  const h = new Date().getHours(), td = ymd(today()), name = esc(nm(S.who));
+  const hi = h < 5 ? `늦은 밤이에요, ${name}님` : h < 11 ? `좋은 아침이에요, ${name}님` : h < 17 ? `좋은 오후예요, ${name}님` : h < 22 ? `좋은 저녁이에요, ${name}님` : `오늘도 수고했어요, ${name}님`;
+  const ic = h < 5 || h >= 22 ? '🌙' : h < 11 ? '☀️' : h < 17 ? '🌤️' : '🌆';
+  let sp = '';
+  const a = annivs().find(x => diff(today(), x.d) === 0);
+  if (a) sp = `오늘은 ${esc(a.label)}이에요 🎉`;
+  else if (occ(today(), addDays(today(), 1)).some(o => o.ds === td && o.kind === 'date')) sp = '오늘은 데이트 날이에요 💗';
+  else if (lUnread().length) sp = '도착한 편지가 있어요 💌';
+  return `<div class="greet"><div><b>${hi}</b>${sp ? `<span class="sp">${sp}</span>` : ''}</div><span aria-hidden="true">${ic}</span></div>`;
+}
 function vHome() {
   const td = ymd(today()), mine = ans(td, S.who), theirs = ans(td, other()), nc = newCount(), av = annivs();
   const seen = Number(ls.get('ud-poke-' + S.who) || 0);
@@ -733,7 +783,7 @@ function vHome() {
   const qs = mine && theirs ? '둘 다 답했어요. 서로의 답을 확인해 보세요' : mine ? `${esc(nm(other()))}님의 답을 기다리는 중` : theirs ? `${esc(nm(other()))}님이 먼저 답했어요` : '아직 아무도 답하지 않았어요';
   const rec = received().slice(0, 4), na = av[0];
   return `${S.update ? '<div class="banner">새 버전이 나왔어요<button type="button" data-act="reload">새로고침</button></div>' : ''}${pk ? `<div class="banner">${esc(nm(other()))}님이 콕 찔렀어요 · ${ago(S.poke.at)}<button type="button" data-act="seen-poke">확인</button></div>` : ''}
-  ${heroHTML()}
+  ${vGreet()}${heroHTML()}
   <div class="sec">${vInvite()}${vPushBanner()}${vLetterHome()}<p class="sh">오늘 우리 기분</p>${vMood()}${vRemind() ? `<p class="sh">미리 알림</p>${vRemind()}` : ''}
   <p class="sh">다음 데이트</p>${vNext()}
   ${memPrompt() ? `<p class="sh">기록할 데이트</p>${memPrompt()}` : ''}${vRecapCard()}
@@ -1303,7 +1353,7 @@ async function savePhoto(p) {
 }
 
 /* ---------- events ---------- */
-function go(tab) { S.tab = tab; S.viewer = null; ls.set('ud-tab', tab); try { history.replaceState(null, '', '#' + tab); } catch (e) {} render(); window.scrollTo(0, 0); const v = $('#view'); v.classList.remove('in-l', 'in-r'); if (S.slide) { void v.offsetWidth; v.classList.add('in-' + S.slide); S.slide = null; } }
+function go(tab) { S.tab = tab; S.viewer = null; ls.set('ud-tab', tab); try { history.replaceState(null, '', '#' + tab); } catch (e) {} render(); window.scrollTo(0, 0); const v = $('#view'); v.classList.remove('in-l', 'in-r', 'in-f'); void v.offsetWidth; v.classList.add('in-' + (S.slide || 'f')); S.slide = null; }
 let diTimer = 0;
 document.addEventListener('click', async e => {
   // an opened island folds back when anything else is tapped, so it never covers the controls under it
@@ -1639,6 +1689,7 @@ function vRealSettings() {
   <p class="sh">연결</p><div class="card"><p style="margin:0">${S.info.partner_joined ? `${esc(nm('me'))}님과 ${esc(nm('partner'))}님이 연결되어 있어요` : '아직 상대가 들어오지 않았어요'}</p><p class="note" style="margin-top:8px">초대 코드</p><div class="bigcode sm">${esc(S.info.code)}</div>${S.info.partner_joined ? '' : '<div class="row"><button class="btn" type="button" data-act="invite-share">초대 링크 보내기</button></div>'}</div>
   <p class="sh">홈 화면 위젯</p><div class="card"><p style="margin:0">함께한 날, 다음 데이트 D-day, ${esc(nm(other()))}님 기분과 새 사진을 홈 화면과 잠금 화면에 띄워요.</p><p class="note" style="margin-top:6px">웹앱은 아이폰 위젯을 직접 만들 수 없어서, 무료 앱 Scriptable이 대신 보여줘요.</p>
   <ol class="steps"><li>App Store에서 <b>Scriptable</b>(무료)을 설치해요.</li><li>아래 <b>위젯 코드 복사</b>를 눌러요.</li><li>Scriptable을 열고 오른쪽 위 <b>+</b> → 빈 화면을 길게 눌러 <b>붙여넣기</b> → 맨 위 이름을 <b>우리 둘</b>로 바꾸고 <b>완료</b>.</li><li>홈 화면 빈 곳을 길게 누르고 <b>편집 → 위젯 추가 → Scriptable</b>에서 크기를 골라 추가해요.</li><li>추가된 위젯을 길게 눌러 <b>위젯 편집 → Script → 우리 둘</b>을 골라요.</li></ol>
+  <p class="note" style="margin-top:6px">배경을 우리 사진으로: 위젯을 길게 눌러 <b>위젯 편집 → Parameter</b>에 <b>사진</b>이라고 적으면, 홈 배경 사진(사진함에서 '홈 배경으로')이 위젯 배경이 돼요. 위젯 코드를 예전에 붙여넣었다면 한 번 더 복사해 바꿔 주세요.</p>
   <p class="note" style="margin-top:6px">잠금 화면: 잠금 화면을 길게 눌러 <b>사용자화 → 잠금 화면 → 위젯 칸</b>에서 Scriptable을 넣고 똑같이 '우리 둘'을 골라요.</p>
   <div class="row"><button class="btn" type="button" data-act="wg-copy" style="flex:1">위젯 코드 복사</button><button class="btn line" type="button" data-act="wg-reset">키 바꾸기</button></div>
   ${S.wgShow && S.wgCode ? `<label class="f" for="wg-code">복사가 안 되면 아래를 길게 눌러 전체 선택 → 복사</label><textarea id="wg-code" readonly style="min-height:120px;font-size:12px;font-family:ui-monospace,monospace">${esc(S.wgCode)}</textarea>` : ''}
@@ -1671,7 +1722,7 @@ function openCouple() {
 async function prepWidget(reset) {
   try {
     const [t, tpl] = await Promise.all([UDB.widgetToken(reset), S.wgTpl ? S.wgTpl : fetch('widget.scriptable.js', {cache: 'no-cache'}).then(r => r.text())]);
-    S.wgTpl = tpl; S.wgCode = tpl.replace('__WIDGET_URL__', UDB.widgetUrl(t));
+    S.wgTpl = tpl; S.wgCode = tpl.replace('__WIDGET_URL__', UDB.widgetUrl(t)).replace('__APP_URL__', location.origin + location.pathname.replace(/[^/]*$/, ''));
     return true;
   } catch (e) { return false; }
 }

@@ -142,8 +142,12 @@ try {
     const code = await B.evaluate(() => navigator.clipboard.readText());
     const m = code.match(/const API = '([^']+)'/);
     if (!m || !code.includes('ListWidget')) throw new Error('clipboard has no widget script');
+    if (code.includes('__APP_URL__')) throw new Error('app address missing from the widget script');
     const j = await (await fetch(m[1])).json();
     if (!j.ready || j.me !== PT || j.partner !== ME || !j.next || j.next.title !== '테스트 데이트') throw new Error('widget data: ' + JSON.stringify(j).slice(0, 200));
+    if (!Array.isArray(j.upcoming) || !j.upcoming.length || !j.progress || typeof j.progress.pct !== 'number') throw new Error('widget extras missing: ' + JSON.stringify(j).slice(0, 300));
+    const app = code.match(/const APP = '([^']+)'/)[1];
+    if ((await fetch(app + 'widget/duo.png')).status !== 200) throw new Error('widget picture not served at ' + app);
     await shot(B, '09-B-widget-card');
   });
 
