@@ -199,6 +199,19 @@ try {
     await A.locator('.regs li', { hasText: '★ 5.0' }).waitFor();
   });
 
+  await step('A buys a tulip with hearts; it shows up in B\'s yard', async () => {
+    await tab(A, 'q');
+    await A.locator('.yard .cr[data-w=me]').waitFor();
+    await A.click('[data-act=shop-open]');
+    const before = await A.locator('.wallet b').innerText();
+    await A.click('[data-act=shop-buy][data-v=tulip]');
+    await A.locator('.wallet b').filter({ hasNotText: before }).waitFor();
+    await A.click('[data-act=shop-close]');
+    await tab(B, 'q');
+    await B.locator('.yard .yi', { hasText: '🌷' }).waitFor();
+    await shot(B, '11-B-yard');
+  });
+
   await step('B copies the widget code and the widget shows today', async () => {
     await B.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(base).origin });
     await B.click('#t-us');

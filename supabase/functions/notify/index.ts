@@ -67,6 +67,12 @@ Deno.serve(async (req) => {
         ? { title: `${n}님이 편지를 보냈어요 💌`, body: d.title || '지금 열어 볼 수 있어요', tag: `letter-${r.id}`, url: './#mem' }
         : { title: `${n}님이 편지를 남겼어요 💌`, body: `${fmtDate(d.openAt)}에 열려요. 그날 아침에 알려 드릴게요`, tag: `letter-${r.id}`, url: './#mem' };
       break;
+    case 'yard':
+      if (!isInsert) break;
+      msg = d.cat === 'theme'
+        ? { title: `${n}님이 마당을 '${d.name}'(으)로 꾸몄어요 🎨`, body: '우리 마당에 놀러 가 볼까요?', tag: `yard-${r.id}`, url: './#q' }
+        : { title: `${n}님이 마당에 ${d.e || ''} ${d.name || '새 물건'}을(를) 들였어요`, body: '우리 마당에 놀러 가 볼까요?', tag: `yard-${r.id}`, url: './#q' };
+      break;
     case 'pings':
       to = r.by_user;
       msg = { title: '알림이 잘 와요', body: '이제 상대 소식을 바로 받아요', tag: 'ping', url: './#us' };

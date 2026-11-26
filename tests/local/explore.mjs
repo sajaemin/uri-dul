@@ -42,6 +42,12 @@ const docs = {
   [`moods/${kst(0)}_partner`]: { date: kst(0), who: 'partner', m: 'miss', note: '주말까지 ' + XSS, at: 4 },
   'letters/l1': { from: 'partner', title: '700일에 열어 봐', text: '사랑해', openAt: kst(30), at: 5, readAt: 0 },
   'letters/l2': { from: 'partner', title: XSS, text: '오늘 고마웠어 ' + XSS, openAt: kst(0), at: 6, readAt: 0, paper: 'sky', ink: 'blue', stickers: [{ e: '🐻', x: 88, y: 10, r: 12 }, { e: '🌙', x: 10, y: 90, r: -8 }, { e: XSS, x: 50, y: 50, r: 0 }] },
+  'yard/y1': { k: 'tree', e: '🌳', name: '나무', price: 60, cat: 'flower', placed: true, x: 14, y: 66, by: 'partner', at: 1764000000000 },
+  'yard/y2': { k: 'dog', e: '🐶', name: '강아지', price: 150, cat: 'pet', placed: true, x: 80, y: 86, by: 'partner', at: 1764000000001 },
+  'yard/y3': { k: 'cloud', e: '☁️', name: '구름', price: 20, cat: 'sky', placed: true, x: 70, y: 22, by: 'me', at: 1764000000002 },
+  'yard/y4': { k: 'tulip', e: '🌷', name: '튤립', price: 20, cat: 'flower', placed: false, x: 0, y: 0, by: 'me', at: 1764000000003 },
+  'yard/y5': { k: 'nope', e: XSS, name: XSS, price: 5, cat: 'flower', placed: true, x: 40, y: 80, by: 'me', at: 1764000000004 },
+  'yard/t1': { k: 'th_sakura', e: '🎨', name: '벚꽃 동산', price: 150, cat: 'theme', placed: false, x: 0, y: 0, by: 'partner', at: 1764000000005 },
   'letters/l3': { from: 'me', title: 'Re: 답장', text: '나도 고마워', openAt: kst(0), at: 7, readAt: 0, paper: 'lilac', ink: 'violet', stickers: [{ e: '💗', x: 90, y: 88, r: 5 }], replyTo: 'l2' },
   ...Object.fromEntries([2, 3, 4, 5, 6, 8, 9, 11, 12, 15].flatMap((n, i) => [[`moods/${kst(-n)}_me`, { date: kst(-n), who: 'me', m: ['happy', 'love', 'tired', 'calm', 'happy', 'busy', 'miss', 'happy', 'sad', 'love'][i], note: i === 2 ? '야근 ' + XSS : '', at: 10 + i }], [`moods/${kst(-n)}_partner`, { date: kst(-n), who: 'partner', m: ['happy', 'love', 'calm', 'calm', 'grr', 'busy', 'miss', 'love', 'sad', 'love'][i], note: '', at: 30 + i }]])),
   'pokes/latest': { from: 'partner', at: Date.now() - 60000 },
@@ -100,7 +106,7 @@ async function run(label, device, scheme, look) {
       try {
         const el = p.locator(sel).first();
         if (!(await el.isVisible())) continue;
-        await el.click({ timeout: 1500 });
+        await el.click({ timeout: 1500, force: a.act === 'cr-tap' });
         await p.waitForTimeout(150);
         await check(`${t} → ${a.act}${a.v ? '(' + a.v + ')' : ''}`);
         // look at overlays briefly, then close them
@@ -112,7 +118,7 @@ async function run(label, device, scheme, look) {
         }
       } catch (e) { const why = (e.message.split('\n').find(l => /intercepts|not visible|outside of the viewport|not stable/.test(l)) || '').trim(); say(label, `${t} → ${a.act}: ${e.message.split('\n')[0]} ${why}`); }
       await p.keyboard.press('Escape');
-      for (const c of ['sheet-close', 'msheet-close', 'close', 'l-close', 'l-cancel', 'rc-close', 'rc-img-close', 'mcal-close']) { const x = p.locator(`#ov [data-act="${c}"]`).first(); if (await x.isVisible().catch(() => false)) await x.click({ timeout: 800 }).catch(() => {}); }
+      for (const c of ['sheet-close', 'msheet-close', 'close', 'l-close', 'l-cancel', 'rc-close', 'rc-img-close', 'mcal-close', 'shop-close']) { const x = p.locator(`#ov [data-act="${c}"]`).first(); if (await x.isVisible().catch(() => false)) await x.click({ timeout: 800 }).catch(() => {}); }
       if ((await p.locator('#t-' + t).getAttribute('aria-current').catch(() => null)) !== 'page') await p.click('#t-' + t).catch(() => {});
     }
   }
@@ -136,6 +142,11 @@ async function run(label, device, scheme, look) {
       for (let n = 1; n <= 370; n++) { const ds = new Date(Date.now() + 9 * 3600e3 - n * 864e5).toISOString().slice(0, 10); for (const w of ['me', 'partner']) st.docs[`answers/${ds}_${w}`] = st.docs[`answers/${ds}_${w}`] || { date: ds, text: '답', at: n }; }
       localStorage.setItem('mock-udb', JSON.stringify(st)); }, [kst(0)]);
     await p.reload(); await p.locator('#t-home').waitFor({ state: 'visible' }); await shot('stage8');
+    await p.click('#t-q'); await p.waitForTimeout(2500); await shot('yard');
+    await p.click('[data-act=shop-open]'); await shot('shop'); await p.click('[data-act=shop-cat][data-v=pet]'); await shot('shop-pet');
+    await p.click('[data-act=shop-buy][data-v=chick]'); await p.waitForTimeout(300);
+    await p.click('[data-act=shop-cat][data-v=theme]'); await shot('shop-theme'); await p.click('[data-act=theme-use][data-v=sakura]'); await p.keyboard.press('Escape'); await p.waitForTimeout(1500); await shot('yard-sakura');
+    await p.click('[data-act=yedit]'); await p.locator('.yard.edit .yi').first().dragTo(p.locator('.yard.edit'), { targetPosition: { x: 60, y: 120 } }); await shot('yedit'); await p.click('[data-act=yedit]');
     await p.click('#t-q'); await shot('grow'); await p.locator('.qsw-b').scrollIntoViewIfNeeded(); await shot('qswap'); await p.click('.qsw-b'); await shot('qswapped');
     await p.click('#t-mem'); await p.click('[data-act=mem-tab][data-v=lt]'); await p.click('[data-act=l-new]');
     await p.click('[data-act=l-paper][data-v=butter]'); await p.click('[data-act=l-ink][data-v=straw]');

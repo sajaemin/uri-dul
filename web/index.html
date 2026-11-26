@@ -666,6 +666,90 @@ ol.steps.big li{margin:10px 0;font-size:16px}
 .hpop{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;background:linear-gradient(180deg,#ff86ad,#ff5c8d);color:#fff;font-weight:800;font-size:18px;border-radius:999px;padding:8px 18px;box-shadow:0 10px 24px -6px rgba(255,92,141,.7);pointer-events:none;animation:hpop 1.6s ease-out forwards}
 @keyframes hpop{0%{opacity:0;transform:translate(-50%,16px) scale(.8)}15%{opacity:1;transform:translate(-50%,0) scale(1.08)}70%{opacity:1;transform:translate(-50%,-26px) scale(1)}100%{opacity:0;transform:translate(-50%,-50px)}}
 @media(prefers-reduced-motion:reduce){.hpop{animation:none;opacity:1}}
+
+/* the yard */
+.yard{position:relative;isolation:isolate;width:100%;height:clamp(178px,50vw,214px);overflow:hidden;--sky1:#ffd3e3;--sky2:#fff0f5;--g1:#cdeedb;--g2:#b7e4c9;background:linear-gradient(180deg,var(--sky1),var(--sky2) 52%);user-select:none;-webkit-user-select:none}
+.yard.big{height:clamp(220px,64vw,270px);border-radius:20px}
+.yard::before,.yard::after{content:'';position:absolute;left:-12%;right:-12%;border-radius:50% 50% 0 0/26% 26% 0 0;z-index:1}
+.yard::before{top:48%;bottom:-10%;background:var(--g1)}
+.yard::after{top:62%;bottom:-10%;background:var(--g2);left:-30%;right:20%}
+.yard.th-sakura{--sky1:#ffe0ee;--sky2:#fff6fa;--g1:#ffd6e6;--g2:#ffc3d8}
+.yard.th-beach{--sky1:#bfe4ff;--sky2:#eef8ff;--g1:#8fd3f0;--g2:#ffe6b0}
+.yard.th-beach::before{top:44%}
+.yard.th-snow{--sky1:#dce8f8;--sky2:#f5f9ff;--g1:#f4f8ff;--g2:#ffffff}
+.yard.th-night{--sky1:#2e2f63;--sky2:#6b5a9e;--g1:#3f7263;--g2:#4f8a77}
+.yard.th-night .crn{background:#ffffffd9}
+.ysnow,.ystars,.ypetal,.yrain{position:absolute;inset:0;pointer-events:none;z-index:0}
+.ydeco{position:absolute;left:0;top:0;width:100%;height:56%;z-index:0;pointer-events:none}
+.ydeco .ycl{opacity:.92}
+.yard.th-night .ydeco .ycl{opacity:.25}
+.ysnow{z-index:120;background-image:radial-gradient(circle,#fff 1.6px,transparent 2px),radial-gradient(circle,#fff 1.1px,transparent 1.5px);background-size:34px 34px,22px 22px;animation:snowf 9s linear infinite}
+@keyframes snowf{to{background-position:0 34px,11px 44px}}
+.ystars{background-image:radial-gradient(circle,#fff8 1.2px,transparent 1.6px);background-size:26px 20px;height:46%}
+.ypetal{z-index:120;background-image:radial-gradient(ellipse 3.5px 2.2px at 30% 40%,#ff9fbb 70%,transparent 72%),radial-gradient(ellipse 2.6px 1.8px at 70% 20%,#ffb8cc 70%,transparent 72%);background-size:53px 61px,37px 43px;animation:petalf 13s linear infinite;opacity:.85}
+@keyframes petalf{to{background-position:-26px 61px,18px 86px}}
+.yrain{background:radial-gradient(ellipse 72% 78% at 50% 92%,transparent 62%,#a9c8ffaa 62.5% 66%,#a8e6cfaa 66.5% 70%,#ffd36baa 70.5% 74%,#ffb3c9aa 74.5% 78%,transparent 78.5%)}
+.yi{position:absolute;z-index:2;transform:translate(-50%,-90%);line-height:1;filter:drop-shadow(0 3px 2px rgba(60,40,50,.16));pointer-events:none}
+.yi.a-sway{transform-origin:50% 100%;animation:ysway 4s ease-in-out var(--d) infinite}
+.yi.a-bob{animation:ybob 3s ease-in-out var(--d) infinite}
+.yi.a-pet{animation:ypet 10s ease-in-out var(--d) infinite}
+.yi.a-fly{animation:yfly 7s ease-in-out var(--d) infinite}
+.yi.a-drift{animation:ydrift 18s ease-in-out var(--d) infinite}
+.yi.a-spin{animation:ybob 5s ease-in-out var(--d) infinite}
+.yi.a-twinkle{animation:ytw 2.4s ease-in-out var(--d) infinite}
+@keyframes ysway{0%,100%{transform:translate(-50%,-90%) rotate(-3deg)}50%{transform:translate(-50%,-90%) rotate(3deg)}}
+@keyframes ybob{0%,100%{transform:translate(-50%,-90%)}50%{transform:translate(-50%,-104%)}}
+@keyframes ypet{0%,100%{transform:translate(-80%,-90%) scaleX(1)}24%{transform:translate(-20%,-90%) scaleX(1)}26%{transform:translate(-20%,-90%) scaleX(-1)}30%{transform:translate(-20%,-110%) scaleX(-1)}34%{transform:translate(-20%,-90%) scaleX(-1)}74%{transform:translate(-80%,-90%) scaleX(-1)}76%{transform:translate(-80%,-90%) scaleX(1)}}
+@keyframes yfly{0%,100%{transform:translate(-90%,-90%)}25%{transform:translate(-30%,-150%)}50%{transform:translate(20%,-100%)}75%{transform:translate(-40%,-60%)}}
+@keyframes ydrift{0%,100%{transform:translate(-80%,-90%)}50%{transform:translate(-20%,-90%)}}
+@keyframes ytw{0%,100%{opacity:1;transform:translate(-50%,-90%) scale(1)}50%{opacity:.55;transform:translate(-50%,-90%) scale(.8)}}
+.cr{position:absolute;width:clamp(62px,19vw,80px);padding:0;border:0;background:none;transform:translate(-50%,-92%);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.yard:not(.big) .cr{width:clamp(56px,16vw,70px)}
+.cr svg{display:block;width:100%;height:auto;overflow:visible;transform:scaleX(var(--f,1))}
+.cr .crn{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);background:#ffffffe6;border-radius:999px;padding:0 7px;font-size:10.5px;font-weight:800;color:#5a2b40;white-space:nowrap;line-height:16px}
+.cr.walk .cbody{animation:cwalk .42s ease-in-out infinite}
+.cr.walk .cfeet ellipse:first-child{animation:cfoot .42s ease-in-out infinite}
+.cr.walk .cfeet ellipse:last-child{animation:cfoot .42s ease-in-out .21s infinite}
+.cr.hop .cbody{animation:chop .55s cubic-bezier(.3,.7,.4,1) 2}
+.cr .ceyes{animation:cblink 4.5s infinite;transform-origin:0 -3px}
+.cr .cwing{animation:cwing .6s ease-in-out infinite alternate;transform-origin:0 0}
+@keyframes cwalk{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-6px) rotate(3deg)}}
+@keyframes cfoot{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes chop{0%,100%{transform:translateY(0) scale(1,1)}20%{transform:translateY(0) scale(1.1,.88)}55%{transform:translateY(-22px) scale(.94,1.06)}}
+@keyframes cblink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes cwing{to{transform:scaleY(.82)}}
+.crb{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);background:#fff;color:#5a2b40;font-size:12.5px;font-weight:800;border-radius:12px;padding:4px 9px;white-space:nowrap;box-shadow:0 4px 10px rgba(90,43,64,.18);animation:crb 1.5s ease-out forwards;pointer-events:none}
+@keyframes crb{0%{opacity:0;transform:translate(-50%,6px)}15%,80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-8px)}}
+.ymeet{position:absolute;transform:translate(-50%,0);font-size:22px;z-index:130;pointer-events:none;animation:ymeet 1.8s ease-out forwards}
+@keyframes ymeet{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}25%{opacity:1;transform:translate(-50%,0) scale(1.2)}100%{opacity:0;transform:translate(-50%,-34px) scale(1)}}
+@media(prefers-reduced-motion:reduce){.yi,.cr .cbody,.cr .ceyes,.cr .cwing,.ysnow,.ypetal{animation:none!important}}
+.yard.edit{box-shadow:inset 0 0 0 3px var(--acc)}
+.yard.edit .yi{pointer-events:auto;cursor:grab;touch-action:none;animation:none;outline:2px dashed #ff5c8d66;outline-offset:2px;border-radius:8px}
+.yard.edit .yi.drag{cursor:grabbing;transform:translate(-50%,-90%) scale(1.15);z-index:200!important}
+.yard.edit .cr{opacity:.45;pointer-events:none}
+.hero.cute .yard{border-radius:0}
+.ytools{margin-top:12px}
+.ytools .btn{flex:1}
+.yedit-bar{margin-top:12px;background:var(--fill);border-radius:16px;padding:12px}
+.ystore{display:flex;flex-wrap:wrap;gap:6px}
+.ysb{border:0;background:#fff;border-radius:12px;width:46px;height:46px;font-size:26px;box-shadow:inset 0 0 0 2px var(--line)}
+/* the shop */
+.wallet{background:linear-gradient(135deg,#ffe1eb,#fff0e4);border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;margin-bottom:10px}
+.wallet .wl{font-size:13px;font-weight:700;color:var(--mut)}
+.wallet b{font-size:26px;color:var(--acc)}
+.app[data-look=cute] .wallet b{font-family:Jua,sans-serif;font-weight:400}
+.wallet .note{font-size:12px}
+.stabs{margin-bottom:10px}
+.sgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sitem{background:var(--fill);border-radius:16px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.sitem .se{font-size:36px;line-height:1.1}
+.sitem b{font-size:13.5px}
+.sitem small{font-size:11.5px}
+.sbuy{min-height:34px;padding:0 10px;font-size:13px;border-radius:999px;width:100%}
+.sbuy:disabled{background:#ead9e0!important;color:#9b7480;box-shadow:none!important;font-size:11.5px}
+.sown{font-size:13px;font-weight:800;color:var(--acc);min-height:34px;display:flex;align-items:center}
+.sth{display:block;width:100%;height:46px;border-radius:12px;position:relative;overflow:hidden;background:linear-gradient(180deg,var(--sky1),var(--sky2) 50%,var(--g1) 50%)}
+.sth.th-spring{--sky1:#ffd3e3;--sky2:#fff0f5;--g1:#cdeedb}.sth.th-sakura{--sky1:#ffe0ee;--sky2:#fff6fa;--g1:#ffc3d8}.sth.th-beach{--sky1:#bfe4ff;--sky2:#eef8ff;--g1:#ffe6b0}.sth.th-snow{--sky1:#dce8f8;--sky2:#f5f9ff;--g1:#fff}.sth.th-night{--sky1:#2e2f63;--sky2:#6b5a9e;--g1:#3f7263}
 </style>
 </head>
 <body>
@@ -758,7 +842,7 @@ const dlab = d => { const n = diff(today(), d); return n === 0 ? '오늘' : n > 
 S.diAlways = ls.get('ud-di') !== '0'; S.diExp = false; S.look = 'cute';
 S.memories = []; S.bucket = []; S.memTab = 'tl'; S.mapView = 'kr'; S.mapSel = null; S.memFilter = ''; S.memPlace = ''; S.msheet = null; S.msheetDel = false; S.recap = null;
 S.events = []; S.calMode = 'month'; S.sheet = null; S.sheetDel = false;
-S.moods = {}; S.qswap = {}; S.prefs = {}; S.mcal = null; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
+S.moods = {}; S.yard = []; S.ycfg = null; S.yedit = false; S.shop = null; S.qswap = {}; S.prefs = {}; S.mcal = null; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
 { const t = today(); S.calMonth = new Date(t.getFullYear(), t.getMonth(), 1); S.calSel = ymd(t); }
 function starts(ev, s0, from, to) {
   const r = ev.repeat || 'none', res = [];
@@ -824,6 +908,9 @@ const W = {
   delBucket: id => guard(async () => { if (db) await db.doc('bucket/' + id).delete(); else { S.bucket = S.bucket.filter(x => x.id !== id); render(); } }),
   poke: d => guard(async () => { if (db) await db.doc('pokes/latest').set(d); else { S.poke = d; render(); } }),
   mood: (id, d) => guard(async () => { if (db) await db.doc('moods/' + id).set(d); else { S.moods = {...S.moods, [id]: d}; render(); } }),
+  yard: (id, d) => guard(async () => { if (db) await db.doc('yard/' + id).set(d); else { S.yard = [...S.yard.filter(x => x.id !== id), {...d, id}]; render(); } }),
+  yardUpd: (id, d) => guard(async () => { S.yard = S.yard.map(x => x.id === id ? {...x, ...d} : x); render(); if (db) await db.doc('yard/' + id).update(d); }),
+  ycfg: d => guard(async () => { S.ycfg = d; render(); if (db) await db.doc('yardcfg/main').set(d); }),
   qswap: (id, d) => guard(async () => { S.qswap = {...S.qswap, [id]: d}; render(); if (db) await db.doc('qswaps/' + id).set(d); }),
   prefs: (w, d) => guard(async () => { S.prefs = {...S.prefs, [w]: d}; render(); if (db) await db.doc('prefs/' + w).set(d); }),
   letter: (id, d) => guard(async () => { if (db) await db.doc('letters/' + id).set(d); else { S.letters = [...S.letters.filter(x => x.id !== id), {...d, id}]; render(); } }),
@@ -907,7 +994,7 @@ function heroHTML() {
   const av = annivs(), na = av[0], cv = coverSrc();
   const sub = `${dotd(S.couple.start)}부터${na ? ` · ${esc(na.label)} ${dlab(na.d)}` : ''}`;
   if (S.look === 'cute') {
-    return `<div class="hero cute">${cv ? `<span class="polaroid"><img src="${esc(cv)}" alt="우리 사진"></span>` : ''}${scene(undefined, [nm('me'), nm('partner')])}<div class="hin"><p class="hl">${esc(nm('me'))}<svg viewBox="0 0 24 24"><path d="${HEART}"/></svg>${esc(nm('partner'))}</p><div class="n">${dayNo().toLocaleString('ko-KR')}<span>일째</span></div><p class="hs">${sub}</p><span class="gchip">${(() => { const h = hearts(S.who); return `${STN[hStage(h.total)]} · 💗${h.total.toLocaleString('ko-KR')}${h.today ? ` · 오늘 +${h.today}` : ''}`; })()}</span></div></div>`;
+    return `<div class="hero cute">${cv ? `<span class="polaroid"><img src="${esc(cv)}" alt="우리 사진"></span>` : ''}${vYard(false)}<div class="hin"><p class="hl">${esc(nm('me'))}<svg viewBox="0 0 24 24"><path d="${HEART}"/></svg>${esc(nm('partner'))}</p><div class="n">${dayNo().toLocaleString('ko-KR')}<span>일째</span></div><p class="hs">${sub}</p><span class="gchip">${(() => { const h = hearts(S.who); return `${STN[hStage(h.total)]} · 💗${h.total.toLocaleString('ko-KR')}${h.today ? ` · 오늘 +${h.today}` : ''}`; })()}</span></div></div>`;
   }
   return `<div class="hero${cv ? ' photo' : ''}">${cv ? `<img class="cv" src="${esc(cv)}" alt=""><span class="shade"></span>` : ''}<div class="hin"><div class="pair">${avHTML('me')}${avHTML('partner')}</div><p class="hl">${esc(nm('me'))} 그리고 ${esc(nm('partner'))}</p><div class="n">${dayNo().toLocaleString('ko-KR')}<span>일째</span></div><p class="hs">${sub}</p></div></div>`;
 }
@@ -1031,7 +1118,7 @@ function vMood() {
 }
 
 /* ---------- which notifications each person wants ---------- */
-const NKINDS = [['answers', '질문 답', '상대가 답하거나 둘 다 답했을 때'], ['moods', '기분', '상대가 기분이나 한마디를 남겼을 때'], ['photos', '사진', '새 사진이 올라왔을 때'], ['pokes', '콕 찌르기', '상대가 콕 찔렀을 때'], ['events', '일정', '새 데이트나 일정이 잡혔을 때'], ['memories', '추억', '새 추억, 둘 다 또 갈래'], ['bucket', '버킷리스트', '담거나 함께 해냈을 때'], ['letters', '편지', '편지가 오거나 열리는 날'], ['morning', '아침 9시 알림', '기념일·생일·데이트·1년 전 오늘'], ['evening', '저녁 6시 알림', '아직 오늘의 질문에 답하지 않았을 때']];
+const NKINDS = [['answers', '질문 답', '상대가 답하거나 둘 다 답했을 때'], ['moods', '기분', '상대가 기분이나 한마디를 남겼을 때'], ['photos', '사진', '새 사진이 올라왔을 때'], ['pokes', '콕 찌르기', '상대가 콕 찔렀을 때'], ['events', '일정', '새 데이트나 일정이 잡혔을 때'], ['memories', '추억', '새 추억, 둘 다 또 갈래'], ['bucket', '버킷리스트', '담거나 함께 해냈을 때'], ['letters', '편지', '편지가 오거나 열리는 날'], ['yard', '마당 꾸미기', '상대가 마당에 새 물건을 들였을 때'], ['morning', '아침 9시 알림', '기념일·생일·데이트·1년 전 오늘'], ['evening', '저녁 6시 알림', '아직 오늘의 질문에 답하지 않았을 때']];
 const nOff = () => ((S.prefs[S.who] || {}).off || []);
 function vNotifChoices() {
   const off = nOff();
@@ -1527,6 +1614,100 @@ function streak() {
   while (both(ymd(d)) && n < 3650) { n++; d = addDays(d, -1); }
   return n;
 }
+
+/* ---------- the yard: both characters live here; hearts buy things to put in it ---------- */
+const SHOP = [
+  ['flower', '꽃·나무', [['tulip', '🌷', '튤립', 20, 26, 'sway'], ['daisy', '🌼', '데이지', 15, 24, 'sway'], ['sunf', '🌻', '해바라기', 25, 30, 'sway'], ['clover', '🍀', '네잎클로버', 10, 22, ''], ['mush', '🍄', '버섯', 15, 26, ''], ['pot', '🪴', '화분', 30, 30, ''], ['cactus', '🌵', '선인장', 30, 34, ''], ['tree', '🌳', '나무', 60, 50, 'sway'], ['pine', '🌲', '소나무', 60, 50, ''], ['blossom', '🌸', '벚꽃', 40, 28, 'sway']]],
+  ['play', '놀이', [['kite', '🪁', '연', 60, 30, 'bob'], ['balloon', '🎈', '풍선', 30, 30, 'bob'], ['parasol', '⛱️', '파라솔', 80, 44, ''], ['slide', '🛝', '미끄럼틀', 120, 46, ''], ['tent', '🎪', '서커스 텐트', 150, 52, ''], ['carousel', '🎠', '회전목마', 260, 50, 'bob'], ['ferris', '🎡', '관람차', 300, 60, 'spin'], ['canoe', '🛶', '카누', 90, 40, '']]],
+  ['home', '집·소품', [['house', '🏡', '우리 집', 300, 62, ''], ['hut', '🛖', '오두막', 220, 54, ''], ['camp', '⛺', '캠핑 텐트', 140, 48, ''], ['fountain', '⛲', '분수', 200, 50, ''], ['chair', '🪑', '의자', 40, 30, ''], ['sofa', '🛋️', '소파', 120, 40, ''], ['basket', '🧺', '피크닉 바구니', 50, 28, ''], ['lantern', '🏮', '등불', 45, 28, 'sway'], ['post', '📮', '우체통', 70, 32, ''], ['log', '🪵', '통나무', 25, 30, '']]],
+  ['pet', '친구들', [['dog', '🐶', '강아지', 150, 30, 'pet'], ['cat', '🐱', '고양이', 150, 30, 'pet'], ['bunny', '🐰', '토끼', 120, 28, 'pet'], ['chick', '🐥', '병아리', 60, 24, 'pet'], ['duck', '🦆', '오리', 80, 28, 'pet'], ['squirrel', '🐿️', '다람쥐', 100, 28, 'pet'], ['turtle', '🐢', '거북이', 90, 28, 'pet'], ['bfly', '🦋', '나비', 40, 24, 'fly']]],
+  ['sky', '하늘', [['cloud', '☁️', '구름', 20, 40, 'drift'], ['star', '⭐', '별', 30, 22, 'twinkle'], ['sun', '☀️', '해', 100, 44, 'spin'], ['moon', '🌙', '달', 120, 38, 'bob'], ['dove', '🕊️', '비둘기', 70, 28, 'fly'], ['rainbow', '🌈', '무지개', 200, 56, '']]],
+];
+const THEMES = [['spring', '봄 들판', 0], ['sakura', '벚꽃 동산', 150], ['beach', '바닷가', 200], ['snow', '눈 오는 겨울', 200], ['night', '밤하늘', 250]];
+const ITEM = {}; SHOP.forEach(([cat, , list]) => list.forEach(([k, e, name, price, size, anim]) => { ITEM[k] = {k, e, name, price, size, anim, cat}; }));
+const spentBy = w => S.yard.filter(y => y.by === w).reduce((n, y) => n + (Number(y.price) || 0), 0);
+const heartsLeft = w => hearts(w).total - spentBy(w);
+const yTheme = () => { const t = (S.ycfg && S.ycfg.theme) || 'spring'; return THEMES.some(x => x[0] === t) ? t : 'spring'; };
+const ownsTheme = t => t === 'spring' || S.yard.some(y => y.k === 'th_' + t);
+const YS = {me: {x: 32, y: 80, f: 1, t: 0}, partner: {x: 64, y: 84, f: -1, t: 0}};
+const YLINES = ['헤헤', '오늘도 좋아!', '놀아줘~', '배고파…', '💗', '같이 산책할래?', '쓰담쓰담 해줘', '보고 싶었어!', '하트 더 모으자!', '꺄르르'];
+function charSVG(w, st) {
+  const H = 'M12 21s-8-4.6-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.4-8 11-8 11z';
+  const crown = `<g transform="translate(0 -30)"><path d="M-17 2l-3-17 10 8 10-12 10 12 10-8-3 17z" fill="#ffd36e" stroke="#e8a93a" stroke-width="1.5" stroke-linejoin="round"/><circle cx="0" cy="-17" r="2.6" fill="#ff6f98"/></g>`;
+  const leaves = l => `<path d="M0 -30v-${l ? 12 : 7}" stroke="#5fb883" stroke-width="3" stroke-linecap="round"/><ellipse cx="-7" cy="-${l ? 43 : 37}" rx="${l ? 8 : 6}" ry="${l ? 4.5 : 3.4}" fill="#7fd19b" transform="rotate(-28 -7 -${l ? 43 : 37})"/>${l ? '<ellipse cx="7" cy="-45" rx="8" ry="4.5" fill="#7fd19b" transform="rotate(28 7 -45)"/>' : ''}`;
+  const flower = `<path d="M0 -30v-16" stroke="#5fb883" stroke-width="3" stroke-linecap="round"/>${[0, 72, 144, 216, 288].map(a => `<ellipse cx="0" cy="-58" rx="5.5" ry="8" fill="#ff9fbb" transform="rotate(${a} 0 -50)"/>`).join('')}<circle cx="0" cy="-50" r="5" fill="#ffd36e"/>`;
+  const bow = k => `<g transform="translate(15 -26) rotate(18) scale(${k})"><path d="M0 0l-12-7v14z" fill="#ff6f98"/><path d="M0 0l12-7v14z" fill="#ff6f98"/><circle r="4" fill="#ff4f82"/></g>`;
+  const fcrown = [-18, 0, 18].map((x, i) => `<g transform="translate(${x} ${-28 - (i === 1 ? 4 : 0)})">${[0, 90, 180, 270].map(a => `<ellipse cx="0" cy="-4" rx="3.2" ry="4.5" fill="${i === 1 ? '#ff6f98' : '#ffd36e'}" transform="rotate(${a})"/>`).join('')}<circle r="2.4" fill="#fff"/></g>`).join('');
+  const s4 = Math.min(st, 4);
+  const top = w === 'me' ? [leaves(false), leaves(true), leaves(true) + '<ellipse cx="0" cy="-52" rx="6" ry="8" fill="#ff9fbb"/>', flower, crown][s4]
+    : [bow(0.7), bow(1), bow(1.25) + `<path transform="translate(-22 -30) scale(.45)" d="${H}" fill="#ff6f98"/>`, fcrown, crown][s4];
+  const scarf = st >= 5 ? `<path d="M-28 14Q0 29 28 14L29 23Q0 38-29 23Z" fill="#ff7aa5"/><path d="M-27 19Q0 33 27 19" stroke="#fff" stroke-width="2.2" opacity=".55" fill="none"/><path d="M11 26l2 16 9-1-2-15z" fill="#ff7aa5"/>` : '';
+  const wings = st >= 8 ? `<g class="cwing"><ellipse cx="-42" cy="-8" rx="19" ry="11" transform="rotate(-28 -42 -8)" fill="#fff" stroke="#ffc2d5" stroke-width="2"/><ellipse cx="42" cy="-8" rx="19" ry="11" transform="rotate(28 42 -8)" fill="#fff" stroke="#ffc2d5" stroke-width="2"/></g>` : '';
+  const balloon = st >= 6 ? `<path d="M-36 -46Q-40 -16 -30 6" stroke="#c9a3ae" stroke-width="1.4" fill="none"/><path transform="translate(-57 -86) scale(1.75)" d="${H}" fill="${w === 'me' ? '#ff6f98' : '#ffb0c8'}"/>` : '';
+  const body = w === 'me' ? '#ffd9b3' : '#ffc7d8';
+  return `<svg viewBox="-70 -100 140 140" aria-hidden="true">${balloon}${wings}<g class="cbody"><ellipse cx="0" cy="32" rx="28" ry="5" fill="#000" opacity=".08"/><g class="cfeet"><ellipse cx="-12" cy="28" rx="8" ry="5" fill="${body}" stroke="#00000010"/><ellipse cx="12" cy="28" rx="8" ry="5" fill="${body}"/></g><ellipse cx="0" cy="0" rx="34" ry="31" fill="${body}"/>${top}${scarf}<ellipse cx="-11" cy="-14" rx="12" ry="7" fill="#fff" opacity=".45"/><g class="ceyes"><ellipse cx="-10" cy="-3" rx="3.2" ry="4.2" fill="#4b2f3a"/><ellipse cx="10" cy="-3" rx="3.2" ry="4.2" fill="#4b2f3a"/></g><ellipse cx="-19" cy="7" rx="6.5" ry="3.6" fill="#ff8fb0" opacity=".65"/><ellipse cx="19" cy="7" rx="6.5" ry="3.6" fill="#ff8fb0" opacity=".65"/><path d="M-5 6q5 5 10 0" stroke="#4b2f3a" stroke-width="2.2" fill="none" stroke-linecap="round"/></g></svg>`;
+}
+function vYard(big) {
+  const th = yTheme(), sa = heartStage('me'), sb = heartStage('partner');
+  const items = S.yard.filter(y => y.placed && ITEM[y.k]);
+  const who = ['me', 'partner'].filter(w => w === S.who || paired());
+  const HH = 'M12 21s-8-4.6-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.4-8 11-8 11z';
+  return `<div class="yard th-${th}${big ? ' big' : ''}${S.yedit && big ? ' edit' : ''}" aria-label="우리 마당">
+  <svg class="ydeco" viewBox="0 0 360 110" preserveAspectRatio="xMidYMin slice" aria-hidden="true"><g class="ycl" fill="#fff"><ellipse cx="58" cy="30" rx="30" ry="11"/><ellipse cx="80" cy="22" rx="19" ry="14"/><ellipse cx="44" cy="24" rx="13" ry="10"/><ellipse cx="300" cy="20" rx="26" ry="9"/><ellipse cx="318" cy="14" rx="14" ry="10"/></g><g class="floaty" fill="#ff9fbb"><path transform="translate(140 40) scale(.55)" d="${HH}"/><path transform="translate(226 30) scale(.4)" d="${HH}" opacity=".75"/><path transform="translate(258 62) scale(.3)" d="${HH}" opacity=".6"/></g></svg>
+  ${Math.min(sa, sb) >= 7 ? '<span class="yrain" aria-hidden="true"></span>' : ''}${th === 'snow' ? '<span class="ysnow" aria-hidden="true"></span>' : th === 'night' ? '<span class="ystars" aria-hidden="true"></span>' : th === 'sakura' ? '<span class="ypetal" aria-hidden="true"></span>' : ''}
+  ${items.map(y => { const it = ITEM[y.k], x = Math.min(97, Math.max(3, Number(y.x) || 50)), yy = Math.min(97, Math.max(4, Number(y.y) || 80)); return `<span class="yi${it.anim ? ' a-' + it.anim : ''}" data-yid="${esc(y.id)}" style="left:${x}%;top:${yy}%;z-index:${Math.round(yy)};font-size:${it.size * (big ? 1 : .85)}px;--d:${-(hue(y.id) % 9)}s" title="${esc(it.name)}">${it.e}</span>`; }).join('')}
+  ${who.map(w => { const p = YS[w]; return `<button type="button" class="cr" data-act="cr-tap" data-v="${w}" data-w="${w}" aria-label="${esc(nm(w))} 캐릭터 쓰다듬기" style="left:${p.x}%;top:${p.y}%;z-index:${Math.round(p.y) + 1};--f:${p.f}">${charSVG(w, w === 'me' ? sa : sb)}<span class="crn">${esc(cut(nm(w), 5))}</span></button>`; }).join('')}
+  </div>`;
+}
+function vYardTools() {
+  if (!S.yedit) return `<div class="row ytools"><button class="btn" type="button" data-act="shop-open">🛍️ 꾸미기 상점</button><button class="btn line" type="button" data-act="yedit">✏️ 마당 꾸미기</button></div>`;
+  const store = S.yard.filter(y => !y.placed && ITEM[y.k]);
+  return `<div class="yedit-bar"><p class="note" style="margin:0">물건을 끌어서 옮기고, 톡 누르면 보관함에 들어가요.</p>
+  ${store.length ? `<p class="f" style="margin:10px 0 4px">보관함 <small class="note">눌러서 마당에 놓기</small></p><div class="ystore">${store.map(y => `<button type="button" class="ysb" data-act="y-place" data-v="${esc(y.id)}" aria-label="${esc(ITEM[y.k].name)} 마당에 놓기">${ITEM[y.k].e}</button>`).join('')}</div>` : ''}
+  <div class="row"><button class="btn" type="button" data-act="yedit" style="flex:1">다 했어요</button><button class="btn line" type="button" data-act="shop-open">🛍️ 상점</button></div></div>`;
+}
+function vShop() {
+  const me = S.who, earned = hearts(me).total, spent = spentBy(me), left = earned - spent, cat = S.shop.cat || 'flower';
+  const owned = k => S.yard.filter(y => y.k === k).length;
+  const tabs = [...SHOP.map(c => [c[0], c[1]]), ['theme', '마당 테마']];
+  const buyBtn = (k, price) => `<button class="btn sbuy" type="button" data-act="shop-buy" data-v="${k}"${left < price ? ' disabled' : ''}>${left < price ? `💗${(price - left).toLocaleString('ko-KR')} 더 필요` : `💗 ${price}`}</button>`;
+  const grid = cat === 'theme'
+    ? THEMES.map(([t, name, price]) => `<div class="sitem"><span class="sth th-${t}" aria-hidden="true"></span><b>${name}</b>${ownsTheme(t) ? (yTheme() === t ? '<span class="sown">사용 중</span>' : `<button class="btn line sbuy" type="button" data-act="theme-use" data-v="${t}">사용하기</button>`) : buyBtn('th_' + t, price)}</div>`).join('')
+    : (SHOP.find(c => c[0] === cat) || SHOP[0])[2].map(([k, e, name, price]) => `<div class="sitem"><span class="se" aria-hidden="true">${e}</span><b>${name}</b>${buyBtn(k, price)}${owned(k) ? `<small class="note">${owned(k)}개 있어요</small>` : ''}</div>`).join('');
+  return `<div class="sheet-bg" data-act="shop-close-bg"><div class="sheet shop" role="dialog" aria-label="마당 상점">
+  <div class="calh"><h2 style="text-align:left;justify-content:flex-start">🛍️ 마당 상점</h2><button class="btn line" type="button" data-act="shop-close">닫기</button></div>
+  <div class="wallet"><span class="wl">${esc(nm(me))}님이 쓸 수 있는 하트</span><b>💗 ${left.toLocaleString('ko-KR')}</b><span class="note">모은 하트 ${earned.toLocaleString('ko-KR')} · 쓴 하트 ${spent.toLocaleString('ko-KR')} · 하트를 써도 캐릭터 단계는 그대로예요</span></div>
+  <div class="chips stabs" role="group" aria-label="상점 종류">${tabs.map(([k, t]) => `<button type="button" class="chip${cat === k ? ' on' : ''}" data-act="shop-cat" data-v="${k}" aria-pressed="${cat === k}">${t}</button>`).join('')}</div>
+  <div class="sgrid">${grid}</div>
+  <p class="note" style="margin-top:12px">산 물건은 둘이 같이 쓰는 마당에 놓이고, ${esc(nm(other()))}님에게 알림이 가요.</p></div></div>`;
+}
+function yardTick() {
+  const els = document.querySelectorAll('.yard .cr'); if (!els.length) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const now = Date.now();
+  for (const el of els) {
+    const w = el.dataset.w, st = YS[w], o = YS[w === 'me' ? 'partner' : 'me'];
+    if (now < st.t || el.closest('.edit')) continue;
+    const r = Math.random();
+    if (r < 0.18) { el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop'); st.t = now + 900 + Math.random() * 1500; continue; }
+    if (r < 0.32) { st.t = now + 1400 + Math.random() * 2600; continue; }
+    let nx, ny;
+    if (r < 0.48 && els.length > 1) { nx = o.x + (st.x < o.x ? -11 : 11); ny = o.y + (Math.random() - .5) * 4; }
+    else { nx = 8 + Math.random() * 84; ny = 64 + Math.random() * 28; }
+    nx = Math.min(92, Math.max(8, nx)); ny = Math.min(93, Math.max(62, ny));
+    const dur = Math.min(4.5, Math.max(0.9, Math.hypot(nx - st.x, (ny - st.y) * 2) / 13));
+    st.f = nx < st.x ? -1 : 1; st.x = nx; st.y = ny; st.t = now + dur * 1000 + 500 + Math.random() * 1800;
+    el.style.transition = `left ${dur}s linear, top ${dur}s linear`; el.style.left = nx + '%'; el.style.top = ny + '%'; el.style.zIndex = Math.round(ny) + 1; el.style.setProperty('--f', st.f);
+    el.classList.add('walk'); clearTimeout(el._w); el._w = setTimeout(() => el.classList.remove('walk'), dur * 1000);
+  }
+  // when they meet, a heart floats up
+  if (els.length > 1 && Math.abs(YS.me.x - YS.partner.x) < 14 && Math.abs(YS.me.y - YS.partner.y) < 9 && now - (YS.met || 0) > 7000) {
+    YS.met = now; const yard = els[0].closest('.yard');
+    setTimeout(() => { if (!yard.isConnected) return; const h = document.createElement('span'); h.className = 'ymeet'; h.textContent = '💗'; h.style.left = (YS.me.x + YS.partner.x) / 2 + '%'; h.style.top = (Math.min(YS.me.y, YS.partner.y) - 24) + '%'; yard.appendChild(h); setTimeout(() => h.remove(), 1800); }, 1200);
+  }
+}
+setInterval(yardTick, 300);
+
 /* ---------- hearts: every activity grows your own character ---------- */
 const HR = {answer: ['오늘의 질문 답하기', 10], both: ['둘 다 답하면 보너스', 5], mood: ['오늘 기분 남기기', 3], note: ['기분에 한마디 더하기', 2], photo: ['사진 올리기 (하루 5장까지)', 2], memory: ['추억 남기기', 15], rate: ['추억에 별점·또 갈래', 2], letter: ['편지 보내기', 10], event: ['데이트·일정 잡기', 5], bucket: ['버킷리스트 담기', 3], bdone: ['버킷리스트 함께 해내기', 10]};
 const HT = [0, 30, 80, 160, 280, 450, 700, 1000, 1400];
@@ -1554,11 +1735,11 @@ function vGrow() {
     const nx = HT[st + 1], pct = nx ? Math.round((h.total - HT[st]) / (nx - HT[st]) * 100) : 100;
     return `<div class="gcol${w === me ? ' mine' : ''}"><p class="gn">${S.look === 'cute' ? mini(w, 20) : ''}${esc(nm(w))}${w === me ? ' (나)' : ''}</p><b class="gs">${STN[st]}</b>
     <p class="gh">💗 ${h.total.toLocaleString('ko-KR')}${h.today ? `<small> 오늘 +${h.today}</small>` : ''}</p><div class="pbar"><i style="width:${pct}%"></i></div>
-    <p class="note gx">${nx ? `'${STN[st + 1]}'까지 💗${(nx - h.total).toLocaleString('ko-KR')}` : '최고 단계예요!'}</p></div>`;
+    <p class="note gx">${nx ? `'${STN[st + 1]}'까지 💗${(nx - h.total).toLocaleString('ko-KR')}` : '최고 단계예요!'}</p><p class="note gx">🛍️ 쓸 수 있는 하트 ${heartsLeft(w).toLocaleString('ko-KR')}</p></div>`;
   };
   const daily = ['answer', 'both', 'mood', 'note', 'photo'], anytime = ['memory', 'letter', 'event', 'bucket', 'bdone', 'rate'];
   const done = k => k === 'photo' ? hm.photosToday >= 5 : hm.kinds.has(k);
-  return `<div class="card grow">${scene([heartStage('me'), heartStage('partner')], [nm('me'), nm('partner')])}
+  return `<div class="card grow">${vYard(true)}${vYardTools()}
   <div class="gcols">${col(me, hm, sm)}${paired() ? col(pt, hp, sp) : ''}</div>
   ${HT[sm + 1] ? `<p class="gift">🎁 다음 선물: ${esc(nm(me))}님 캐릭터가 ${GIFT[sm + 1]}</p>` : ''}
   <p class="f" style="margin-top:14px">오늘 하트 모으기 <small class="note">매일 새로 받아요</small></p>
@@ -1702,7 +1883,7 @@ function heartWatch() {
 }
 function render() {
   $('.app').dataset.look = S.look;
-  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter || S.mcal) ? 'hidden' : '';
+  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter || S.mcal || S.shop) ? 'hidden' : '';
   const lt = $('#l-text'); if (lt) growTA(lt);
   heartWatch();
   const a = document.activeElement, aid = a && a.id, ss = a && a.selectionStart;
@@ -1723,7 +1904,7 @@ function render() {
   if (S.clearNote) { delete keep.pnote; S.clearNote = false; }
   $('.app').classList.toggle('gated', !!S.gate || !S.loaded || !S.couple);
   $('#view').innerHTML = S.gate ? vGate() : !S.loaded ? vLoading() : S.err ? `<div class="empty">${esc(S.err)}</div>` : !S.couple ? vSetup() : ({home: vHome, q: vQ, cal: vCal, mem: vMem, ph: vPh, us: vUs})[S.tab]();
-  $('#ov').innerHTML = S.mcal ? vMoodCal() : S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
+  $('#ov').innerHTML = S.shop ? vShop() : S.mcal ? vMoodCal() : S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
   if (S.recap && S.recap.jump != null) { const tr = $('#rct'); if (tr) tr.scrollLeft = S.recap.jump * tr.clientWidth; S.recap.jump = null; }
   for (const k in keep) { const el = document.getElementById(k); if (el) { if (el.type === 'checkbox') el.checked = keep[k]; else el.value = keep[k]; } }
   tick();
@@ -1786,7 +1967,7 @@ document.addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
   const act = b.dataset.act, v = b.dataset.v;
   if (act === 'tab') go(v);
-  else if (act === 'who') { S.hPrev = null; S.mcal = null; S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
+  else if (act === 'who') { S.shop = null; S.yedit = false; S.hPrev = null; S.mcal = null; S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
   else if (act === 'save-ans') {
     const text = (S.draft || '').trim(); if (!text) { toast('답을 먼저 적어 주세요'); return; }
     const td = ymd(today());
@@ -1884,6 +2065,33 @@ document.addEventListener('click', async e => {
     S.letter = null; S.letterDel = false; S.lsheet = {openAt: '', title: ('Re: ' + (l.title || '편지')).slice(0, 30), text: '', paper: paperOf(l), ink: (INKS.find(x => x[0] === l.ink) || INKS[0])[0], stickers: [], replyTo: l.id}; render();
     const t = $('#l-text'); if (t) t.focus();
   }
+  else if (act === 'cr-tap') {
+    const el = b, bub = document.createElement('span');
+    el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop');
+    bub.className = 'crb'; bub.textContent = YLINES[Math.floor(Math.random() * YLINES.length)];
+    el.appendChild(bub); setTimeout(() => bub.remove(), 1500); YS[v].t = Date.now() + 1600;
+  }
+  else if (act === 'shop-open') { S.shop = {cat: (S.shop && S.shop.cat) || 'flower'}; render(); }
+  else if (act === 'shop-cat') { S.shop.cat = v; render(); }
+  else if (act === 'shop-close' || (act === 'shop-close-bg' && e.target === b)) { S.shop = null; render(); }
+  else if (act === 'shop-buy') {
+    const th = v.startsWith('th_') ? THEMES.find(t => 'th_' + t[0] === v) : null, it = ITEM[v];
+    if (!th && !it) return;
+    const price = th ? th[2] : it.price, left = heartsLeft(S.who);
+    if (left < price) { toast(`하트가 ${price - left}개 더 필요해요`); return; }
+    const id = 'y' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const sky = it && it.cat === 'sky';
+    const d = th ? {k: v, e: '🎨', name: th[1], price, cat: 'theme', placed: false, x: 0, y: 0, by: S.who, at: Date.now()}
+      : {k: v, e: it.e, name: it.name, price, cat: it.cat, placed: true, x: Math.round(10 + Math.random() * 80), y: Math.round(sky ? 10 + Math.random() * 22 : 52 + Math.random() * 38), by: S.who, at: Date.now()};
+    if (await W.yard(id, d)) {
+      burst(14);
+      if (th) { await W.ycfg({theme: th[0], by: S.who, at: Date.now()}); toast(`마당이 '${th[1]}'(으)로 바뀌었어요!`); }
+      else toast(`${it.e} ${it.name}을(를) 마당에 놓았어요! '마당 꾸미기'로 자리를 옮길 수 있어요`);
+    }
+  }
+  else if (act === 'theme-use') { if (ownsTheme(v)) { await W.ycfg({theme: v, by: S.who, at: Date.now()}); toast('마당 테마를 바꿨어요'); } }
+  else if (act === 'yedit') { S.yedit = !S.yedit; render(); if (S.yedit) toast('끌어서 옮기고, 톡 누르면 보관함에 들어가요'); }
+  else if (act === 'y-place') { const y = S.yard.find(x => x.id === v); if (y) { const sky = y.cat === 'sky'; await W.yardUpd(v, {placed: true, x: 50, y: sky ? 20 : 78}); } }
   else if (act === 'mcal-open') { const t = today(); S.mcal = {y: t.getFullYear(), m: t.getMonth(), sel: ymd(t)}; render(); }
   else if (act === 'mcal-nav') { const d = new Date(S.mcal.y, S.mcal.m + Number(v), 1); if (d <= today()) { S.mcal = {y: d.getFullYear(), m: d.getMonth(), sel: ''}; render(); } }
   else if (act === 'mcal-day') { S.mcal.sel = S.mcal.sel === v ? '' : v; render(); }
@@ -1968,6 +2176,27 @@ document.addEventListener('click', async e => {
   else if (act === 'del-yes') { const p = S.photos.find(x => x.id === S.viewer); S.confirmDel = false; S.viewer = null; if (p && await W.delPhoto(p)) toast('사진을 지웠어요'); render(); }
 });
 function growTA(t) { t.style.height = 'auto'; t.style.height = Math.max(192, t.scrollHeight) + 'px'; }
+let ydrag = null;
+document.addEventListener('pointerdown', e => {
+  const el = e.target.closest && e.target.closest('.yard.edit .yi'); if (!el) return;
+  e.preventDefault();
+  ydrag = {el, id: el.dataset.yid, x0: e.clientX, y0: e.clientY, moved: false, box: el.parentElement.getBoundingClientRect()};
+  try { el.setPointerCapture(e.pointerId); } catch (_) {}
+  el.classList.add('drag');
+});
+document.addEventListener('pointermove', e => {
+  if (!ydrag) return;
+  if (Math.hypot(e.clientX - ydrag.x0, e.clientY - ydrag.y0) > 6) ydrag.moved = true;
+  if (!ydrag.moved) return;
+  const b = ydrag.box, x = Math.min(97, Math.max(3, (e.clientX - b.left) / b.width * 100)), y = Math.min(97, Math.max(6, (e.clientY - b.top) / b.height * 100));
+  ydrag.el.style.left = x + '%'; ydrag.el.style.top = y + '%'; ydrag.el.style.zIndex = Math.round(y); ydrag.x = x; ydrag.y = y;
+});
+document.addEventListener('pointerup', async () => {
+  if (!ydrag) return;
+  const {id, moved, x, y, el} = ydrag; ydrag = null; el.classList.remove('drag');
+  if (moved) await W.yardUpd(id, {x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10});
+  else { await W.yardUpd(id, {placed: false}); toast('보관함에 넣었어요'); }
+});
 let stk = null;
 document.addEventListener('pointerdown', e => {
   const el = e.target.closest && e.target.closest('.lpaper .lstk'); if (!el || !S.lsheet) return;
@@ -1998,6 +2227,7 @@ document.addEventListener('change', e => { if (e.target.id === 'm-file') { const
 document.addEventListener('keydown', e => {
   if (e.target.matches && e.target.matches('label[for=file]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#file').click(); }
   if (e.target.matches && e.target.matches('label[for=m-file]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#m-file').click(); return; }
+  if (S.shop && e.key === 'Escape') { S.shop = null; render(); return; }
   if (S.mcal && e.key === 'Escape') { S.mcal = null; render(); return; }
   if (S.sheet && e.key === 'Escape') { S.sheet = null; S.sheetDel = false; render(); return; }
   if (S.msheet && e.key === 'Escape') { S.msheet = null; S.msheetDel = false; render(); return; }
@@ -2078,7 +2308,7 @@ let sw = null;
 document.addEventListener('touchstart', e => {
   if (e.touches.length !== 1) { sw = null; return; }
   const t = e.touches[0], el = e.target;
-  if (S.sheet || S.msheet || S.recap || S.lsheet || S.letter || S.mcal || el.closest('input,textarea,select,.di,.mstrip,.mpl,.kmap')) { sw = null; return; }
+  if (S.sheet || S.msheet || S.recap || S.lsheet || S.letter || S.mcal || S.shop || el.closest('input,textarea,select,.di,.mstrip,.mpl,.kmap,.yard')) { sw = null; return; }
   if (!S.viewer && !el.closest('#view')) { sw = null; return; }
   sw = {x: t.clientX, y: t.clientY, t: Date.now(), cal: !!el.closest('.calbox')};
 }, {passive: true});
@@ -2264,6 +2494,8 @@ function attachDB(timer) {
   db.collection('events').onSnapshot(s => { S.events = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
   db.doc('pokes/latest').onSnapshot(s => { S.poke = s.exists ? s.data() : null; render(); }, () => {});
   db.collection('moods').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.moods = m; render(); }, () => {});
+  db.collection('yard').onSnapshot(s => { S.yard = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
+  db.doc('yardcfg/main').onSnapshot(s => { S.ycfg = s.exists ? s.data() : null; render(); }, () => {});
   db.collection('qswaps').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.qswap = m; render(); }, () => {});
   db.collection('prefs').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.prefs = m; render(); }, () => {});
   db.collection('letters').onSnapshot(s => { S.letters = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});

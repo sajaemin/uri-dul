@@ -116,10 +116,11 @@ set role authenticated;
 insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'moods', '2026-11-24_me', '{"m":"happy"}');
 insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'letters', 'l1', '{"text":"hi"}');
 insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'settings', 's1', '{}');
-insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'snaps', '2026-11-24_me', '{"date":"2026-11-24"}');
+insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'yard', 'y1', '{"k":"tulip","x":50,"y":80}');
+update public.docs set data = '{"k":"tulip","x":20,"y":70}' where coll = 'yard' and id = 'y1';
 reset role;
 do $$ begin
-  assert (select count(*) from net.calls) = 4, 'moods, letters and snaps notify, settings does not';
+  assert (select count(*) from net.calls) = 4, 'moods, letters and a new yard item notify; settings and moving a yard item do not';
   assert (select body->>'type' from net.calls order by id desc limit 1) = 'INSERT', 'type is INSERT';
 end $$;
 select private.call_daily('evening');
