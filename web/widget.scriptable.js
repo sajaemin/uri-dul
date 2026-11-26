@@ -43,11 +43,11 @@ async function image(url, name, maxW) {
 
 // ---------- look ----------
 const usePhoto = !acc && /사진|photo/i.test(param) && d && d.cover;
-const C = (l, dk) => Color.dynamic(new Color(l), new Color(dk));
+// always the bright pink look, like the app, even when the iPhone is in dark mode
+const C = (l, a = 1) => new Color(l, a);
 const T = usePhoto
-  ? { ink: new Color('#ffffff'), mut: new Color('#ffffff', 0.82), pink: new Color('#ffd1df'), chip: new Color('#000000', 0.28), hot: new Color('#ff5f8f', 0.92), hotInk: new Color('#ffffff'), track: new Color('#ffffff', 0.28), fill: new Color('#ffffff') }
-  : { ink: C('#4b2f3a', '#ffe9f0'), mut: C('#9b7480', '#c9a3ae'), pink: C('#ff4f82', '#ff7aa3'), chip: C('#ffffff', '#ffffff'), hot: C('#ff5f8f', '#ff5f8f'), hotInk: new Color('#ffffff'), track: C('#ffd3df', '#4a2a36'), fill: C('#ff5f8f', '#ff7aa3') };
-const chipAlpha = usePhoto ? 1 : 0.72;
+  ? { star: new Color('#ffe08a'), ink: new Color('#ffffff'), mut: new Color('#ffffff', 0.82), pink: new Color('#ffd1df'), chip: new Color('#000000', 0.28), hot: new Color('#ff5f8f', 0.92), hotInk: new Color('#ffffff'), track: new Color('#ffffff', 0.28), fill: new Color('#ffffff') }
+  : { ink: C('#5a2b40'), mut: C('#a87a8d'), pink: C('#ff4f86'), chip: C('#ffffff', 0.8), hot: C('#ff5c8d'), hotInk: C('#ffffff'), track: C('#ffffff', 0.85), fill: C('#ff5c8d'), star: C('#ffc53d') };
 
 const w = new ListWidget();
 w.refreshAfterDate = new Date(Date.now() + 15 * 60 * 1000);
@@ -64,8 +64,8 @@ if (!acc) {
     }
   } else {
     const g = new LinearGradient();
-    g.colors = [C('#ffdfe9', '#3b1f2b'), C('#fff7f9', '#1c1115')];
-    g.locations = [0, 1];
+    g.colors = [C('#ffcde0'), C('#ffe6ee'), C('#fff8f3')];
+    g.locations = [0, 0.55, 1];
     w.backgroundGradient = g;
   }
   w.setPadding(14, 14, 14, 14);
@@ -85,7 +85,7 @@ function row(parent) { const s = parent.addStack(); s.layoutHorizontally(); s.ce
 function col(parent) { const s = parent.addStack(); s.layoutVertically(); s.topAlignContent(); return s; }
 function chip(parent, hot) {
   const s = row(parent);
-  s.backgroundColor = hot ? T.hot : usePhoto ? T.chip : Color.dynamic(new Color('#ffffff', chipAlpha), new Color('#ffffff', 0.08));
+  s.backgroundColor = hot ? T.hot : T.chip;
   s.cornerRadius = 12;
   s.setPadding(6, 9, 6, 9);
   return s;
@@ -159,7 +159,7 @@ if (!d || !d.ready) {
     if (pm) text(top, pm.emoji, 18);
     w.addSpacer(4);
     const big = row(w); big.bottomAlignContent();
-    text(big, num(d.days), 34, T.pink, 'heavy'); big.addSpacer(2); text(big, '일째', 13, T.ink, 'bold');
+    text(big, num(d.days), 34, T.pink, 'heavy'); big.addSpacer(2); text(big, '일째', 13, T.ink, 'bold'); big.addSpacer(3); text(big, '✦', 12, T.star, 'bold');
     text(w, d.me + ' ♥ ' + d.partner, 11, T.mut, 'bold');
     w.addSpacer();
     if (first) dateChip(w, first, first.kind === 'date' && first.days <= 3);
@@ -170,7 +170,7 @@ if (!d || !d.ready) {
     if (duo) { const i = left.addImage(duo); i.imageSize = new Size(70, 40); }
     left.addSpacer(2);
     const big = row(left); big.bottomAlignContent();
-    text(big, num(d.days), 36, T.pink, 'heavy'); big.addSpacer(2); text(big, '일째', 13, T.ink, 'bold');
+    text(big, num(d.days), 36, T.pink, 'heavy'); big.addSpacer(2); text(big, '일째', 13, T.ink, 'bold'); big.addSpacer(3); text(big, '✦', 12, T.star, 'bold');
     text(left, d.me + ' ♥ ' + d.partner, 11, T.mut, 'bold');
     left.addSpacer(7);
     bar(left, 106, prog.pct);
@@ -191,7 +191,7 @@ if (!d || !d.ready) {
     head.addSpacer(10);
     const hc = col(head);
     const big = row(hc); big.bottomAlignContent();
-    text(big, num(d.days), 38, T.pink, 'heavy'); big.addSpacer(2); text(big, '일째', 14, T.ink, 'bold');
+    text(big, num(d.days), 38, T.pink, 'heavy'); big.addSpacer(2); text(big, '일째', 14, T.ink, 'bold'); big.addSpacer(3); text(big, '✦', 13, T.star, 'bold');
     text(hc, d.me + ' ♥ ' + d.partner + ' · ' + String(d.start).replace(/-/g, '.') + '부터', 11, T.mut, 'bold');
     head.addSpacer();
     w.addSpacer(10);
