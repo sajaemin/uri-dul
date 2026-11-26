@@ -102,6 +102,9 @@ try {
     await B.locator('.bub', { hasText: 'A가 쓴 답이에요' }).waitFor();
     await A.locator('.bub', { hasText: 'B가 쓴 답이에요' }).waitFor();
     await shot(B, '04-B-question');
+    await B.locator('.hlist li.done', { hasText: '오늘의 질문 답하기' }).waitFor();
+    await B.locator('.hlist li.done', { hasText: '둘 다 답하면 보너스' }).waitFor();
+    await A.locator('.hlist li.done', { hasText: '둘 다 답하면 보너스' }).waitFor();
   });
 
   await step('A uploads a photo, B sees it as new and opens it', async () => {
