@@ -33,7 +33,7 @@ async function phone(name) {
   return page;
 }
 const shot = (p, n) => p.screenshot({ path: SHOTS + n + '.png', fullPage: false }).catch(() => {});
-const tab = (p, t) => p.click(`#t-${t}`);
+const tab = async (p, t) => { if (t === 'q') { await p.click('#t-mem'); await p.click('[data-act=mem-tab][data-v=q]'); } else await p.click(`#t-${t}`); };
 let nfail = 0;
 const step = async (label, fn) => { try { await fn(); ok(true, label); } catch (e) { ok(false, `${label} — ${e.message.split('\n')[0]}`); nfail++; await shot(A, `fail-${nfail}-A`); await shot(B, `fail-${nfail}-B`); } };
 
@@ -102,6 +102,7 @@ try {
     await B.locator('.bub', { hasText: 'A가 쓴 답이에요' }).waitFor();
     await A.locator('.bub', { hasText: 'B가 쓴 답이에요' }).waitFor();
     await shot(B, '04-B-question');
+    await tab(A, 'grow'); await tab(B, 'grow');
     await B.locator('.hlist li.done', { hasText: '오늘의 질문 답하기' }).waitFor();
     await B.locator('.hlist li.done', { hasText: '둘 다 답하면 보너스' }).waitFor();
     await A.locator('.hlist li.done', { hasText: '둘 다 답하면 보너스' }).waitFor();
@@ -200,14 +201,14 @@ try {
   });
 
   await step('A buys a tulip with hearts; it shows up in B\'s yard', async () => {
-    await tab(A, 'q');
+    await tab(A, 'grow');
     await A.locator('.yard .cr[data-w=me]').waitFor();
     await A.click('[data-act=shop-open]');
     const before = await A.locator('.wallet b').innerText();
     await A.click('[data-act=shop-buy][data-v=tulip]');
     await A.locator('.wallet b').filter({ hasNotText: before }).waitFor();
     await A.click('[data-act=shop-close]');
-    await tab(B, 'q');
+    await tab(B, 'grow');
     await B.locator('.yard .yi', { hasText: '🌷' }).waitFor();
     await shot(B, '11-B-yard');
   });
@@ -225,6 +226,9 @@ try {
     if (!Array.isArray(j.upcoming) || !j.upcoming.length || !j.progress || typeof j.progress.pct !== 'number') throw new Error('widget extras missing: ' + JSON.stringify(j).slice(0, 300));
     const app = code.match(/const APP = '([^']+)'/)[1];
     if ((await fetch(app + 'widget/duo.png')).status !== 200) throw new Error('widget picture not served at ' + app);
+    const y = j.yard;
+    if (!y || !Array.isArray(y.chars) || y.chars.length !== 2 || !y.items.some(it => it.e === '🌷')) throw new Error('yard widget data: ' + JSON.stringify(y).slice(0, 300));
+    if ((await fetch(app + `widget/char-${y.chars[0].role}-${y.chars[0].stage}.png`)).status !== 200) throw new Error('character picture not served');
     await shot(B, '09-B-widget-card');
   });
 

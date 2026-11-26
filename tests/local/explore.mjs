@@ -43,6 +43,7 @@ const docs = {
   'letters/l1': { from: 'partner', title: '700일에 열어 봐', text: '사랑해', openAt: kst(30), at: 5, readAt: 0 },
   'letters/l2': { from: 'partner', title: XSS, text: '오늘 고마웠어 ' + XSS, openAt: kst(0), at: 6, readAt: 0, paper: 'sky', ink: 'blue', stickers: [{ e: '🐻', x: 88, y: 10, r: 12 }, { e: '🌙', x: 10, y: 90, r: -8 }, { e: XSS, x: 50, y: 50, r: 0 }] },
   'photos/p1': { from: 'partner', url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffb3c9'/%3E%3Cstop offset='1' stop-color='%23ffe3a3'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='300' fill='url(%23g)'/%3E%3Ccircle cx='220' cy='80' r='34' fill='%23fff7c2'/%3E%3Cpath d='M0 230Q80 170 150 215T300 200V300H0z' fill='%23a8e6cf'/%3E%3C/svg%3E", at: Date.now() - 40 * 864e5, note: '', savedBy: {} },
+  'photos/p2': { from: 'me', url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect width='300' height='300' fill='%23cfe6ff'/%3E%3Ccircle cx='80' cy='90' r='30' fill='%23fff'/%3E%3Ccircle cx='110' cy='80' r='26' fill='%23fff'/%3E%3Crect y='200' width='300' height='100' fill='%23ffd6a8'/%3E%3Cpath d='M150 150l20 60h-40z' fill='%23ff8fb1'/%3E%3C/svg%3E", at: Date.parse(yago + 'T03:00:00Z'), note: '', savedBy: {} },
   'yard/y1': { k: 'tree', e: '🌳', name: '나무', price: 60, cat: 'flower', placed: true, x: 18, y: 38, by: 'partner', at: 1764000000000 },
   'yard/y2': { k: 'dog', e: '🐶', name: '강아지', price: 150, cat: 'pet', placed: true, x: 78, y: 84, by: 'partner', at: 1764000000001 },
   'yard/y3': { k: 'cloud', e: '☁️', name: '구름', price: 20, cat: 'sky', placed: true, x: 70, y: 8, by: 'me', at: 1764000000002 },
@@ -83,7 +84,7 @@ async function run(label, device, scheme, look) {
     if (r.xss) say(label, `${where}: markup from data ran (XSS)`);
     if (r.dlg) say(label, `${where}: a dialog opened`);
   };
-  const tabs = ['home', 'q', 'cal', 'mem', 'ph', 'us'];
+  const tabs = ['home', 'grow', 'cal', 'mem', 'ph', 'us'];
   for (const t of tabs) {
     await p.click('#t-' + t);
     await p.waitForTimeout(250);
@@ -92,6 +93,9 @@ async function run(label, device, scheme, look) {
       await p.click('[data-act=mem-tab][data-v=map]'); await p.waitForTimeout(200);
       await p.screenshot({ path: `${out}/${label}-mem-map.png`, fullPage: !process.env.VIEWPORT });
       if (!process.env.SHOTS_ONLY) await check('mem-map');
+      await p.click('[data-act=mem-tab][data-v=q]'); await p.waitForTimeout(200);
+      await p.screenshot({ path: `${out}/${label}-mem-q.png`, fullPage: !process.env.VIEWPORT });
+      if (!process.env.SHOTS_ONLY) { await check('mem-q'); for (const b of ['q-swap', 'edit-ans', 'cancel-edit']) await p.locator(`#view [data-act="${b}"]`).first().click({ timeout: 800 }).catch(() => {}); await check('mem-q buttons'); }
       await p.click('[data-act=mem-tab][data-v=tl]'); await p.waitForTimeout(200);
       await p.evaluate(() => document.querySelectorAll('nav.tabs,.toast').forEach(e => { e.style.visibility = 'hidden'; }));
       await p.locator('article.mem').first().screenshot({ path: `${out}/${label}-mem-card.png` }).catch(() => {});
@@ -129,7 +133,7 @@ async function run(label, device, scheme, look) {
   if (process.env.SHOTS_ONLY) { await ctx.close(); return; }
   // empty forms: nothing should throw
   await p.click('#t-cal'); await p.click('#view [data-act="ev-new"]').catch(() => {}); await p.locator('#e-title').fill('').catch(() => {}); await p.click('#ef button[type=submit]').catch(() => {}); await check('empty event form'); await p.keyboard.press('Escape');
-  await p.click('#t-q'); await p.click('[data-act=save-ans]').catch(() => {}); await check('empty answer');
+  await p.click('#t-mem'); await p.click('[data-act=mem-tab][data-v=q]'); await p.click('[data-act=save-ans]').catch(() => {}); await check('empty answer');
   await p.click('#t-home'); await p.click('#mnf button[type=submit]').catch(() => {}); await check('empty mood note');
   // a photo through the real upload path
   await p.click('#t-ph');
@@ -146,12 +150,12 @@ async function run(label, device, scheme, look) {
       for (let n = 1; n <= 370; n++) { const ds = new Date(Date.now() + 9 * 3600e3 - n * 864e5).toISOString().slice(0, 10); for (const w of ['me', 'partner']) st.docs[`answers/${ds}_${w}`] = st.docs[`answers/${ds}_${w}`] || { date: ds, text: '답', at: n }; }
       localStorage.setItem('mock-udb', JSON.stringify(st)); }, [kst(0)]);
     await p.reload(); await p.locator('#t-home').waitFor({ state: 'visible' }); await shot('stage8');
-    await p.click('#t-q'); await p.waitForTimeout(2500); await shot('yard');
+    await p.click('#t-grow'); await p.waitForTimeout(2500); await shot('yard');
     await p.click('[data-act=shop-open]'); await shot('shop'); await p.click('[data-act=shop-cat][data-v=pet]'); await shot('shop-pet');
     await p.click('[data-act=shop-buy][data-v=chick]'); await p.waitForTimeout(300);
     await p.click('[data-act=shop-cat][data-v=theme]'); await shot('shop-theme'); await p.click('[data-act=theme-use][data-v=sakura]'); await p.keyboard.press('Escape'); await p.waitForTimeout(1500); await shot('yard-sakura');
     await p.click('[data-act=yedit]'); await p.locator('.yard.edit .yi').first().dragTo(p.locator('.yard.edit'), { targetPosition: { x: 60, y: 120 } }); await shot('yedit'); await p.click('[data-act=yedit]');
-    await p.click('#t-q'); await shot('grow'); await p.locator('.qsw-b').scrollIntoViewIfNeeded(); await shot('qswap'); await p.click('.qsw-b'); await shot('qswapped');
+    await p.click('#t-grow'); await shot('grow'); await p.click('#t-mem'); await p.click('[data-act=mem-tab][data-v=q]'); await p.locator('.qsw-b').scrollIntoViewIfNeeded(); await shot('qswap'); await p.click('.qsw-b'); await shot('qswapped');
     await p.click('#t-mem'); await p.click('[data-act=mem-tab][data-v=lt]'); await p.click('[data-act=l-new]');
     await p.click('[data-act=l-paper][data-v=butter]'); await p.click('[data-act=l-ink][data-v=straw]');
     for (const e of ['🍓', '🐰', '✨', '🎀']) await p.click(`[data-act=l-stk][data-v="${e}"]`);

@@ -26,6 +26,7 @@ select public.my_info()->>'couple_id' as cid \gset
 do $$ declare i jsonb := public.my_info(); begin
   assert i->>'role' = 'me', 'A is me';
   assert (i->>'partner_joined')::boolean = false, 'nobody joined yet';
+  assert i->>'joined_at' is null, 'no join time yet';
   assert length(i->>'code') = 6 and length(i->>'rc') = 8, 'code lengths';
   assert (public.create_couple())->>'code' = i->>'code', 'create_couple is idempotent';
 end $$;
@@ -50,6 +51,7 @@ do $$ declare i jsonb := public.my_info(); begin
   assert i->>'role' = 'partner', 'B is partner';
   assert (select count(*) from public.couples where code is not null) = 1, 'B can read the safe couple columns';
   assert (i->>'partner_joined')::boolean, 'joined';
+  assert (i->>'joined_at')::bigint > 0, 'the join time is recorded';
   assert (select count(*) from public.docs) = 1, 'B sees the couple doc';
   assert (select count(*) from public.couples) = 1, 'B sees the couple row';
 end $$;

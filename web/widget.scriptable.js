@@ -1,6 +1,7 @@
 // 우리 둘 위젯 (Scriptable)
 // 홈 화면: 작게·중간·크게 / 잠금 화면: 직사각형·원형·한 줄
-// 위젯을 길게 눌러 '위젯 편집 → Parameter'에 '사진'이라고 적으면 홈 배경 사진이 위젯 배경이 돼요.
+// 위젯을 길게 눌러 '위젯 편집 → Parameter'에 '사진'이라고 적으면 위젯 배경 사진이 깔리고,
+// '마당'이라고 적으면 우리 마당 위젯이 돼요(15분쯤마다 캐릭터가 다른 곳에서 놀고 있어요).
 // 아래 주소에는 내 위젯 키가 들어 있어요. 다른 사람에게 보내지 마세요.
 const API = '__WIDGET_URL__';
 const APP = '__APP_URL__';
@@ -51,8 +52,83 @@ const T = usePhoto
 
 const w = new ListWidget();
 w.refreshAfterDate = new Date(Date.now() + 15 * 60 * 1000);
+const yardMode = !acc && /마당|yard/i.test(param) && !!(d && d.ready && d.yard);
+if (yardMode) w.url = APP + '#grow';
+
+// ---------- the yard (Parameter: 마당) ----------
+// The app's yard seen from slightly above, drawn as one picture. Widgets cannot move,
+// so each refresh puts the two characters somewhere new.
+const YC = {
+  spring: ['#ffd3e3', '#fff0f5', '#bfe8c9', '#aadfb9', '#86c99c', '#d6f1de', '#ffffff'],
+  sakura: ['#ffe0ee', '#fff6fa', '#ffd3e2', '#ffc2d6', '#efa3bd', '#ffe8f0', '#ffffff'],
+  beach: ['#bfe4ff', '#eef8ff', '#ffe7b6', '#ffdda0', '#e9bf7a', '#9fd8f2', '#fff8e8'],
+  snow: ['#dce8f8', '#f5f9ff', '#ffffff', '#eef4ff', '#c9d8ee', '#e6effb', '#ffffff'],
+  night: ['#2e2f63', '#5d4f92', '#4f8a77', '#467e6c', '#2c5a4c', '#34525e', '#d9d4ee'],
+};
+const YSIZE = { house: 62, hut: 54, ferris: 60, carousel: 50, tent: 52, fountain: 50, tree: 50, pine: 50, slide: 46, parasol: 44, camp: 48, rainbow: 56, sun: 44, cloud: 40, canoe: 40, sofa: 40 };
+const CSIZE = { flower: 28, play: 36, home: 34, pet: 30, sky: 30 };
+function hexMix(a, b, t) { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const x = p(a), y = p(b); return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join(''); }
+async function drawYard(Y, W, H) {
+  const k = 3, dc = new DrawContext(), c = YC[Y.theme] || YC.spring, night = Y.theme === 'night';
+  dc.size = new Size(W * k, H * k); dc.opaque = true; dc.respectScreenScale = false;
+  const PX = x => x / 360 * W * k, PY = y => y / 260 * H * k, u = H / 270 * (H < 200 ? 1.18 : 1);
+  // sky, then the field around the garden
+  for (let i = 0; i < 6; i++) { dc.setFillColor(new Color(hexMix(c[0], c[1], i / 5))); dc.fillRect(new Rect(0, PY(44) * i / 6, W * k, PY(44) / 6 + 1)); }
+  dc.setFillColor(new Color(c[5])); dc.fillRect(new Rect(0, PY(44), W * k, H * k));
+  dc.setFillColor(new Color('#ffffff', night ? 0.25 : 0.92));
+  for (const [x, y, rx, ry] of [[58, 18, 26, 8], [76, 13, 16, 10], [300, 15, 24, 7], [316, 11, 13, 8]]) dc.fillEllipse(new Rect(PX(x - rx), PY(y - ry), PX(2 * rx), PY(2 * ry)));
+  if (night) { dc.setFillColor(new Color('#ffffff', 0.7)); for (let i = 0; i < 18; i++) { const x = (i * 97) % 360, y = 4 + (i * 37) % 36; dc.fillEllipse(new Rect(PX(x), PY(y), 2.2 * k, 2.2 * k)); } }
+  // the lawn: an edge, the grass, mowing stripes
+  const quad = (t0, t1, dy) => { const L = t => 46 + (9 - 46) * t, R = t => 314 + (351 - 314) * t, y = t => 38 + 212 * t + dy; const pth = new Path(); pth.addLines([new Point(PX(L(t0)), PY(y(t0))), new Point(PX(R(t0)), PY(y(t0))), new Point(PX(R(t1)), PY(y(t1))), new Point(PX(L(t1)), PY(y(t1)))]); pth.closeSubpath(); return pth; };
+  dc.addPath(quad(0, 1, 9)); dc.setFillColor(new Color(c[4])); dc.fillPath();
+  dc.addPath(quad(0, 1, 0)); dc.setFillColor(new Color(c[2])); dc.fillPath();
+  for (let i = 1; i < 8; i += 2) { dc.addPath(quad(i / 8, (i + 1) / 8, 0)); dc.setFillColor(new Color(c[3])); dc.fillPath(); }
+  // picket fence along the back
+  dc.setFillColor(new Color(c[6], 0.95));
+  for (let x = 52; x <= 308; x += 13) dc.fillRect(new Rect(PX(x - 2), PY(x % 39 === 0 ? 20 : 22), PX(4), PY(x % 39 === 0 ? 20 : 18)));
+  dc.fillRect(new Rect(PX(48), PY(26), PX(264), PY(3))); dc.fillRect(new Rect(PX(48), PY(33), PX(264), PY(3)));
+  // what stands in the yard, back to front, characters included
+  const depth = y => 0.68 + 0.42 * Math.min(1, Math.max(0, (y - 18) / 76));
+  const things = (Y.items || []).map(it => ({ kind: 'item', ...it, y: it.cat === 'sky' ? Math.min(it.y, 15) : Math.max(it.y, 24) }));
+  const cs = Y.chars || [], spots = [];
+  const meet = cs.length > 1 && Math.random() < 0.35;
+  cs.forEach((ch, i) => {
+    let x, y;
+    if (meet && i === 1) { x = Math.min(84, Math.max(16, spots[0].x + (Math.random() < 0.5 ? -13 : 13))); y = spots[0].y + (Math.random() - 0.5) * 4; }
+    else { for (let n = 0; n < 20; n++) { x = 16 + Math.random() * 68; y = 40 + Math.random() * 48; if (!spots.length || Math.abs(spots[0].x - x) > 22) break; } }
+    spots.push({ x, y });
+    things.push({ kind: 'char', ...ch, x, y, flip: meet ? (i === 0) === (x > (spots[1 - i] || spots[0]).x) : Math.random() < 0.5 });
+  });
+  things.sort((a, b) => a.y - b.y);
+  for (const t of things) {
+    const cx = t.x / 100 * W * k, fy = t.y / 100 * H * k;
+    if (t.kind === 'item') {
+      const sz = (YSIZE[t.k] || CSIZE[t.cat] || 30) * u * (t.cat === 'sky' ? 0.8 : depth(t.y)) * k;
+      dc.setFont(Font.systemFont(sz)); dc.setTextAlignedCenter();
+      dc.drawTextInRect(t.e, new Rect(cx - sz, fy - sz * 1.12, sz * 2, sz * 1.3));
+    } else {
+      const img = await image(APP + 'widget/char-' + t.role + '-' + t.stage + (t.flip ? '-l' : '') + '.png', 'char-' + t.role + '-' + t.stage + (t.flip ? '-l' : '') + '.png');
+      const cw = 92 * u * depth(t.y) * k;
+      if (img) dc.drawImageInRect(img, new Rect(cx - cw / 2, fy - cw * 0.975, cw, cw));
+      const nm = String(t.name).slice(0, 5), fs = 8.5 * k * Math.max(0.9, u), tw = fs * (nm.length * 1.05 + 1.2);
+      const pill = new Path(); pill.addRoundedRect(new Rect(cx - tw / 2, fy - fs * 0.4, tw, fs * 1.55), fs * 0.75, fs * 0.75);
+      dc.addPath(pill); dc.setFillColor(new Color('#ffffff', 0.92)); dc.fillPath();
+      dc.setFont(Font.boldRoundedSystemFont(fs)); dc.setTextColor(new Color('#5a2b40')); dc.setTextAlignedCenter();
+      dc.drawTextInRect(nm, new Rect(cx - tw / 2, fy - fs * 0.3, tw, fs * 1.4));
+    }
+  }
+  if (meet && spots.length > 1) { const hs = 15 * u * k; dc.setFont(Font.systemFont(hs)); dc.setTextAlignedCenter(); dc.drawTextInRect('💗', new Rect((spots[0].x + spots[1].x) / 200 * W * k - hs, Math.min(spots[0].y, spots[1].y) / 100 * H * k - 92 * u * k * 0.9, hs * 2, hs * 1.3)); }
+  // days together, top left
+  const fsz = 11 * k;
+  dc.setFont(Font.heavyRoundedSystemFont(fsz)); dc.setTextColor(new Color(night ? '#ffffff' : '#5a2b40', 0.9)); dc.setTextAlignedLeft();
+  dc.drawTextInRect('♥ ' + Number(d.days).toLocaleString('ko-KR') + '일째', new Rect(10 * k, 6 * k, W * k * 0.6, fsz * 1.4));
+  return dc.getImage();
+}
 if (!acc) {
-  if (usePhoto) {
+  if (yardMode) {
+    const S = { small: [158, 158], medium: [338, 158], large: [338, 354], extraLarge: [715, 354] }[fam] || [338, 158];
+    w.backgroundImage = await drawYard(d.yard, S[0], S[1]);
+  } else if (usePhoto) {
     const img = await image(d.cover, 'cover.jpg', 900);
     if (img) {
       const dc = new DrawContext();
@@ -68,7 +144,7 @@ if (!acc) {
     g.locations = [0, 0.55, 1];
     w.backgroundGradient = g;
   }
-  w.setPadding(14, 14, 14, 14);
+  w.setPadding(yardMode ? 0 : 14, yardMode ? 0 : 14, yardMode ? 0 : 14, yardMode ? 0 : 14);
 }
 
 // ---------- helpers ----------
@@ -113,6 +189,8 @@ if (!d || !d.ready) {
   text(w, '우리 둘', acc ? 13 : 16, T.pink, 'bold');
   const msg = text(w, d && d.message ? d.message : d && d.error ? '위젯 키가 바뀌었어요. 앱 설정에서 위젯 코드를 다시 복사해 주세요' : '연결하지 못했어요. 잠시 뒤 다시 보여 드릴게요', acc ? 11 : 12, T.mut);
   msg.lineLimit = 3;
+  w.addSpacer();
+} else if (yardMode) {
   w.addSpacer();
 } else if (fam === 'accessoryInline') {
   text(w, '♥ ' + num(d.days) + '일째' + (d.next ? ' · 데이트 ' + dd(d.next.days) : d.anniv ? ' · ' + d.anniv.label + ' ' + dd(d.anniv.days) : ''), 12);

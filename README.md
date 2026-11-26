@@ -44,6 +44,8 @@
 - `tests/e2e/api.mjs`, `tests/e2e/ui.mjs`: 배포 때 실제 서버로 도는 테스트
 - `tests/local/explore.mjs`: 가짜 서버(`tests/local/mock-backend.js`)로 모든 화면의 모든 버튼을 눌러 보는 테스트 (SE·13·Pro Max, 라이트·다크). 배포 때도 돌아요
 - `tests/local/walk.mjs`: 처음 설치부터 연결까지 화면을 차례로 찍어 보는 테스트
+- `tests/local/widget-preview.mjs`: 위젯(정보 위젯과 '마당' 위젯)을 아이폰 없이 그려 보는 미리보기
+- `scripts/render-chars.mjs`: 마당 위젯에 쓰는 캐릭터 그림(`web/widget/char-*.png`)을 앱의 캐릭터 모양에서 다시 그려요. 캐릭터 모양을 바꾸면 한 번 돌려 주세요
 
 ## 아이폰에 설치
 

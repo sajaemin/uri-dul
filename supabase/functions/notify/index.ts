@@ -70,8 +70,8 @@ Deno.serve(async (req) => {
     case 'yard':
       if (!isInsert) break;
       msg = d.cat === 'theme'
-        ? { title: `${n}님이 마당을 '${d.name}'(으)로 꾸몄어요 🎨`, body: '우리 마당에 놀러 가 볼까요?', tag: `yard-${r.id}`, url: './#q' }
-        : { title: `${n}님이 마당에 ${d.e || ''} ${d.name || '새 물건'}을(를) 들였어요`, body: '우리 마당에 놀러 가 볼까요?', tag: `yard-${r.id}`, url: './#q' };
+        ? { title: `${n}님이 마당을 '${d.name}'(으)로 꾸몄어요 🎨`, body: '우리 마당에 놀러 가 볼까요?', tag: `yard-${r.id}`, url: './#grow' }
+        : { title: `${n}님이 마당에 ${d.e || ''} ${d.name || '새 물건'}을(를) 들였어요`, body: '우리 마당에 놀러 가 볼까요?', tag: `yard-${r.id}`, url: './#grow' };
       break;
     case 'pings':
       to = r.by_user;

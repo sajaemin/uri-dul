@@ -7,13 +7,13 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const t = new URL(req.url).searchParams.get('t') || '';
   if (!/^[A-Z0-9]{24}$/.test(t)) return json({ error: 'bad_key' }, 400);
-  const { data: c } = await admin.from('couples').select('id, me, partner, me_wt, partner_wt').or(`me_wt.eq.${t},partner_wt.eq.${t}`).maybeSingle();
+  const { data: c } = await admin.from('couples').select('id, me, partner, me_wt, partner_wt, partner_joined_at').or(`me_wt.eq.${t},partner_wt.eq.${t}`).maybeSingle();
   if (!c) return json({ error: 'unknown_key' }, 404);
   const role: Role = c.me_wt === t ? 'me' : 'partner';
   const other: Role = role === 'me' ? 'partner' : 'me';
   const today = todayKST();
 
-  const { data: rows } = await admin.from('docs').select('coll, id, data').eq('couple_id', c.id).in('coll', ['couple', 'events', 'moods', 'answers', 'letters', 'photos']);
+  const { data: rows } = await admin.from('docs').select('coll, id, data').eq('couple_id', c.id).in('coll', ['couple', 'events', 'moods', 'answers', 'letters', 'photos', 'yard', 'yardcfg', 'stages']);
   const docs = rows ?? [];
   const main = docs.find((d) => d.coll === 'couple' && d.id === 'main')?.data as any;
   if (!main?.start) return json({ ready: false, message: '앱에서 우리 정보를 먼저 넣어 주세요' });
@@ -64,8 +64,23 @@ Deno.serve(async (req) => {
   const progress = { label: `${nextHundred.toLocaleString('ko-KR')}일`, left: nextHundred - dayNo, pct: Math.round(((dayNo - (nextHundred - 100)) / 100) * 100) / 100 };
   const cover = typeof main.cover?.url === 'string' && main.cover.url.startsWith('https://') ? main.cover.url : null;
 
+  // the yard: things bought since the two connected, the theme, and each character's stage (kept up to date by the app)
+  const since = c.partner && c.partner_joined_at ? Date.parse(c.partner_joined_at) : null;
+  const bought = since == null ? [] : docs.filter((x) => x.coll === 'yard' && Number((x.data as any).at) >= since).map((x) => x.data as any);
+  const THEMES = ['spring', 'sakura', 'beach', 'snow', 'night'];
+  const want = String((docs.find((x) => x.coll === 'yardcfg' && x.id === 'main')?.data as any)?.theme || 'spring');
+  const theme = THEMES.includes(want) && (want === 'spring' || bought.some((y) => y.k === 'th_' + want)) ? want : 'spring';
+  const stageOf = (r: Role) => { const n = Number((docs.find((x) => x.coll === 'stages' && x.id === r)?.data as any)?.stage); return since != null && n >= 0 && n <= 8 ? Math.floor(n) : 0; };
+  const yard = {
+    theme,
+    items: bought.filter((y) => y.placed && y.cat !== 'theme' && typeof y.e === 'string' && y.e.length <= 8)
+      .map((y) => ({ k: String(y.k || '').slice(0, 20), e: y.e, cat: String(y.cat || ''), x: Math.min(97, Math.max(3, Number(y.x) || 50)), y: Math.min(97, Math.max(3, Number(y.y) || 70)) })).slice(0, 60),
+    chars: (['me', 'partner'] as Role[]).filter((r) => r === 'me' || c.partner).map((r) => ({ role: r, name: main[r]?.name || (r === 'me' ? '나' : '상대'), stage: stageOf(r) })),
+  };
+
   return json({
     ready: true,
+    yard,
     upcoming: upcoming.slice(0, 4), progress, cover,
     me: name(role), partner: name(other),
     days: dayNo, start: main.start,

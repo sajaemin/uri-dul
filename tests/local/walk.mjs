@@ -57,7 +57,7 @@ await p.fill('#n-me', '재민'); await p.fill('#n-pt', '은지'); await p.fill('
 await p.click('#cf button[type=submit]');
 await p.locator('.invite').waitFor();
 await shot(p, 'home-waiting-for-partner');
-for (const t of ['q', 'cal', 'mem', 'ph', 'us']) { await p.click('#t-' + t); await shot(p, 'tab-' + t + '-alone'); }
+for (const t of ['grow', 'cal', 'mem', 'ph', 'us']) { await p.click('#t-' + t); await shot(p, 'tab-' + t + '-alone'); }
 // partner joins
 await p.evaluate(() => { window.UDB.partnerJoins(); });
 await p.reload();
