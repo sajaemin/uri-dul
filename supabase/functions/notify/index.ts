@@ -64,14 +64,6 @@ Deno.serve(async (req) => {
         ? { title: `${n}님이 편지를 보냈어요 💌`, body: d.title || '지금 열어 볼 수 있어요', tag: `letter-${r.id}`, url: './#mem' }
         : { title: `${n}님이 편지를 남겼어요 💌`, body: `${fmtDate(d.openAt)}에 열려요. 그날 아침에 알려 드릴게요`, tag: `letter-${r.id}`, url: './#mem' };
       break;
-    case 'snaps': {
-      if (!isInsert) break;
-      const { data: their } = await admin.from('docs').select('id').eq('couple_id', r.couple_id).eq('coll', 'snaps').eq('id', `${d.date}_${other}`).maybeSingle();
-      msg = their
-        ? { title: '오늘의 한 장이 공개됐어요 ✨', body: `${n}님도 올렸어요. 서로의 지금을 확인해 보세요`, tag: `snap-${d.date}`, url: './#home' }
-        : { title: `${n}님이 오늘의 한 장을 올렸어요 📸`, body: d.late ? '내 사진을 올리면 서로 볼 수 있어요' : '지금 찍어 올리면 서로 볼 수 있어요', tag: `snap-${d.date}`, url: './#home' };
-      break;
-    }
     case 'pings':
       to = r.by_user;
       msg = { title: '알림이 잘 와요', body: '이제 상대 소식을 바로 받아요', tag: 'ping', url: './#us' };

@@ -23,6 +23,7 @@ create function net.http_post(url text, body jsonb, params jsonb, headers jsonb,
 language sql as $$ insert into net.calls (url, body, headers) values (url, body, headers) returning id $$;
 create schema cron;
 create table cron.job (jobname text primary key, schedule text, command text);
+create function cron.unschedule(n text) returns boolean language sql as $$ delete from cron.job where jobname = n returning true $$;
 create function cron.schedule(n text, s text, c text) returns bigint language sql as $$
   insert into cron.job values (n, s, c) on conflict (jobname) do update set schedule = excluded.schedule, command = excluded.command returning 1::bigint
 $$;

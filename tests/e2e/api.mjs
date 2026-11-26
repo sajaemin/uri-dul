@@ -84,25 +84,15 @@ try {
   }
   const hit = rows.find(r => /"sent"/.test(r.content || ''));
   ok(hit && hit.status_code === 200 && /"sent":1/.test(hit.content), `the change reached the push function and one notification was sent (${hit ? hit.content : 'no response'})`);
-  // a snap from A reaches B as a notification too
-  const since2 = (await sql(REF, 'select now() as t'))[0].t;
-  await doc(A, 'snaps', '2026-01-01_me', { date: '2026-01-01', who: 'me', url: 'https://example.com/x.jpg', at: Date.now(), min: 700, late: 0 });
-  let snapHit = null;
-  for (let i = 0; i < 30 && !snapHit; i++) {
-    const rs = await sql(REF, `select status_code, content::text as content from net._http_response where created >= $1 order by created`, [since2]);
-    snapHit = rs.find(r => /"sent":1/.test(r.content || ''));
-    if (!snapHit) await sleep(1000);
-  }
-  ok(!!snapHit, 'a daily snap sends a notification to the partner');
   const fn = u => fetch(`${URL0}/functions/v1/${u}`, { method: 'POST', headers: { 'x-notify-secret': NOTIFY_SECRET, 'Content-Type': 'application/json', apikey: KEY }, body: '{}' });
-  const dm = await fn('daily?slot=morning'), de = await fn('daily?slot=evening'), ds = await fn('daily?slot=snap');
-  ok(dm.status === 200 && de.status === 200 && ds.status === 200, `the 9am, 6pm and snap jobs run (${dm.status}, ${de.status}, ${ds.status})`);
+  const dm = await fn('daily?slot=morning'), de = await fn('daily?slot=evening');
+  ok(dm.status === 200 && de.status === 200, `the 9am and 6pm jobs run (${dm.status}, ${de.status})`);
   const bad = await fetch(`${URL0}/functions/v1/notify`, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: KEY }, body: '{}' });
   ok(bad.status === 403, 'outsiders cannot trigger notifications');
   const cfg = await (await fetch(`${URL0}/functions/v1/config`, { headers: { apikey: KEY } })).json();
   ok(typeof cfg.vapidPublicKey === 'string' && cfg.vapidPublicKey.length > 80, 'the app can get the push key');
   const jobs = await sql(REF, `select jobname from cron.job where jobname like 'uridul-%' order by 1`);
-  ok(jobs.length === 3, 'daily reminder and snap schedules exist');
+  ok(jobs.length === 2 && !jobs.some(j => j.jobname === 'uridul-snap'), 'only the 9am and 6pm schedules run');
 
   // home-screen widget: a private key gives a read-only summary, no sign-in needed
   const wt = (await rpc(B, 'widget_token')).data;

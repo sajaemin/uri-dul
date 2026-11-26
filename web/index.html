@@ -402,29 +402,6 @@ button.bk:not(.on):active{background:var(--acc2)}
 .app.real .who,.app.real .tag{display:none}
 .app.real .gear{margin-left:auto}
 .app.gated nav.tabs,.app.gated .gear{display:none}
-/* today's snap */
-.snapc.live{box-shadow:0 0 0 2px var(--acc),0 10px 30px color-mix(in srgb,var(--acc) 22%,transparent)}
-.snapc h2 .cd{font-variant-numeric:tabular-nums;color:var(--acc);font-weight:800}
-.spair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;padding:4px 2px}
-.pol{border:0;padding:6px 6px 8px;background:light-dark(#fff,#2a2226);border-radius:8px;box-shadow:0 6px 16px rgba(60,20,40,.14);transform:rotate(-2.2deg);display:flex;flex-direction:column;gap:6px;text-align:left;color:var(--ink);width:100%}
-.pol:nth-child(2){transform:rotate(2deg)}
-.pol .ph{aspect-ratio:3/4;border-radius:4px;overflow:hidden;background:var(--fill);display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;color:var(--mut);padding:8px}
-.pol .ph img{width:100%;height:100%;object-fit:cover;display:block}
-.pol .ph.lock{background:linear-gradient(140deg,#ffd1df,#ffe9c9 50%,#d9e8ff);filter:saturate(.9);color:#7a5162;font-weight:600}
-.app[data-theme=dark] .pol .ph.lock,.pol .ph.lock{color:#6b4352}
-.pol .cap{font-size:12.5px;font-weight:700;display:flex;justify-content:space-between;gap:6px;padding:0 2px}
-.pol .cap span{color:var(--mut);font-weight:600}
-.snapbtns{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.snapbtns .btn{flex:1}
-.sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}
-.sday{display:flex;flex-direction:column;gap:6px}
-.sday .spair{margin:0;gap:6px;padding:0}
-.sday .pol{padding:4px 4px 5px;box-shadow:0 3px 8px rgba(60,20,40,.12)}
-.sday .pol .cap{font-size:11px}
-.sday p{margin:0;font-size:12.5px;font-weight:700;color:var(--mut)}
-.snapview{position:fixed;inset:0;z-index:40;background:rgba(10,4,8,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:calc(20px + env(safe-area-inset-top,0px)) 16px calc(20px + env(safe-area-inset-bottom,0px))}
-.snapview img{max-width:100%;max-height:78vh;border-radius:12px}
-.snapview p{color:#fff;margin:0;font-weight:600}
 /* floating tab bar */
 nav.tabs{position:fixed;left:0;right:0;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:min(536px,calc(100% - 20px));margin:0 auto;border:0;border-radius:30px;padding:5px;gap:2px;background:color-mix(in srgb,var(--card) 70%,transparent);box-shadow:0 10px 30px rgba(70,20,45,.16),0 1px 3px rgba(70,20,45,.08),inset 0 0 0 .5px color-mix(in srgb,var(--ink) 12%,transparent);padding-bottom:5px}
 nav.tabs button{min-height:52px;border-radius:25px;font-size:11.5px;gap:2px;transition:background .25s,color .25s}
@@ -555,6 +532,16 @@ const diff = (a, b) => Math.round((b - a) / 864e5);
 const dotd = s => String(s).replace(/-/g, '.');
 const dayNo = () => S.couple ? diff(parse(S.couple.start), today()) + 1 : 0;
 const qIdx = ds => { const k = S.couple ? diff(parse(S.couple.start), parse(ds)) : 0; return ((k % Q.length) + Q.length) % Q.length; };
+// from 2026-11-27 a bigger, more varied list (일상·취향·추억·서로·상상·밸런스·미래·깊은 대화·고마움·데이트, taking turns)
+const Q2_FROM = '2026-11-27';
+const Q2 = ["오늘 하루 중 제일 좋았던 순간은 언제였어?", "평생 한 가지 음식만 먹어야 한다면 뭘 고를래?", "우리 첫 데이트에서 제일 기억나는 장면은?", "내가 제일 귀여울 때는 언제야?", "하루 동안 서로 몸이 바뀌면 뭐 하고 싶어?", "평생 여름만 vs 평생 겨울만?", "1년 뒤 오늘, 우리는 뭐 하고 있을까?", "요즘 제일 고민되는 건 뭐야?", "오늘 나한테 칭찬 하나 해줘", "이번 주말에 하고 싶은 데이트는?", "요즘 출근길이나 등굣길에 제일 많이 하는 생각은 뭐야?", "여행 가면 계획파야, 즉흥파야?", "나를 좋아한다고 처음 느낀 순간은 언제였어?", "내 습관 중에 은근히 좋아하는 거 있어?", "복권 1등에 당첨되면 제일 먼저 뭐 할래?", "연락 자주 하는 연애 vs 만나면 진하게 노는 연애?", "같이 꼭 가보고 싶은 해외 여행지는?", "사랑받는다고 느낄 때는 언제야?", "이번 주에 내가 고마웠던 일 하나는?", "아직 안 해본 데이트 중에 해보고 싶은 건?", "요즘 제일 자주 듣는 노래 한 곡 알려줘", "제일 좋아하는 계절과 그 이유는?", "우리가 같이 먹은 음식 중 제일 맛있었던 건?", "나를 동물로 비유하면?", "우리 둘이 영화 주인공이라면 장르는?", "깜짝 이벤트 받기 vs 미리 알고 기대하기?", "나중에 살고 싶은 동네는 어떤 곳이야?", "서운할 때 내가 어떻게 해주면 좋겠어?", "나의 어떤 점이 제일 자랑스러워?", "비 오는 날 데이트 코스를 짜 본다면?", "오늘 점심 뭐 먹었어? 10점 만점에 몇 점?", "아침형 인간이야, 저녁형 인간이야?", "같이 찍은 사진 중 제일 좋아하는 한 장은?", "나를 세 단어로 표현해 줘", "시간 여행이 가능하면 우리 연애 중 언제로 가고 싶어?", "여행 가서 맛집 투어 vs 관광지 투어?", "올해가 가기 전에 우리 둘이 꼭 하고 싶은 것 하나는?", "연애하면서 나 자신이 달라진 점은?", "내가 해준 말 중에 힘이 됐던 말 있어?", "1만 원으로 하는 데이트, 어떻게 할래?", "요즘 나만의 작은 행복은 뭐야?", "나랑 같이 보고 싶은 영화 장르는?", "우리 처음 싸웠던 날 기억나? 지금 생각하면 어때?", "내가 몰랐으면 하는 너의 비밀 하나 (말할 수 있는 만큼만)", "무인도에 딱 세 가지만 가져갈 수 있다면?", "데이트 비용 매번 반반 vs 번갈아 내기?", "같이 배워 보고 싶은 게 있어?", "나랑 있을 때 가장 나다운 모습이 나와?", "나랑 만나서 좋아진 점 세 가지는?", "하루 종일 집에서 데이트한다면 뭐 할까?", "최근에 산 것 중 제일 잘 산 물건은?", "카페 가면 늘 시키는 메뉴는?", "나한테 받은 선물 중 제일 기억에 남는 건?", "내가 해주는 것 중에 제일 좋아하는 건?", "우리가 같이 가게를 연다면 무슨 가게를 할까?", "집 데이트 vs 밖 데이트?", "언젠가 같이 키우고 싶은 반려동물은?", "요즘 스스로에게 해주고 싶은 말은?", "오늘 나를 보고 싶었던 순간은 언제였어?", "나랑 같이 가고 싶은 맛집 있어?", "요즘 빠져 있는 유튜브나 드라마 있어?", "좋아하는 냄새 세 가지만 말해줘", "같이 갔던 곳 중 다시 가고 싶은 곳은?", "나한테 바라는 거 하나만 솔직하게 말해줘", "초능력 하나를 가질 수 있다면?", "같이 요리하기 vs 같이 맛집 가기?", "우리 100번째 데이트는 어디서 하고 싶어?", "좋은 연애란 어떤 거라고 생각해?", "나에게 상장을 준다면 무슨 상이야?", "다음 기념일에 하고 싶은 것은?", "오늘 나한테 제일 하고 싶었던 말은?", "산이 좋아, 바다가 좋아?", "우리 연애에서 제일 웃겼던 사건은?", "내 친구들 앞에서 나는 어때 보여?", "우리 이야기가 노래라면 제목은 뭐일까?", "아침 일찍 데이트 vs 밤늦게 데이트?", "5년 뒤 나에게 하고 싶은 말은?", "우리가 더 잘 맞춰 가고 싶은 부분이 있다면?", "지금 바로 나한테 하고 싶은 한마디는?", "우리 동네에서 아직 안 가본 곳 중 가볼 만한 곳은?", "요즘 잠들기 전에 뭐 해?", "우리 집 인테리어를 고를 수 있다면 어떤 느낌으로 하고 싶어?", "나 때문에 감동받았던 순간 하나 말해줘", "내가 힘들어 보일 때 어떻게 알아채?", "한 달 동안 아무 데서나 살 수 있다면 어디?", "긴 편지 한 통 vs 짧은 메시지 매일?", "나이 들어서도 같이 하고 싶은 취미는?", "나한테 아직 말 못 한 고마운 일 있어?", "이번 주에 제일 힘들었던 일 하나만 털어놔 줘", "가장 좋아하는 간식은 뭐야?", "처음 손잡았을 때 무슨 생각했어?", "나랑 있을 때 제일 편한 순간은?", "우리가 고양이랑 강아지 중 하나라면 각각 뭘까?", "평생 치킨 못 먹기 vs 평생 떡볶이 못 먹기?", "내년에 꼭 이루고 싶은 목표는?", "힘들 때 혼자 있고 싶어, 같이 있고 싶어?", "요즘 제일 갖고 싶은 건 뭐야?", "선물 받을 때 실용적인 게 좋아, 감성적인 게 좋아?", "어린 시절 제일 행복했던 기억은?", "나한테 배우고 싶은 점이 있어?", "내일 지구가 멸망한다면 오늘 뭐 할래?", "사진 많이 찍는 여행 vs 눈에 담는 여행?", "꿈꾸는 하루 일과를 그려 줘", "우리 관계에서 제일 소중하게 지키고 싶은 건?", "최근에 혼자 피식 웃었던 일 있어?", "노래방 가면 꼭 부르는 18번은?", "학창 시절 나는 어떤 학생이었을 것 같아?", "내 말투 중에 따라 하고 싶은 거 있어?", "우리 둘을 주인공으로 웹툰을 그린다면 첫 화 제목은?", "연인과 똑같은 취미 vs 각자 다른 취미?", "같이 해보고 싶은 도전 하나는?", "요즘 행복하다고 느끼는 순간은 언제야?", "휴대폰 사진첩 최근 사진 중 하나를 설명해 줘", "비 오는 날 하고 싶은 것은?", "우리 연애 초반에 몰래 했던 노력 있어?", "내가 제일 멋있어 보였던 순간은?", "하루 동안 투명인간이 된다면?", "싸우면 바로 풀기 vs 하루 생각하고 풀기?", "오늘 기분을 날씨로 말하면?", "어릴 때부터 지금까지 변하지 않은 취향 하나는?", "올해 우리에게 제일 큰 사건은 뭐였을까?", "나에 대해 아직 궁금한 게 있다면?", "우리만의 기념일을 하나 더 만든다면 무슨 날?", "커플템 많이 vs 커플템 없이?"];
+function qOf(ds) {
+  const saved = (S.answers[ds + '_me'] || {}).q || (S.answers[ds + '_partner'] || {}).q;
+  if (saved) return saved;
+  if (ds < Q2_FROM) return Q[qIdx(ds)];
+  const k = diff(parse(Q2_FROM), parse(ds));
+  return Q2[((k % Q2.length) + Q2.length) % Q2.length];
+}
 const ans = (ds, w) => S.answers[ds + '_' + w];
 const src = p => S.real ? (p.url || '') : (p.assetId ? '/_blob/' + encodeURIComponent(p.assetId) : p.url);
 const received = () => S.photos.filter(p => p.from === other());
@@ -584,10 +571,10 @@ function holidays(y) {
 }
 const whoL = w => (w === 'me' || w === 'partner') ? nm(w) : '같이';
 const dlab = d => { const n = diff(today(), d); return n === 0 ? '오늘' : n > 0 ? 'D-' + n : (-n) + '일 전'; };
-S.diAlways = ls.get('ud-di') !== '0'; S.diExp = false; S.look = ls.get('ud-look') === 'modern' ? 'modern' : 'cute';
+S.diAlways = ls.get('ud-di') !== '0'; S.diExp = false; S.look = 'cute';
 S.memories = []; S.bucket = []; S.memTab = 'tl'; S.mapView = 'kr'; S.mapSel = null; S.memFilter = ''; S.msheet = null; S.msheetDel = false; S.recap = null;
 S.events = []; S.calMode = 'month'; S.sheet = null; S.sheetDel = false;
-S.moods = {}; S.snaps = {}; S.snapView = null; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
+S.moods = {}; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
 { const t = today(); S.calMonth = new Date(t.getFullYear(), t.getMonth(), 1); S.calSel = ymd(t); }
 function starts(ev, s0, from, to) {
   const r = ev.repeat || 'none', res = [];
@@ -651,7 +638,6 @@ const W = {
   bucketUpd: (id, d) => guard(async () => { if (db) await db.doc('bucket/' + id).update(d); else { S.bucket = S.bucket.map(x => x.id === id ? {...x, ...d} : x); render(); } }),
   delBucket: id => guard(async () => { if (db) await db.doc('bucket/' + id).delete(); else { S.bucket = S.bucket.filter(x => x.id !== id); render(); } }),
   poke: d => guard(async () => { if (db) await db.doc('pokes/latest').set(d); else { S.poke = d; render(); } }),
-  snap: (id, d) => guard(async () => { if (db) await db.doc('snaps/' + id).set(d); else { S.snaps = {...S.snaps, [id]: d}; render(); } }),
   mood: (id, d) => guard(async () => { if (db) await db.doc('moods/' + id).set(d); else { S.moods = {...S.moods, [id]: d}; render(); } }),
   letter: (id, d) => guard(async () => { if (db) await db.doc('letters/' + id).set(d); else { S.letters = [...S.letters.filter(x => x.id !== id), {...d, id}]; render(); } }),
   letterUpd: (id, d) => guard(async () => { if (db) await db.doc('letters/' + id).update(d); else { S.letters = S.letters.map(x => x.id === id ? {...x, ...d} : x); render(); } }),
@@ -788,11 +774,7 @@ function renderDI() {
   }
   return L;
 }
-let snapWasOpen = null;
 function tick() {
-  const cd = document.querySelector('[data-snapcd]');
-  if (cd) { const st = snapState(); cd.textContent = `${Math.floor(st.left / 60)}:${String(st.left % 60).padStart(2, '0')}`; if (!st.left) render(); }
-  if (S.couple && S.tab === 'home') { const o = snapState().open; if (snapWasOpen === false && o) render(); snapWasOpen = o; }
   const L = renderDI(); if (!L) return;
   document.querySelectorAll('[data-cd]').forEach(el => { const v = L[el.dataset.cd] || ''; if (el.textContent !== v) el.textContent = v; });
   const p = L.p, off = (1 - p) * 15 - p * 11;
@@ -830,10 +812,10 @@ function vHome() {
   const rec = received().slice(0, 4), na = av[0];
   return `${S.update ? '<div class="banner">새 버전이 나왔어요<button type="button" data-act="reload">새로고침</button></div>' : ''}${pk ? `<div class="banner">${esc(nm(other()))}님이 콕 찔렀어요 · ${ago(S.poke.at)}<button type="button" data-act="seen-poke">확인</button></div>` : ''}
   ${vGreet()}${heroHTML()}
-  <div class="sec">${vInvite()}${vPushBanner()}${vLetterHome()}<p class="sh">오늘의 한 장</p>${vSnap()}<p class="sh">오늘 우리 기분</p>${vMood()}${vRemind() ? `<p class="sh">미리 알림</p>${vRemind()}` : ''}
+  <div class="sec">${vInvite()}${vPushBanner()}${vLetterHome()}<p class="sh">오늘 우리 기분</p>${vMood()}${vRemind() ? `<p class="sh">미리 알림</p>${vRemind()}` : ''}
   <p class="sh">다음 데이트</p>${vNext()}
   ${memPrompt() ? `<p class="sh">기록할 데이트</p>${memPrompt()}` : ''}${vRecapCard()}
-  <p class="sh">오늘의 질문</p><div class="card"><p class="q">${esc(Q[qIdx(td)])}</p><p class="note" style="margin-top:8px">${qs}</p>
+  <p class="sh">오늘의 질문</p><div class="card"><p class="q">${esc(qOf(td))}</p><p class="note" style="margin-top:8px">${qs}</p>
   <div class="row"><button class="btn" type="button" data-act="tab" data-v="q">${mine ? '답 보러 가기' : '답하러 가기'}</button>${!theirs && paired() ? `<button class="btn ghost" type="button" data-act="poke">콕 찌르기</button>` : ''}</div></div>
   <p class="sh">다가오는 일정</p>${vPlans()}
   <p class="sh">사진함</p><div class="card"><h2>${nc ? `새 사진 ${nc}장` : '새 사진 없음'} <small>${esc(nm(other()))}님이 올린 사진</small></h2>
@@ -841,62 +823,6 @@ function vHome() {
   <div class="row"><button class="btn ghost" type="button" data-act="tab" data-v="ph">${nc ? '받으러 가기' : '사진함 열기'}</button></div></div>
   <p class="sh">다가오는 기념일</p><div class="card"><ul class="list">${av.map(a => `<li><span><b>${esc(a.label)}</b> <span class="date">${dotd(ymd(a.d))}</span></span><span class="dd">${dlab(a.d) === '오늘' ? 'D-DAY' : dlab(a.d)}</span></li>`).join('')}</ul></div></div>`;
 }
-/* ---------- today's snap: both take a photo within 10 minutes of a surprise moment ---------- */
-// same moment as the server: FNV-1a of couple id + date -> a 10-minute slot between 10:00 and 20:50 KST
-function snapMoment(ds) {
-  const id = (S.info && S.info.couple_id) || 'test';
-  let h = 0x811c9dc5; const t = id + ':' + ds;
-  for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
-  return 600 + (h % 66) * 10;
-}
-const kstNow = () => { const d = new Date(Date.now() + 9 * 3600e3); return {ds: d.toISOString().slice(0, 10), min: d.getUTCHours() * 60 + d.getUTCMinutes(), sec: d.getUTCSeconds()}; };
-const hm = m => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
-function snapState() {
-  const k = kstNow(), m = S.real ? snapMoment(k.ds) : Math.min(k.min, snapMoment(k.ds));
-  return {ds: k.ds, m, open: k.min >= m, left: Math.max(0, (m + 10) * 60 - (k.min * 60 + k.sec)), mine: S.snaps[k.ds + '_' + S.who], theirs: S.snaps[k.ds + '_' + other()]};
-}
-function polHTML(w, x, showIt, big) {
-  const cap = x ? `<span>${hm(x.min)}${x.late ? ` · ${x.late}분 늦음` : ''}</span>` : '<span>아직</span>';
-  const ph = x && showIt ? `<img src="${esc(x.url)}" alt="${esc(nm(w))}의 한 장" loading="lazy"${S.real ? ' crossorigin="anonymous"' : ''}>`
-    : x ? `<span>${esc(nm(w))}님은 올렸어요<br>내 것을 올리면 보여요</span>` : `<span>${w === S.who ? '아직 안 찍었어요' : `${esc(nm(w))}님을<br>기다리는 중`}</span>`;
-  const tag = x && showIt ? 'button' : 'div';
-  return `<${tag}${tag === 'button' ? ` type="button" data-act="snap-open" data-v="${esc(x.date + '_' + w)}"` : ''} class="pol"><span class="ph${x && !showIt ? ' lock' : ''}">${ph}</span><span class="cap">${esc(nm(w))}${cap}</span></${tag}>`;
-}
-function vSnap() {
-  if (!paired()) return '';
-  const st = snapState(), both = st.mine && st.theirs;
-  const live = st.open && !st.mine;
-  const head = both ? '오늘의 한 장이 공개됐어요 ✨' : live ? (st.left > 0 ? `📸 지금 찍을 시간! <span class="cd" data-snapcd>${Math.floor(st.left / 60)}:${String(st.left % 60).padStart(2, '0')}</span>` : '📸 오늘의 한 장, 늦었지만 지금도 돼요') : st.mine ? `${esc(nm(other()))}님의 한 장을 기다리는 중` : '📸 오늘의 한 장';
-  const sub = both ? `${hm(st.m)}에 알림이 왔던 오늘의 우리예요` : live ? '꾸미지 말고 지금 모습 그대로! 둘 다 올리면 함께 공개돼요' : st.mine ? '올라오면 바로 알려 드릴게요' : `오늘 언젠가 알림이 와요. 그때 10분 안에 지금 모습을 찍어 올려요${S.real ? '' : '<br>(테스트 모드는 바로 찍어 볼 수 있어요)'}`;
-  const btns = live || (!st.mine && st.open) ? `<div class="snapbtns"><label class="btn" for="snapcam" tabindex="0">지금 찍기</label><label class="btn line" for="snapfile" tabindex="0">앨범에서</label></div><input type="file" id="snapcam" accept="image/*" capture="environment" hidden><input type="file" id="snapfile" accept="image/*" hidden>` : '';
-  const pair = st.mine || st.theirs || st.open ? `<div class="spair">${polHTML(S.who, st.mine, true)}${polHTML(other(), st.theirs, !!st.mine)}</div>` : '';
-  return `<div class="card snapc${live ? ' live' : ''}"><h2>${head}</h2><p class="note" style="margin-top:2px">${sub}</p>${S.snapBusy ? `<p class="note" style="margin-top:10px">${esc(S.snapBusy)}</p>` : btns}${pair}${!st.theirs && st.mine && paired() ? '<div class="row"><button class="btn ghost" type="button" data-act="poke">콕 찌르기</button></div>' : ''}</div>`;
-}
-function vSnapArchive() {
-  const days = [...new Set(Object.values(S.snaps).map(x => x.date))].sort().reverse();
-  if (!days.length) return `<div class="empty">${emptyArt()}아직 오늘의 한 장이 없어요.<br>홈에서 알림이 온 날 함께 찍어 보세요.</div>`;
-  return `<p class="note" style="margin:0 4px 12px">둘 다 올린 날은 서로의 사진이 보여요. 내가 안 올린 날 상대 사진은 잠겨 있어요.</p><div class="sgrid">${days.map(ds => { const a = S.snaps[ds + '_' + S.who], b = S.snaps[ds + '_' + other()]; return `<div class="sday"><p>${dotd(ds)}</p><div class="spair">${polHTML(S.who, a, true)}${polHTML(other(), b, !!a)}</div></div>`; }).join('')}</div>`;
-}
-function vSnapView() {
-  const x = S.snaps[S.snapView]; if (!x) { S.snapView = null; return ''; }
-  return `<div class="snapview" data-act="snap-close"><img src="${esc(x.url)}" alt=""><p>${esc(nm(x.who))} · ${dotd(x.date)} ${hm(x.min)}${x.late ? ` · ${x.late}분 늦음` : ''}</p><button class="btn line" type="button" data-act="snap-close">닫기</button></div>`;
-}
-async function uploadSnap(f) {
-  if (!f) return;
-  const st = snapState(), id = st.ds + '_' + S.who;
-  if (st.mine) { toast('오늘의 한 장은 이미 올렸어요'); return; }
-  S.snapBusy = '올리는 중…'; render();
-  try {
-    const small = await toJpeg(f, 1600);
-    const r = await putBlob(new File([small], 'snap.jpg', {type: 'image/jpeg'}));
-    const k = kstNow(), late = k.min >= st.m + 10 ? Math.max(1, k.min - (st.m + 10)) : 0;
-    if (await W.snap(id, {date: st.ds, who: S.who, url: r.url, assetId: r.assetId, at: Date.now(), min: k.min, late})) {
-      burst(20); toast(st.theirs ? '오늘의 한 장이 공개됐어요!' : `올렸어요! ${nm(other())}님이 올리면 함께 공개돼요`);
-    }
-  } catch (e) { toast('올리지 못했어요. 다시 해 주세요'); }
-  S.snapBusy = ''; render();
-}
-
 /* ---------- today's mood ---------- */
 const MOODS = [['love', '🥰', '설레'], ['happy', '😊', '좋아'], ['calm', '😌', '평온'], ['miss', '🥺', '보고 싶어'], ['tired', '😪', '피곤해'], ['busy', '🫠', '바빠'], ['sad', '🥲', '울적해'], ['grr', '😤', '짜증 나']];
 const moodOf = k => MOODS.find(m => m[0] === k);
@@ -1015,14 +941,14 @@ function vQ() {
   const td = ymd(today()), mine = ans(td, S.who), theirs = ans(td, other());
   const edit = !mine || S.editing;
   const past = [...new Set(Object.values(S.answers).map(a => a.date))].filter(d => d < td).sort().reverse().slice(0, 30);
-  return `<div class="sec"><p class="sh">함께 키우는 캐릭터</p>${vGrow()}<p class="sh">오늘의 질문 · ${dayNo()}일째</p><div class="card"><p class="q">${esc(Q[qIdx(td)])}</p>
+  return `<div class="sec"><p class="sh">함께 키우는 캐릭터</p>${vGrow()}<p class="sh">오늘의 질문 · ${dayNo()}일째</p><div class="card"><p class="q">${esc(qOf(td))}</p>
   <span class="who-l">${S.look === 'cute' ? mini(S.who, 24) : ''}${esc(nm(S.who))} (나)</span>
   ${edit ? `<textarea id="ans" maxlength="500" placeholder="솔직하게 적어 보세요. 둘 다 답하면 서로의 답이 열려요">${esc(S.draft)}</textarea><div class="row"><button class="btn" type="button" data-act="save-ans">${mine ? '수정 저장' : '답 저장하기'}</button>${mine ? '<button class="btn line" type="button" data-act="cancel-edit">취소</button>' : ''}</div>`
     : `<div class="bub me">${esc(mine.text)}</div><div class="row"><button class="btn line" type="button" data-act="edit-ans">수정</button></div>`}
   <span class="who-l">${S.look === 'cute' ? mini(other(), 24) : ''}${esc(nm(other()))}</span>
   ${mine && theirs ? `<div class="bub">${esc(theirs.text)}</div>` : theirs ? `<div class="lock">${esc(nm(other()))}님은 답했어요. 내 답을 저장하면 열려요.</div>` : `<div class="lock">${paired() ? '아직 답하지 않았어요.<div class="row"><button class="btn ghost" type="button" data-act="poke">콕 찌르기</button></div>' : `${esc(nm(other()))}님이 들어오면 여기서 답을 볼 수 있어요.`}</div>`}
   </div>
-  <p class="sh">지난 질문</p><div class="card">${past.length ? `<ul class="list">${past.map(d => { const a = ans(d, S.who), b = ans(d, other()); const both = a && b; return `<li style="display:block"><span class="date">${dotd(d)}</span><div style="font-weight:600;margin-top:2px">${esc(Q[qIdx(d)])}</div>${both ? `<div class="bub me">${esc(a.text)}</div><div class="bub">${esc(b.text)}</div>` : `<p class="note" style="margin-top:4px">${a ? '나만 답했어요' : '상대만 답했어요'} · 둘 다 답한 질문만 열려요</p>`}</li>`; }).join('')}</ul>` : '<p class="note">답한 질문이 쌓이면 여기에 모여요.</p>'}</div></div>`;
+  <p class="sh">지난 질문</p><div class="card">${past.length ? `<ul class="list">${past.map(d => { const a = ans(d, S.who), b = ans(d, other()); const both = a && b; return `<li style="display:block"><span class="date">${dotd(d)}</span><div style="font-weight:600;margin-top:2px">${esc(qOf(d))}</div>${both ? `<div class="bub me">${esc(a.text)}</div><div class="bub">${esc(b.text)}</div>` : `<p class="note" style="margin-top:4px">${a ? '나만 답했어요' : '상대만 답했어요'} · 둘 다 답한 질문만 열려요</p>`}</li>`; }).join('')}</ul>` : '<p class="note">답한 질문이 쌓이면 여기에 모여요.</p>'}</div></div>`;
 }
 function tiles(list, kind) {
   return `<div class="grid">${list.map(p => {
@@ -1036,16 +962,14 @@ function vPh() {
   <input type="text" id="pnote" maxlength="60" placeholder="한마디 남기기 (선택)" style="margin-top:10px">
   ${S.busy ? `<p class="note" style="margin-top:10px">${esc(S.busy)}</p>` : `<label class="btn" for="file" tabindex="0">사진 고르기</label>`}
   <input type="file" id="file" accept="image/*" multiple hidden></div>
-  <div class="seg seg3" role="group" aria-label="사진 종류"><button type="button" data-act="seg" data-v="in" aria-pressed="${S.phTab === 'in'}">받은 사진 ${rin.length}${nc ? ` · 새 ${nc}` : ''}</button><button type="button" data-act="seg" data-v="out" aria-pressed="${S.phTab === 'out'}">보낸 사진 ${rout.length}</button><button type="button" data-act="seg" data-v="snap" aria-pressed="${S.phTab === 'snap'}">오늘의 한 장</button></div>
+  <div class="seg" role="group" aria-label="사진 종류"><button type="button" data-act="seg" data-v="in" aria-pressed="${S.phTab === 'in'}">받은 사진 ${rin.length}${nc ? ` · 새 ${nc}` : ''}</button><button type="button" data-act="seg" data-v="out" aria-pressed="${S.phTab === 'out'}">보낸 사진 ${rout.length}</button></div>
   ${S.phTab === 'in' && nc ? `<button class="btn wide" type="button" data-act="save-all" style="margin-bottom:12px">새 사진 ${nc}장 모두 저장</button>` : ''}
-  ${S.phTab === 'snap' ? vSnapArchive() : list.length ? tiles(list, S.phTab) : `<div class="empty">${emptyArt()}${S.phTab === 'in' ? `${esc(nm(other()))}님이 올린 사진이 아직 없어요.${S.real ? `<br>${esc(nm(other()))}님이 사진을 올리면 여기 모이고 알림이 가요.` : `<br>테스트하려면 오른쪽 위에서 '${esc(nm(other()))}'로 바꿔 사진을 올려 보세요.`}` : '아직 올린 사진이 없어요.'}</div>`}
+  ${list.length ? tiles(list, S.phTab) : `<div class="empty">${emptyArt()}${S.phTab === 'in' ? `${esc(nm(other()))}님이 올린 사진이 아직 없어요.${S.real ? `<br>${esc(nm(other()))}님이 사진을 올리면 여기 모이고 알림이 가요.` : `<br>테스트하려면 오른쪽 위에서 '${esc(nm(other()))}'로 바꿔 사진을 올려 보세요.`}` : '아직 올린 사진이 없어요.'}</div>`}
   ${!dl && S.loaded ? '<p class="note" style="margin-top:12px">이 화면에서는 저장 버튼이 막혀 있어요. 사진을 열고 길게 눌러 저장할 수 있어요.</p>' : ''}</div>`;
 }
 function vUs() {
   const cv = coverSrc();
-  return `<div class="sec">${vRealSettings()}<p class="sh">테마</p><div class="looks" role="group" aria-label="테마 고르기"><button class="look" type="button" data-act="look" data-v="modern" aria-pressed="${S.look === 'modern'}"><span class="lk m"></span><b>모던</b><span class="note">차분하고 세련되게</span></button><button class="look" type="button" data-act="look" data-v="cute" aria-pressed="${S.look === 'cute'}"><span class="lk c"></span><b>러블리</b><span class="note">말랑하고 귀엽게</span></button></div>
-  <p class="note" style="margin:8px 6px 0">테마는 각자 폰에서 따로 골라요.</p>
-  <p class="sh">홈 배경 사진</p><div class="card">${cv ? `<div class="thumbs" style="margin-top:0"><img src="${esc(cv)}" alt="지금 배경 사진"></div><div class="row"><button class="btn line" type="button" data-act="clear-cover">배경 사진 빼기</button></div>` : '<p class="note">사진함에서 사진을 열고 오른쪽 위 \'홈 배경으로\'를 누르면 홈 화면 맨 위에 크게 걸려요.</p><div class="row"><button class="btn ghost" type="button" data-act="tab" data-v="ph">사진함 열기</button></div>'}</div>
+  return `<div class="sec">${vRealSettings()}<p class="sh">홈 배경 사진</p><div class="card">${cv ? `<div class="thumbs" style="margin-top:0"><img src="${esc(cv)}" alt="지금 배경 사진"></div><div class="row"><button class="btn line" type="button" data-act="clear-cover">배경 사진 빼기</button></div>` : '<p class="note">사진함에서 사진을 열고 오른쪽 위 \'홈 배경으로\'를 누르면 홈 화면 맨 위에 크게 걸려요.</p><div class="row"><button class="btn ghost" type="button" data-act="tab" data-v="ph">사진함 열기</button></div>'}</div>
   <p class="sh">우리 정보</p><div class="card">${coupleForm('저장')}</div><p class="sh">안내</p>
   ${S.real ? '' : `<div class="card"><h2>테스트하는 법</h2><ol class="steps"><li>오른쪽 위 '${esc(nm('me'))} / ${esc(nm('partner'))}'로 지금 어느 폰인지 바꿔요.</li><li>질문: 한쪽에서 답하고, 바꿔서 다른 쪽도 답하면 서로의 답이 열려요.</li><li>사진함: 한쪽에서 사진을 올리고, 바꿔서 '받은 사진'에서 저장해 보세요.</li><li>콕 찌르기는 상대 폰의 홈 화면 위에 표시돼요.</li><li>캘린더: 한쪽에서 일정을 넣고 바꿔 보면 상대 캘린더에도 똑같이 보여요.</li><li>추억 탭: 사진·한 줄·장소로 추억을 남기면 타임라인과 지도에 쌓여요. 버킷리스트는 '일정 잡기'로 데이트가 되고, '했어요'로 추억이 돼요.</li><li>홈의 '오늘 우리 기분'에서 기분을 고르면 상대에게 바로 보여요. 추억 탭의 '편지'는 정한 날에만 열리고, 버킷리스트 아래 룰렛이 오늘 할 것·먹을 것을 골라 줘요.</li><li>질문 탭의 캐릭터는 둘 다 답한 날이 이어질수록 자라요 (3일 새싹, 7일 꽃봉오리, 14일 활짝, 30일 왕관).</li><li>설정(우리)은 오른쪽 위 톱니바퀴에 있어요. 화면을 좌우로 밀면 옆 탭으로 넘어가요. 캘린더 달력 위에서 밀면 달이 바뀌고, 사진을 크게 볼 때 밀면 다음 사진으로 가요.</li></ol></div>`}
   <div class="card"><h2>캘린더 안내</h2><ol class="steps"><li>데이트·일정·기념일을 넣을 수 있고, 매주·매월·매년 반복과 여러 날 일정(여행)도 돼요.</li><li>생일을 넣으면 매년 자동으로 표시돼요. 100일 단위·주년 기념일도 자동이에요.</li><li>미리 알림(7일·3일·하루 전·당일)은 지금은 앱을 열었을 때 홈에 보여요. ${S.real ? '알림을 켜 두면 아침 9시에 푸시로도 와요.' : '진짜 푸시 알림은 앱 버전에서 가능해요.'}</li><li>공휴일은 빨갛게 표시돼요. 설날·추석·부처님오신날은 2030년까지 들어 있고, 대체공휴일은 빠져 있어요.</li></ol></div>
@@ -1096,7 +1020,7 @@ function vDay(ds) {
   const pics = S.photos.filter(p => ymd(new Date(p.at)) === ds), a = ans(ds, S.who), b = ans(ds, other());
   return `<div class="sec" style="padding-top:0"><div class="card"><h2>${d.getMonth() + 1}월 ${d.getDate()}일 ${WD[d.getDay()]}요일 <small>${dlab(d)}${dn > 0 ? ` · ${dn.toLocaleString('ko-KR')}일째` : ''}</small></h2>
   ${list.length ? `<ul class="list ag">${list.map(o => agItem(o, false)).join('')}</ul>` : '<p class="note">이 날은 아직 비어 있어요.</p>'}
-  ${a && b ? `<p class="note" style="margin-top:14px">이날의 질문</p><p style="margin:2px 0 0;font-weight:600">${esc(Q[qIdx(ds)])}</p><div class="bub me">${esc(a.text)}</div><div class="bub">${esc(b.text)}</div>` : ''}
+  ${a && b ? `<p class="note" style="margin-top:14px">이날의 질문</p><p style="margin:2px 0 0;font-weight:600">${esc(qOf(ds))}</p><div class="bub me">${esc(a.text)}</div><div class="bub">${esc(b.text)}</div>` : ''}
   ${pics.length ? `<p class="note" style="margin-top:14px">이날 올린 사진 ${pics.length}장</p><div class="thumbs">${pics.slice(0, 8).map(p => `<button class="tile" type="button" data-act="open" data-v="${esc(p.id)}" data-k="${p.from === S.who ? 'out' : 'in'}" aria-label="사진 열기"><img src="${esc(src(p))}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}
   ${dayMems(ds)}
   <div class="row"><button class="btn" type="button" data-act="ev-new" data-v="${ds}">이 날 일정 추가</button>${ds <= ymd(today()) ? `<button class="btn ghost" type="button" data-act="mem-from" data-v="${ds}|${esc((list.find(o => o.kind === 'date' && o.ev) || {ev: {}}).ev.id || '')}">추억 남기기</button>` : ''}</div></div></div>`;
@@ -1329,7 +1253,7 @@ function recapCards() {
     {kicker: `${R.Y} 우리 결산`, big: String(R.Y), unit: '', lines: [`${me} 그리고 ${pt}`, '올 한 해를 넘겨 볼까요?']},
     {kicker: '올해 함께한 날', big: R.days.toLocaleString('ko-KR'), unit: '일', lines: [`처음부터 세면 오늘이 ${dayNo().toLocaleString('ko-KR')}일째`, R.streak ? `요즘 질문 연속 ${R.streak}일째` : '']},
     {kicker: '올해 데이트', big: String(R.past), unit: '번', lines: [R.plan ? `올해 남은 약속 ${R.plan}번 더` : '', `추억으로 남긴 날 ${R.memN}개`]},
-    {kicker: '둘 다 답한 질문', big: String(R.both), unit: '개', lines: R.fav ? [`“${cut(Q[qIdx(R.fav.d)], 28)}”`, `${me}: ${cut(ans(R.fav.d, 'me').text, 30)}`, `${pt}: ${cut(ans(R.fav.d, 'partner').text, 30)}`] : ['내년엔 더 많이 나눠요']},
+    {kicker: '둘 다 답한 질문', big: String(R.both), unit: '개', lines: R.fav ? [`“${cut(qOf(R.fav.d), 28)}”`, `${me}: ${cut(ans(R.fav.d, 'me').text, 30)}`, `${pt}: ${cut(ans(R.fav.d, 'partner').text, 30)}`] : ['내년엔 더 많이 나눠요']},
     {kicker: '가장 많이 간 곳', big: top ? cut(top[0], 8) : '아직 없음', unit: '', word: true, lines: top ? [`${top[1]}번 함께 갔어요`, R.places.length > 1 ? `그다음은 ${R.places.slice(1, 3).map(p => p[0]).join(', ')}` : ''] : ['추억에 장소를 넣으면 여기에 모여요']},
     {kicker: '올해의 사진', big: String(R.photoN), unit: '장', lines: [`${me} ${R.sentMe}장 · ${pt} ${R.sentPt}장 주고받음`], photo: R.best},
     {kicker: `${R.Y + 1}에도`, big: '잘 부탁해', unit: '', word: true, lines: [na ? `다음 기념일: ${na.label} ${dlab(na.d)}` : '', `${me} 그리고 ${pt}`]}
@@ -1420,7 +1344,7 @@ function vViewer() {
 
 function render() {
   $('.app').dataset.look = S.look;
-  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter || S.snapView) ? 'hidden' : '';
+  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter) ? 'hidden' : '';
   const a = document.activeElement, aid = a && a.id, ss = a && a.selectionStart;
   for (const w of ['me', 'partner']) { const b = $('#who-' + w); b.innerHTML = (S.look === 'cute' ? mini(w, 22) : '') + `<span>${esc(nm(w))}</span>`; b.setAttribute('aria-pressed', String(S.who === w)); }
   $('.brand').innerHTML = (S.look === 'cute' ? duo(22) : '<i></i>') + '우리 둘';
@@ -1439,7 +1363,7 @@ function render() {
   if (S.clearNote) { delete keep.pnote; S.clearNote = false; }
   $('.app').classList.toggle('gated', !!S.gate || !S.loaded || !S.couple);
   $('#view').innerHTML = S.gate ? vGate() : !S.loaded ? vLoading() : S.err ? `<div class="empty">${esc(S.err)}</div>` : !S.couple ? vSetup() : ({home: vHome, q: vQ, cal: vCal, mem: vMem, ph: vPh, us: vUs})[S.tab]();
-  $('#ov').innerHTML = S.snapView ? vSnapView() : S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
+  $('#ov').innerHTML = S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
   if (S.recap && S.recap.jump != null) { const tr = $('#rct'); if (tr) tr.scrollLeft = S.recap.jump * tr.clientWidth; S.recap.jump = null; }
   for (const k in keep) { const el = document.getElementById(k); if (el) { if (el.type === 'checkbox') el.checked = keep[k]; else el.value = keep[k]; } }
   tick();
@@ -1502,11 +1426,11 @@ document.addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
   const act = b.dataset.act, v = b.dataset.v;
   if (act === 'tab') go(v);
-  else if (act === 'who') { S.snapView = null; S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
+  else if (act === 'who') { S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
   else if (act === 'save-ans') {
     const text = (S.draft || '').trim(); if (!text) { toast('답을 먼저 적어 주세요'); return; }
     const td = ymd(today());
-    if (await W.answer(td + '_' + S.who, {date: td, who: S.who, text, at: Date.now()})) { S.draft = ''; S.editing = false; render(); const bo = !!ans(td, other()); burst(bo ? 20 : 8); toast(bo ? '둘 다 답했어요! 서로의 답이 열렸어요' : '저장했어요. 상대가 답하면 열려요'); }
+    if (await W.answer(td + '_' + S.who, {date: td, who: S.who, q: qOf(td), text, at: Date.now()})) { S.draft = ''; S.editing = false; render(); const bo = !!ans(td, other()); burst(bo ? 20 : 8); toast(bo ? '둘 다 답했어요! 서로의 답이 열렸어요' : '저장했어요. 상대가 답하면 열려요'); }
   }
   else if (act === 'edit-ans') { S.editing = true; S.draft = ans(ymd(today()), S.who).text; render(); const t = $('#ans'); if (t) t.focus(); }
   else if (act === 'cancel-edit') { S.editing = false; S.draft = ''; render(); }
@@ -1557,8 +1481,6 @@ document.addEventListener('click', async e => {
   else if (act === 'bk-cat') { S.bkCat = v; render(); }
   else if (act === 'bk-more') { S.bkIdeaOff = (S.bkIdeaOff || 0) + 6; render(); }
   else if (act === 'reload') { location.reload(); }
-  else if (act === 'snap-open') { S.snapView = v; render(); }
-  else if (act === 'snap-close') { if (e.target === b || b.tagName === 'BUTTON') { S.snapView = null; render(); } }
   else if (act === 'copy-url') { copyText(location.origin + location.pathname + (joinParam ? '?join=' + joinParam : ''), '주소를 복사했어요. Safari에 붙여넣어 주세요'); }
   else if (act === 'wg-copy') {
     if (!S.wgCode) { toast('위젯 코드를 준비하는 중이에요. 잠시 뒤 다시 눌러 주세요'); prepWidget(); return; }
@@ -1627,7 +1549,6 @@ document.addEventListener('click', async e => {
   else if (act === 'push-off') { disablePush(); }
   else if (act === 'push-hide') { ls.set('ud-push-hide', '1'); render(); }
   else if (act === 'push-test') { try { await db.doc('pings/test').set({at: Date.now(), by: S.who}); toast('잠시 뒤 이 폰에 알림이 와요'); } catch (e) { toast('보내지 못했어요'); } }
-  else if (act === 'look') { S.look = v; ls.set('ud-look', v); render(); if (v === 'cute') burst(14); toast(v === 'cute' ? '러블리 테마로 바꿨어요' : '모던 테마로 바꿨어요'); }
   else if (act === 'set-cover') { const p = S.photos.find(x => x.id === S.viewer); if (p && S.couple && await W.couple({...S.couple, cover: {assetId: p.assetId || null, url: p.url || ''}})) { S.viewer = null; render(); toast('홈 배경으로 걸었어요'); } }
   else if (act === 'clear-cover') { if (S.couple) { const c = {...S.couple}; delete c.cover; if (await W.couple(c)) toast('배경 사진을 뺐어요'); } }
   else if (act === 'di-toggle') { S.diExp = !S.diExp; tick(); clearTimeout(diTimer); if (S.diExp) diTimer = setTimeout(() => { if (S.diExp) { S.diExp = false; tick(); } }, 8000); }
@@ -1648,12 +1569,10 @@ document.addEventListener('click', async e => {
 });
 document.addEventListener('input', e => { if (e.target.id === 'ans') S.draft = e.target.value; if (e.target.id === 'm-place') { if (S.msheet) S.msheet.place = e.target.value; const sel = ($('#m-geo') || {}).value || ''; const l = $('#m-geo-l'); if (l && !sel) l.textContent = geoLabel(geoFind(e.target.value), sel); } });
 document.addEventListener('scroll', e => { if (e.target && e.target.id === 'rct') rcSync(); }, true);
-document.addEventListener('change', e => { if (e.target.id === 'snapcam' || e.target.id === 'snapfile') { const f = e.target.files[0]; e.target.value = ''; uploadSnap(f); return; } if (e.target.id === 'm-file') { const f = [...e.target.files]; e.target.value = ''; uploadMem(f); return; } if (e.target.id === 'm-geo') { const sel = e.target.value, pl = $('#m-place'); if (S.msheet) S.msheet.geo = sel; const l = $('#m-geo-l'); if (l) l.textContent = geoLabel(sel && sel !== '-' ? geoByName(sel) : geoFind(pl ? pl.value : ''), sel); return; } if (e.target.id === 'di-always') { S.diAlways = e.target.checked; ls.set('ud-di', S.diAlways ? '1' : '0'); tick(); return; } if (e.target.id === 'file') { const f = [...e.target.files]; e.target.value = ''; upload(f); } });
+document.addEventListener('change', e => { if (e.target.id === 'm-file') { const f = [...e.target.files]; e.target.value = ''; uploadMem(f); return; } if (e.target.id === 'm-geo') { const sel = e.target.value, pl = $('#m-place'); if (S.msheet) S.msheet.geo = sel; const l = $('#m-geo-l'); if (l) l.textContent = geoLabel(sel && sel !== '-' ? geoByName(sel) : geoFind(pl ? pl.value : ''), sel); return; } if (e.target.id === 'di-always') { S.diAlways = e.target.checked; ls.set('ud-di', S.diAlways ? '1' : '0'); tick(); return; } if (e.target.id === 'file') { const f = [...e.target.files]; e.target.value = ''; upload(f); } });
 document.addEventListener('keydown', e => {
   if (e.target.matches && e.target.matches('label[for=file]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#file').click(); }
   if (e.target.matches && e.target.matches('label[for=m-file]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#m-file').click(); return; }
-  if (e.target.matches && e.target.matches('label[for=snapcam],label[for=snapfile]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#' + e.target.getAttribute('for')).click(); return; }
-  if (S.snapView && e.key === 'Escape') { S.snapView = null; render(); return; }
   if (S.sheet && e.key === 'Escape') { S.sheet = null; S.sheetDel = false; render(); return; }
   if (S.msheet && e.key === 'Escape') { S.msheet = null; S.msheetDel = false; render(); return; }
   if ((S.lsheet || S.letter) && e.key === 'Escape') { S.lsheet = null; S.letter = null; S.letterDel = false; render(); return; }
@@ -1836,7 +1755,7 @@ function vPushBanner() {
 function vRealSettings() {
   if (!S.real || !S.info) return '';
   const st = {on: '이 폰에서 알림을 받고 있어요', off: '알림이 꺼져 있어요', denied: '설정 앱 → 알림 → 우리 둘에서 알림을 허용해 주세요', 'need-install': '홈 화면에 추가한 앱에서만 알림을 켤 수 있어요', unsupported: '이 기기에서는 알림을 지원하지 않아요'}[S.push] || '확인하는 중…';
-  return `<p class="sh">알림</p><div class="card"><p style="margin:0">${st}</p><div class="row">${S.push === 'on' ? '<button class="btn ghost" type="button" data-act="push-test">테스트 알림 보내기</button><button class="btn line" type="button" data-act="push-off">끄기</button>' : S.push === 'off' ? '<button class="btn" type="button" data-act="push-on">알림 켜기</button>' : ''}</div><p class="note" style="margin-top:10px">받는 알림: 오늘의 한 장(하루 한 번 깜짝 알림), 상대의 답·기분·사진·콕·일정·추억·편지, 아침 9시 기념일/데이트/열리는 편지, 저녁 6시 오늘의 질문</p></div>
+  return `<p class="sh">알림</p><div class="card"><p style="margin:0">${st}</p><div class="row">${S.push === 'on' ? '<button class="btn ghost" type="button" data-act="push-test">테스트 알림 보내기</button><button class="btn line" type="button" data-act="push-off">끄기</button>' : S.push === 'off' ? '<button class="btn" type="button" data-act="push-on">알림 켜기</button>' : ''}</div><p class="note" style="margin-top:10px">받는 알림: 상대의 답·기분·사진·콕·일정·추억·편지, 아침 9시 기념일/데이트/열리는 편지, 저녁 6시 오늘의 질문</p></div>
   <p class="sh">연결</p><div class="card"><p style="margin:0">${S.info.partner_joined ? `${esc(nm('me'))}님과 ${esc(nm('partner'))}님이 연결되어 있어요` : '아직 상대가 들어오지 않았어요'}</p><p class="note" style="margin-top:8px">초대 코드</p><div class="bigcode sm">${esc(S.info.code)}</div>${S.info.partner_joined ? '' : '<div class="row"><button class="btn" type="button" data-act="invite-share">초대 링크 보내기</button></div>'}</div>
   <p class="sh">홈 화면 위젯</p><div class="card"><p style="margin:0">함께한 날, 다음 데이트 D-day, ${esc(nm(other()))}님 기분과 새 사진을 홈 화면과 잠금 화면에 띄워요.</p><p class="note" style="margin-top:6px">웹앱은 아이폰 위젯을 직접 만들 수 없어서, 무료 앱 Scriptable이 대신 보여줘요.</p>
   <ol class="steps"><li>App Store에서 <b>Scriptable</b>(무료)을 설치해요.</li><li>아래 <b>위젯 코드 복사</b>를 눌러요.</li><li>Scriptable을 열고 오른쪽 위 <b>+</b> → 빈 화면을 길게 눌러 <b>붙여넣기</b> → 맨 위 이름을 <b>우리 둘</b>로 바꾸고 <b>완료</b>.</li><li>홈 화면 빈 곳을 길게 누르고 <b>편집 → 위젯 추가 → Scriptable</b>에서 크기를 골라 추가해요.</li><li>추가된 위젯을 길게 눌러 <b>위젯 편집 → Script → 우리 둘</b>을 골라요.</li></ol>
@@ -1915,7 +1834,6 @@ function attachDB(timer) {
   db.collection('bucket').onSnapshot(s => { S.bucket = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
   db.collection('events').onSnapshot(s => { S.events = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
   db.doc('pokes/latest').onSnapshot(s => { S.poke = s.exists ? s.data() : null; render(); }, () => {});
-  db.collection('snaps').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.snaps = m; render(); }, () => {});
   db.collection('moods').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.moods = m; render(); }, () => {});
   db.collection('letters').onSnapshot(s => { S.letters = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
 }

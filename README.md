@@ -42,7 +42,7 @@
 
 - `tests/sql/run.sh`: 로컬 Postgres에서 접근 규칙 테스트 (`PGHOST`, `PGPORT` 지정)
 - `tests/e2e/api.mjs`, `tests/e2e/ui.mjs`: 배포 때 실제 서버로 도는 테스트
-- `tests/local/explore.mjs`: 가짜 서버(`tests/local/mock-backend.js`)로 모든 화면의 모든 버튼을 눌러 보는 테스트 (SE·13·Pro Max, 라이트·다크, 두 테마). 배포 때도 돌아요
+- `tests/local/explore.mjs`: 가짜 서버(`tests/local/mock-backend.js`)로 모든 화면의 모든 버튼을 눌러 보는 테스트 (SE·13·Pro Max, 라이트·다크). 배포 때도 돌아요
 - `tests/local/walk.mjs`: 처음 설치부터 연결까지 화면을 차례로 찍어 보는 테스트
 
 ## 아이폰에 설치

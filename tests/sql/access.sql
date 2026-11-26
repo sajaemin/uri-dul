@@ -109,7 +109,7 @@ do $$ begin
   assert (select count(*) from net.calls where url like '%/notify') = 1, 'one notify call so far (the answer)';
   assert (select headers->>'x-notify-secret' from net.calls limit 1) = 's3cret', 'secret header';
   assert (select body->'record'->>'coll' from net.calls limit 1) = 'answers', 'record in body';
-  assert (select count(*) from cron.job where jobname like 'uridul-%') = 3, 'morning, evening and snap jobs';
+  assert (select count(*) from cron.job where jobname like 'uridul-%') = 2, 'morning and evening jobs (the snap job was turned off)';
 end $$;
 select set_config('request.jwt.claim.sub', :'A', false);
 set role authenticated;

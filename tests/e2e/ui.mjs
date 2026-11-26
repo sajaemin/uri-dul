@@ -109,13 +109,6 @@ try {
     await shot(B, '06-B-next-date');
   });
 
-  await step('both see today\'s snap card; the archive opens', async () => {
-    await tab(A, 'home'); await A.locator('.snapc').waitFor();
-    await tab(B, 'home'); await B.locator('.snapc').waitFor();
-    await tab(B, 'ph'); await B.click('[data-act=seg][data-v=snap]'); await B.locator('#view .empty, #view .sgrid').first().waitFor();
-    await B.click('[data-act=seg][data-v=in]');
-  });
-
   await step('a letter stays sealed until its day, one for today opens', async () => {
     await tab(A, 'mem'); await A.click('[data-act=mem-tab][data-v=lt]');
     await A.click('[data-act=l-new]');
