@@ -41,7 +41,9 @@ const docs = {
   [`answers/${kst(0)}_partner`]: { date: kst(0), text: '오늘은 내가 먼저', at: 3 },
   [`moods/${kst(0)}_partner`]: { date: kst(0), who: 'partner', m: 'miss', note: '주말까지 ' + XSS, at: 4 },
   'letters/l1': { from: 'partner', title: '700일에 열어 봐', text: '사랑해', openAt: kst(30), at: 5, readAt: 0 },
-  'letters/l2': { from: 'partner', title: XSS, text: '오늘 고마웠어 ' + XSS, openAt: kst(0), at: 6, readAt: 0 },
+  'letters/l2': { from: 'partner', title: XSS, text: '오늘 고마웠어 ' + XSS, openAt: kst(0), at: 6, readAt: 0, paper: 'sky', ink: 'blue', stickers: [{ e: '🐻', x: 88, y: 10, r: 12 }, { e: '🌙', x: 10, y: 90, r: -8 }, { e: XSS, x: 50, y: 50, r: 0 }] },
+  'letters/l3': { from: 'me', title: 'Re: 답장', text: '나도 고마워', openAt: kst(0), at: 7, readAt: 0, paper: 'lilac', ink: 'violet', stickers: [{ e: '💗', x: 90, y: 88, r: 5 }], replyTo: 'l2' },
+  ...Object.fromEntries([2, 3, 4, 5, 6, 8, 9, 11, 12, 15].flatMap((n, i) => [[`moods/${kst(-n)}_me`, { date: kst(-n), who: 'me', m: ['happy', 'love', 'tired', 'calm', 'happy', 'busy', 'miss', 'happy', 'sad', 'love'][i], note: i === 2 ? '야근 ' + XSS : '', at: 10 + i }], [`moods/${kst(-n)}_partner`, { date: kst(-n), who: 'partner', m: ['happy', 'love', 'calm', 'calm', 'grr', 'busy', 'miss', 'love', 'sad', 'love'][i], note: '', at: 30 + i }]])),
   'pokes/latest': { from: 'partner', at: Date.now() - 60000 },
 };
 const seed = { info: { couple_id: 'c1', code: 'K7QM2D', role: 'me', rc: 'RCAB12CD', partner_joined: true }, docs };
@@ -110,7 +112,7 @@ async function run(label, device, scheme, look) {
         }
       } catch (e) { const why = (e.message.split('\n').find(l => /intercepts|not visible|outside of the viewport|not stable/.test(l)) || '').trim(); say(label, `${t} → ${a.act}: ${e.message.split('\n')[0]} ${why}`); }
       await p.keyboard.press('Escape');
-      for (const c of ['sheet-close', 'msheet-close', 'close', 'l-close', 'l-cancel', 'rc-close', 'rc-img-close']) { const x = p.locator(`#ov [data-act="${c}"]`).first(); if (await x.isVisible().catch(() => false)) await x.click({ timeout: 800 }).catch(() => {}); }
+      for (const c of ['sheet-close', 'msheet-close', 'close', 'l-close', 'l-cancel', 'rc-close', 'rc-img-close', 'mcal-close']) { const x = p.locator(`#ov [data-act="${c}"]`).first(); if (await x.isVisible().catch(() => false)) await x.click({ timeout: 800 }).catch(() => {}); }
       if ((await p.locator('#t-' + t).getAttribute('aria-current').catch(() => null)) !== 'page') await p.click('#t-' + t).catch(() => {});
     }
   }
@@ -125,6 +127,24 @@ async function run(label, device, scheme, look) {
   await p.setInputFiles('#file', { name: 'a.png', mimeType: 'image/png', buffer: Buffer.from(png, 'base64') }).catch(e => say(label, 'upload: ' + e.message));
   await p.waitForTimeout(800); await check('after upload');
 
+  if (process.env.SHOTS_EXTRA) { // a look at screens that only open on a tap
+    const shot = async n => { await p.waitForTimeout(300); await p.screenshot({ path: `${out}/${label}-x-${n}.png` }); };
+    await p.keyboard.press('Escape'); await p.keyboard.press('Escape');
+    await p.click('#t-home'); await p.click('[data-act=mcal-open]'); await shot('mcal'); await p.keyboard.press('Escape');
+    // a year of both answering (the character's last stage), and nobody has answered today yet
+    await p.evaluate(([t0]) => { const st = JSON.parse(localStorage.getItem('mock-udb')); for (const k of Object.keys(st.docs)) if (k.startsWith('answers/' + t0)) delete st.docs[k];
+      for (let n = 1; n <= 370; n++) { const ds = new Date(Date.now() + 9 * 3600e3 - n * 864e5).toISOString().slice(0, 10); for (const w of ['me', 'partner']) st.docs[`answers/${ds}_${w}`] = st.docs[`answers/${ds}_${w}`] || { date: ds, text: '답', at: n }; }
+      localStorage.setItem('mock-udb', JSON.stringify(st)); }, [kst(0)]);
+    await p.reload(); await p.locator('#t-home').waitFor({ state: 'visible' }); await shot('stage8');
+    await p.click('#t-q'); await shot('grow'); await p.locator('.qsw-b').scrollIntoViewIfNeeded(); await shot('qswap'); await p.click('.qsw-b'); await shot('qswapped');
+    await p.click('#t-mem'); await p.click('[data-act=mem-tab][data-v=lt]'); await p.click('[data-act=l-new]');
+    await p.click('[data-act=l-paper][data-v=butter]'); await p.click('[data-act=l-ink][data-v=straw]');
+    for (const e of ['🍓', '🐰', '✨', '🎀']) await p.click(`[data-act=l-stk][data-v="${e}"]`);
+    await p.fill('#l-text', '오늘도 고마워\n주말에 딸기 먹으러 가자');
+    await p.locator('.lpaper').scrollIntoViewIfNeeded(); await shot('lsheet'); await p.keyboard.press('Escape');
+    await p.click('[data-act=l-read][data-v=l2]'); await shot('lview'); await p.click('[data-act=l-reply]'); await shot('lreply'); await p.keyboard.press('Escape');
+    await p.click('#t-us'); await p.locator('.ntog').scrollIntoViewIfNeeded(); await shot('ntog');
+  }
   await ctx.close();
 }
 

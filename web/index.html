@@ -569,6 +569,74 @@ ol.steps.big li{margin:10px 0;font-size:16px}
 .otd-pi{flex:0 0 auto;width:calc((100% - 30px) / 4);max-width:92px;background:#fff;padding:4px 4px 12px;border-radius:4px;box-shadow:0 4px 10px rgba(90,43,64,.16);transform:rotate(var(--r))}
 .otd-pi img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:2px}
 .otd-more{font-weight:800;color:var(--mut);font-size:14px}
+
+/* character ladder: a window of five stages */
+.ladder span.cur{box-shadow:inset 0 0 0 2px var(--acc)}
+.ladder span{font-size:12.5px}
+/* question swap */
+.qsw-b{display:block;margin:10px 0 2px;border:0;background:var(--fill);color:var(--acc);font-weight:700;font-size:14px;border-radius:999px;padding:8px 14px;min-height:38px}
+.qsw-b small{color:var(--mut);font-weight:500;margin-left:4px}
+.qsw{margin:8px 0 0}
+/* notification switches */
+.ntog li{display:flex;align-items:center;gap:12px;padding:10px 0}
+.nt{flex:1;display:flex;flex-direction:column;min-width:0}
+.nt b{font-size:15px}
+.nt .note{font-size:12.5px}
+.tgl{flex:none;width:52px;height:32px;border:0;border-radius:999px;background:#ead9e0;position:relative;padding:0;transition:background .2s}
+.tgl i{position:absolute;top:3px;left:3px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(90,43,64,.25);transition:transform .2s}
+.tgl.on{background:linear-gradient(180deg,#ff86ad,#ff5c8d)}
+.tgl.on i{transform:translateX(20px)}
+/* mood calendar */
+.mcal-open{display:block;width:100%;margin-top:12px;border:0;background:var(--fill);color:var(--acc);font-weight:700;border-radius:14px;min-height:42px;font-size:14.5px}
+.mcal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.mcw{text-align:center;font-size:12px;color:var(--mut);font-weight:700;padding-bottom:2px}
+.mc{border:0;background:var(--fill);border-radius:12px;min-height:54px;padding:4px 0 3px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;color:var(--ink)}
+.mc:disabled{opacity:.35}
+.mc.today{box-shadow:inset 0 0 0 2px var(--acc)}
+.mc.sel{background:#ffe1eb}
+.mc.same{background:linear-gradient(180deg,#ffe1eb,#fff0e4)}
+.mcd{font-size:11.5px;font-weight:700;color:var(--mut)}
+.mce{display:flex;gap:1px;font-size:15px;line-height:1.1;min-height:18px}
+.mce i{font-style:normal;min-width:15px;text-align:center}
+.mcdet{margin-top:12px;background:var(--fill);border-radius:14px;padding:10px 12px}
+.mcl{margin:2px 0;font-size:14.5px}
+.mcs{margin-top:6px}
+.msts{display:flex;flex-wrap:wrap;gap:6px}
+.mst{background:var(--fill);border-radius:999px;padding:4px 10px;font-size:13.5px}
+.mst b{color:var(--acc)}
+.mcsame{margin:12px 0 0;font-weight:700;color:var(--acc)}
+/* letter papers */
+.paper{position:relative;color:var(--lk,var(--ink))}
+.pp-rose{background-color:#fff7f9;background-image:repeating-linear-gradient(180deg,transparent 0 31px,#ffd3e0 31px 32px)}
+.pp-mint{background-color:#f2fdf8;background-image:linear-gradient(#cdeedf 1px,transparent 1px),linear-gradient(90deg,#cdeedf 1px,transparent 1px);background-size:16px 16px}
+.pp-butter{background-color:#fffbea;background-image:radial-gradient(circle,#ffd97a 1.7px,transparent 2.2px);background-size:18px 18px}
+.pp-lilac{background-color:#faf6ff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M12 18s-5-3-5-6.6a2.7 2.7 0 0 1 5-1.4 2.7 2.7 0 0 1 5 1.4c0 3.6-5 6.6-5 6.6z' fill='%23dccbff'/%3E%3Cpath d='M34 40s-4-2.4-4-5.3a2.2 2.2 0 0 1 4-1.1 2.2 2.2 0 0 1 4 1.1c0 2.9-4 5.3-4 5.3z' fill='%23eadfff'/%3E%3C/svg%3E")}
+.pp-sky{background-color:#edf6ff;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='90'%3E%3Cg fill='%23fff'%3E%3Cellipse cx='30' cy='26' rx='20' ry='8'/%3E%3Cellipse cx='42' cy='20' rx='12' ry='9'/%3E%3Cellipse cx='98' cy='70' rx='18' ry='7'/%3E%3Cellipse cx='108' cy='65' rx='10' ry='8'/%3E%3C/g%3E%3C/svg%3E")}
+.pp-kraft{background-color:#f0e2c8;background-image:repeating-linear-gradient(45deg,rgba(140,100,50,.05) 0 2px,transparent 2px 7px),repeating-linear-gradient(180deg,transparent 0 31px,rgba(140,100,50,.18) 31px 32px)}
+.lstk{position:absolute;transform:translate(-50%,-50%) rotate(var(--r));font-size:30px;line-height:1;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(90,43,64,.18));user-select:none;-webkit-user-select:none}
+.lpaper .lstk{pointer-events:auto;cursor:grab;touch-action:none;z-index:2}
+.lpaper .lstk.drag{cursor:grabbing;font-size:36px;z-index:3}
+.lpaper{padding:18px 18px 16px;margin-top:4px;border-radius:18px;box-shadow:inset 0 0 0 2px rgba(255,92,141,.12)}
+.lpaper textarea{display:block;width:100%;min-height:192px;border:0;background:transparent;resize:none;padding:0;margin:0;font:inherit;font-size:16px;line-height:32px;color:var(--lk);box-shadow:none;outline:none;overflow:hidden}
+.lpaper textarea::placeholder{color:color-mix(in srgb,var(--lk) 45%,transparent)}
+.lpps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.lpp{border:0;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);padding:6px 4px 7px;font-size:12.5px;font-weight:600;color:var(--ink);display:flex;flex-direction:column;align-items:center;gap:4px}
+.lpp[aria-pressed=true]{box-shadow:inset 0 0 0 2.5px var(--acc);color:var(--acc)}
+.lpp .sw{display:block;width:100%;height:30px;border-radius:9px}
+.links{display:flex;gap:10px}
+.lnk{width:36px;height:36px;border-radius:50%;border:0;background:var(--c);box-shadow:0 0 0 3px #fff,0 0 0 4px var(--line)}
+.lnk[aria-pressed=true]{box-shadow:0 0 0 3px #fff,0 0 0 5.5px var(--c)}
+.lstks{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}
+.lsb{border:0;background:var(--fill);border-radius:12px;font-size:22px;min-height:42px;padding:0}
+.lsb:active{transform:scale(.9)}
+/* envelopes in the paper's colour, first sticker as the seal */
+.env.pp-mint .ei{background:linear-gradient(160deg,#e4f8ef,#bfead6)}.env.pp-mint .ei::before{background:#cdeedf}
+.env.pp-butter .ei{background:linear-gradient(160deg,#fff6d6,#ffe39a)}.env.pp-butter .ei::before{background:#ffeab3}
+.env.pp-lilac .ei{background:linear-gradient(160deg,#f3ecff,#dccbff)}.env.pp-lilac .ei::before{background:#e6daff}
+.env.pp-sky .ei{background:linear-gradient(160deg,#e9f4ff,#c4e0ff)}.env.pp-sky .ei::before{background:#d6e9ff}
+.env.pp-kraft .ei{background:linear-gradient(160deg,#ecdcbc,#d8bf92)}.env.pp-kraft .ei::before{background:#e2cda6}
+.env .ei.has-seal::after{display:none}
+.env .ei .seal{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);font-style:normal;font-size:17px;line-height:1;z-index:1}
 </style>
 </head>
 <body>
@@ -623,6 +691,8 @@ const Q2 = ["오늘 하루 중 제일 좋았던 순간은 언제였어?", "평�
 function qOf(ds) {
   const saved = (S.answers[ds + '_me'] || {}).q || (S.answers[ds + '_partner'] || {}).q;
   if (saved) return saved;
+  const sw = S.qswap && S.qswap[ds];
+  if (sw) { const k = diff(parse(Q2_FROM), parse(ds)) + 61 * (sw.n || 1), L = Q2.length; return Q2[((k % L) + L) % L]; }
   if (ds < Q2_FROM) return Q[qIdx(ds)];
   const k = diff(parse(Q2_FROM), parse(ds));
   return Q2[((k % Q2.length) + Q2.length) % Q2.length];
@@ -659,7 +729,7 @@ const dlab = d => { const n = diff(today(), d); return n === 0 ? '오늘' : n > 
 S.diAlways = ls.get('ud-di') !== '0'; S.diExp = false; S.look = 'cute';
 S.memories = []; S.bucket = []; S.memTab = 'tl'; S.mapView = 'kr'; S.mapSel = null; S.memFilter = ''; S.memPlace = ''; S.msheet = null; S.msheetDel = false; S.recap = null;
 S.events = []; S.calMode = 'month'; S.sheet = null; S.sheetDel = false;
-S.moods = {}; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
+S.moods = {}; S.qswap = {}; S.prefs = {}; S.mcal = null; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
 { const t = today(); S.calMonth = new Date(t.getFullYear(), t.getMonth(), 1); S.calSel = ymd(t); }
 function starts(ev, s0, from, to) {
   const r = ev.repeat || 'none', res = [];
@@ -725,6 +795,8 @@ const W = {
   delBucket: id => guard(async () => { if (db) await db.doc('bucket/' + id).delete(); else { S.bucket = S.bucket.filter(x => x.id !== id); render(); } }),
   poke: d => guard(async () => { if (db) await db.doc('pokes/latest').set(d); else { S.poke = d; render(); } }),
   mood: (id, d) => guard(async () => { if (db) await db.doc('moods/' + id).set(d); else { S.moods = {...S.moods, [id]: d}; render(); } }),
+  qswap: (id, d) => guard(async () => { S.qswap = {...S.qswap, [id]: d}; render(); if (db) await db.doc('qswaps/' + id).set(d); }),
+  prefs: (w, d) => guard(async () => { S.prefs = {...S.prefs, [w]: d}; render(); if (db) await db.doc('prefs/' + w).set(d); }),
   letter: (id, d) => guard(async () => { if (db) await db.doc('letters/' + id).set(d); else { S.letters = [...S.letters.filter(x => x.id !== id), {...d, id}]; render(); } }),
   letterUpd: (id, d) => guard(async () => { if (db) await db.doc('letters/' + id).update(d); else { S.letters = S.letters.map(x => x.id === id ? {...x, ...d} : x); render(); } }),
   delLetter: id => guard(async () => { if (db) await db.doc('letters/' + id).delete(); else { S.letters = S.letters.filter(x => x.id !== id); render(); } })
@@ -777,22 +849,27 @@ const coverSrc = () => { const c = S.couple && S.couple.cover; return c ? (S.rea
 function scene(stage, names) {
   const st = stage == null ? stageOf(streak()) : stage;
   const H = 'M12 21s-8-4.6-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.4-8 11-8 11z';
-  const sc = (0.86 + 0.05 * st).toFixed(2);
+  const sc = (0.86 + 0.05 * Math.min(st, 4)).toFixed(2);
   const face = (x, y, body, top) => `<g transform="translate(${x} ${y}) scale(${sc})"><ellipse cx="0" cy="32" rx="30" ry="5" fill="#000" opacity=".06"/><ellipse cx="0" cy="0" rx="34" ry="31" fill="${body}"/>${top}<ellipse cx="-11" cy="-14" rx="12" ry="7" fill="#fff" opacity=".45"/><ellipse cx="-10" cy="-3" rx="3.2" ry="4.2" fill="#4b2f3a"/><ellipse cx="10" cy="-3" rx="3.2" ry="4.2" fill="#4b2f3a"/><ellipse cx="-19" cy="7" rx="6.5" ry="3.6" fill="#ff8fb0" opacity=".65"/><ellipse cx="19" cy="7" rx="6.5" ry="3.6" fill="#ff8fb0" opacity=".65"/><path d="M-5 6q5 5 10 0" stroke="#4b2f3a" stroke-width="2.2" fill="none" stroke-linecap="round"/></g>`;
   const crown = `<g transform="translate(0 -30)"><path d="M-17 2l-3-17 10 8 10-12 10 12 10-8-3 17z" fill="#ffd36e" stroke="#e8a93a" stroke-width="1.5" stroke-linejoin="round"/><circle cx="0" cy="-17" r="2.6" fill="#ff6f98"/><circle cx="-20" cy="-15" r="2.2" fill="#fff"/><circle cx="20" cy="-15" r="2.2" fill="#fff"/></g>`;
   const leaves = (s) => `<path d="M0 -30v-${s ? 12 : 7}" stroke="#5fb883" stroke-width="3" stroke-linecap="round"/><ellipse cx="-7" cy="-${s ? 43 : 37}" rx="${s ? 8 : 6}" ry="${s ? 4.5 : 3.4}" fill="#7fd19b" transform="rotate(-28 -7 -${s ? 43 : 37})"/>${s ? '<ellipse cx="7" cy="-45" rx="8" ry="4.5" fill="#7fd19b" transform="rotate(28 7 -45)"/>' : ''}`;
   const flower = `<path d="M0 -30v-16" stroke="#5fb883" stroke-width="3" stroke-linecap="round"/><ellipse cx="-8" cy="-38" rx="7" ry="4" fill="#7fd19b" transform="rotate(-28 -8 -38)"/>${[0, 72, 144, 216, 288].map(a => `<ellipse cx="0" cy="-58" rx="5.5" ry="8" fill="#ff9fbb" transform="rotate(${a} 0 -50)"/>`).join('')}<circle cx="0" cy="-50" r="5" fill="#ffd36e"/>`;
-  const A = [leaves(false), leaves(true), leaves(true) + '<ellipse cx="0" cy="-52" rx="6" ry="8" fill="#ff9fbb"/><path d="M-5 -48q5 4 10 0" stroke="#7fd19b" stroke-width="3" fill="none"/>', flower, crown][st];
+  const scarf = c => st >= 5 ? `<path d="M-28 14Q0 29 28 14L29 23Q0 38-29 23Z" fill="${c}"/><path d="M-27 19Q0 33 27 19" stroke="#fff" stroke-width="2.2" opacity=".55" fill="none"/><path d="M11 26l2 16 9-1-2-15z" fill="${c}"/><path d="M13 39h8" stroke="#fff" stroke-width="2" opacity=".55"/>` : '';
+  const A = [leaves(false), leaves(true), leaves(true) + '<ellipse cx="0" cy="-52" rx="6" ry="8" fill="#ff9fbb"/><path d="M-5 -48q5 4 10 0" stroke="#7fd19b" stroke-width="3" fill="none"/>', flower, crown][Math.min(st, 4)] + scarf('#ff7aa5');
   const bow = (k) => `<g transform="translate(15 -26) rotate(18) scale(${k})"><path d="M0 0l-12-7v14z" fill="#ff6f98"/><path d="M0 0l12-7v14z" fill="#ff6f98"/><circle r="4" fill="#ff4f82"/></g>`;
   const fcrown = [-18, 0, 18].map((x, i) => `<g transform="translate(${x} ${-28 - (i === 1 ? 4 : 0)})">${[0, 90, 180, 270].map(a => `<ellipse cx="0" cy="-4" rx="3.2" ry="4.5" fill="${i === 1 ? '#ff6f98' : '#ffd36e'}" transform="rotate(${a})"/>`).join('')}<circle r="2.4" fill="#fff"/></g>`).join('');
-  const B = [bow(0.7), bow(1), bow(1.25) + `<path transform="translate(-22 -30) scale(.45)" d="${H}" fill="#ff6f98"/>`, fcrown, crown][st];
+  const B = [bow(0.7), bow(1), bow(1.25) + `<path transform="translate(-22 -30) scale(.45)" d="${H}" fill="#ff6f98"/>`, fcrown, crown][Math.min(st, 4)] + scarf('#ff7aa5');
+  const balloon = (x, y, c, tx) => `<path d="M${x} ${y + 22}Q${x - 6} ${y + 50} ${tx} 118" stroke="#c9a3ae" stroke-width="1.4" fill="none"/><g class="floaty"><path transform="translate(${x - 21} ${y - 18}) scale(1.75)" d="${H}" fill="${c}"/><ellipse cx="${x - 7}" cy="${y - 6}" rx="4" ry="6" fill="#fff" opacity=".5" transform="rotate(-25 ${x - 7} ${y - 6})"/></g>`;
+  const rainbow = st >= 7 ? `<g fill="none" stroke-width="9" opacity=".75" stroke-linecap="round">${['#ffb3c9', '#ffd36b', '#a8e6cf', '#a9c8ff'].map((c, i) => `<path d="M${30 + i * 9} 170A${150 - i * 9} ${118 - i * 9} 0 0 1 ${330 - i * 9} 170" stroke="${c}"/>`).join('')}</g>` : '';
+  const wing = (x, y, f) => `<g transform="translate(${x} ${y}) scale(${f} 1)"><ellipse cx="-44" cy="-8" rx="19" ry="11" transform="rotate(-28 -44 -8)" fill="#fff" stroke="#ffc2d5" stroke-width="2"/><ellipse cx="-40" cy="4" rx="14" ry="8" transform="rotate(-12 -40 4)" fill="#fff" stroke="#ffc2d5" stroke-width="2"/></g>`;
+  const wings = st >= 8 ? wing(122, 132, 1) + wing(238, 132, -1) : '';
   const spark = st >= 3 ? [[70, 98], [292, 104], [180, 58], [40, 140], [320, 150]].map(([x, y]) => `<path class="floaty" d="M${x} ${y - 7}l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#ffd36e"/>`).join('') : '';
   return `<svg class="scene" viewBox="0 0 360 190" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
   <g fill="#fff" opacity=".92"><ellipse cx="58" cy="44" rx="30" ry="11"/><ellipse cx="80" cy="36" rx="19" ry="14"/><ellipse cx="44" cy="38" rx="13" ry="10"/><ellipse cx="292" cy="30" rx="30" ry="10"/><ellipse cx="312" cy="24" rx="16" ry="11"/></g>
   <g class="floaty" fill="#ff9fbb"><path transform="translate(118 54) scale(.5)" d="${H}"/><path transform="translate(236 46) scale(.38)" d="${H}" opacity=".75"/><path transform="translate(262 78) scale(.28)" d="${H}" opacity=".6"/></g>${spark}
-  <path d="M-10 190C60 128 140 132 182 144C232 158 300 124 372 142V190Z" fill="#cdeedb"/>
+  ${rainbow}<path d="M-10 190C60 128 140 132 182 144C232 158 300 124 372 142V190Z" fill="#cdeedb"/>
   <path d="M-10 190C90 154 210 172 372 160V190Z" fill="#b7e4c9"/>
-  ${face(122, 132, '#ffd9b3', A)}${face(238, 132, '#ffc7d8', B)}
+  ${st >= 6 ? balloon(82, 62, '#ff6f98', 98) + balloon(286, 58, '#ffb0c8', 264) : ''}${wings}${face(122, 132, '#ffd9b3', A)}${face(238, 132, '#ffc7d8', B)}
   ${names ? names.map((n, i) => { const x = i ? 238 : 122, w = Math.min(90, String(n).length * 12 + 18); return `<rect x="${x - w / 2}" y="166" width="${w}" height="19" rx="9.5" fill="#fff" opacity=".92"/><text x="${x}" y="179.5" text-anchor="middle" font-size="11.5" font-weight="700" fill="#4b2f3a">${esc(cut(n, 6))}</text>`; }).join('') : ''}
   <ellipse cx="160" cy="124" rx="9" ry="6.5" fill="#ffd9b3" transform="rotate(-25 160 124)"/><ellipse cx="200" cy="124" rx="9" ry="6.5" fill="#ffc7d8" transform="rotate(25 200 124)"/>
   <g transform="translate(167 96) scale(1.1)"><path class="beat" d="${H}" fill="#ff6f98"/></g>
@@ -921,10 +998,57 @@ function vMood() {
   };
   return `<div class="card mood">${line(other())}${line(S.who)}
   <div class="mchips" role="group" aria-label="내 오늘 기분">${MOODS.map(m => `<button type="button" class="mchip" data-act="mood" data-v="${m[0]}" aria-pressed="${!!(mine && mine.m === m[0])}"><span aria-hidden="true">${m[1]}</span>${m[2]}</button>`).join('')}</div>
-  <form id="mnf" class="addrow"><input type="text" id="mood-note" maxlength="40" placeholder="오늘 한마디 (선택)" aria-label="오늘 한마디"><button class="btn line" type="submit">남기기</button></form></div>`;
+  <form id="mnf" class="addrow"><input type="text" id="mood-note" maxlength="40" placeholder="오늘 한마디 (선택)" aria-label="오늘 한마디"><button class="btn line" type="submit">남기기</button></form>
+  <button type="button" class="mcal-open" data-act="mcal-open">📅 기분 달력 보기</button></div>`;
+}
+
+/* ---------- which notifications each person wants ---------- */
+const NKINDS = [['answers', '질문 답', '상대가 답하거나 둘 다 답했을 때'], ['moods', '기분', '상대가 기분이나 한마디를 남겼을 때'], ['photos', '사진', '새 사진이 올라왔을 때'], ['pokes', '콕 찌르기', '상대가 콕 찔렀을 때'], ['events', '일정', '새 데이트나 일정이 잡혔을 때'], ['memories', '추억', '새 추억, 둘 다 또 갈래'], ['bucket', '버킷리스트', '담거나 함께 해냈을 때'], ['letters', '편지', '편지가 오거나 열리는 날'], ['morning', '아침 9시 알림', '기념일·생일·데이트·1년 전 오늘'], ['evening', '저녁 6시 알림', '아직 오늘의 질문에 답하지 않았을 때']];
+const nOff = () => ((S.prefs[S.who] || {}).off || []);
+function vNotifChoices() {
+  const off = nOff();
+  return `<p class="f" style="margin:16px 0 2px">받을 알림 고르기</p><ul class="list ntog">${NKINDS.map(([k, t, d]) => { const on = !off.includes(k); return `<li><span class="nt"><b>${t}</b><span class="note">${d}</span></span><button type="button" class="tgl${on ? ' on' : ''}" role="switch" aria-checked="${on}" aria-label="${t} 알림" data-act="ntog" data-v="${k}"><i></i></button></li>`; }).join('')}</ul>
+  <p class="note" style="margin-top:6px">${esc(nm(S.who))}님 폰에만 적용돼요. 끈 알림은 앱 안에서는 그대로 보여요.</p>`;
+}
+
+/* ---------- mood calendar ---------- */
+function vMoodCal() {
+  const {y, m, sel} = S.mcal, first = new Date(y, m, 1), days = new Date(y, m + 1, 0).getDate(), td = ymd(today()), me = S.who, pt = other();
+  const isNow = y === today().getFullYear() && m === today().getMonth();
+  const ems = k => { const x = moodOf(k); return x ? x[1] : ''; };
+  let cells = '';
+  for (let i = 0; i < first.getDay(); i++) cells += '<span class="mc0"></span>';
+  const cnt = {me: {}, pt: {}}; let same = 0, nMe = 0, nPt = 0;
+  for (let d = 1; d <= days; d++) {
+    const ds = ymd(new Date(y, m, d)), a = moodAt(ds, me), b = moodAt(ds, pt);
+    if (a) { nMe++; cnt.me[a.m] = (cnt.me[a.m] || 0) + 1; }
+    if (b) { nPt++; cnt.pt[b.m] = (cnt.pt[b.m] || 0) + 1; }
+    if (a && b && a.m === b.m) same++;
+    cells += `<button type="button" class="mc${ds === td ? ' today' : ''}${sel === ds ? ' sel' : ''}${a && b && a.m === b.m ? ' same' : ''}" data-act="mcal-day" data-v="${ds}"${ds > td ? ' disabled' : ''}><span class="mcd">${d}</span><span class="mce"><i>${a ? ems(a.m) : ''}</i><i>${b ? ems(b.m) : ''}</i></span></button>`;
+  }
+  const top = c => Object.entries(c).sort((p, q) => q[1] - p[1]).slice(0, 3).map(([k, n]) => { const x = moodOf(k); return x ? `<span class="mst">${x[1]} ${x[2]} <b>${n}</b></span>` : ''; }).join('') || '<span class="note">아직 없어요</span>';
+  const sa = sel && moodAt(sel, me), sb = sel && moodAt(sel, pt);
+  const line = (w, x) => `<p class="mcl"><b>${esc(nm(w))}</b> ${x ? `${ems(x.m)} ${esc((moodOf(x.m) || [])[2] || '')}${x.note ? ` · “${esc(x.note)}”` : ''}` : '<span class="note">남기지 않았어요</span>'}</p>`;
+  return `<div class="sheet-bg" data-act="mcal-close-bg"><div class="sheet" role="dialog" aria-label="기분 달력">
+  <div class="calh"><button class="ib" type="button" data-act="mcal-nav" data-v="-1" aria-label="이전 달">‹</button><h2>${y}년 ${m + 1}월 기분</h2><button class="ib" type="button" data-act="mcal-nav" data-v="1" aria-label="다음 달"${isNow ? ' disabled' : ''}>›</button></div>
+  <p class="note" style="text-align:center;margin:0 0 8px">칸마다 왼쪽은 ${esc(nm(me))}, 오른쪽은 ${esc(nm(pt))}님 기분이에요</p>
+  <div class="mcal">${WD.map(w => `<span class="mcw">${w}</span>`).join('')}${cells}</div>
+  ${sel ? `<div class="mcdet"><p class="note" style="margin:0 0 4px">${dotd(sel)} (${WD[parse(sel).getDay()]})</p>${line(me, sa)}${line(pt, sb)}</div>` : ''}
+  <div class="mcs"><p class="f">${esc(nm(me))} · ${nMe}일 남김</p><div class="msts">${top(cnt.me)}</div>
+  <p class="f">${esc(nm(pt))} · ${nPt}일 남김</p><div class="msts">${top(cnt.pt)}</div>
+  ${same ? `<p class="mcsame">💞 이번 달 같은 기분이었던 날 ${same}일</p>` : ''}</div>
+  <div class="row"><button class="btn line" type="button" data-act="mcal-close" style="flex:1">닫기</button></div></div></div>`;
 }
 
 /* ---------- letters that open on a chosen day ---------- */
+const PAPERS = [['rose', '분홍 줄노트'], ['mint', '민트 모눈'], ['butter', '버터 도트'], ['lilac', '라일락 하트'], ['sky', '하늘 구름'], ['kraft', '크라프트']];
+const INKS = [['berry', '#5a2b40', '초코'], ['straw', '#e0386f', '딸기'], ['blue', '#3a66c4', '파랑'], ['green', '#2b8560', '초록'], ['violet', '#7447c9', '보라']];
+const STICKERS = ['💗', '💌', '🌷', '🍓', '⭐', '🌙', '🐻', '🐰', '🎀', '☁️', '🍀', '🧸', '✨', '🌈', '🍰', '🐱'];
+const SLOTS = [[90, 8], [91, 91], [10, 95], [94, 50], [70, 95], [93, 28], [93, 72], [45, 96], [74, 6], [27, 96], [57, 5], [82, 60]];
+const paperOf = l => PAPERS.some(x => x[0] === (l && l.paper)) ? l.paper : 'rose';
+const inkOf = l => (INKS.find(x => x[0] === (l && l.ink)) || INKS[0])[1];
+const stkOf = l => (Array.isArray(l && l.stickers) ? l.stickers : []).filter(k => k && STICKERS.includes(k.e)).slice(0, 12);
+const stkHTML = l => stkOf(l).map((k, i) => `<span class="lstk" data-i="${i}" style="left:${Number(k.x) || 50}%;top:${Number(k.y) || 50}%;--r:${Number(k.r) || 0}deg" aria-hidden="true">${k.e}</span>`).join('');
 const lOpen = l => l.openAt <= ymd(today());
 const lIn = () => S.letters.filter(l => l.from === other());
 const lOut = () => S.letters.filter(l => l.from === S.who);
@@ -935,7 +1059,8 @@ function envHTML(l) {
   const open = lOpen(l), mine = l.from === S.who, n = diff(today(), parse(l.openAt));
   const sub = open ? `${dotd(l.openAt)}에 열렸어요` : `${dotd(l.openAt)}에 열려요`;
   const badge = mine ? (open ? (l.readAt ? '읽었어요' : '안 읽음') : 'D-' + n) : open ? (l.readAt ? '' : '<span class="eb new">NEW</span>') : 'D-' + n;
-  return `<button type="button" class="env${open ? '' : ' sealed'}" data-act="l-read" data-v="${esc(l.id)}"><span class="ei" aria-hidden="true"></span><span class="em"><b>${esc(l.title || (mine ? nm(other()) + '에게' : nm(l.from) + '의 편지'))}</b><span>${sub}</span></span>${badge.startsWith('<') ? badge : badge ? `<span class="eb">${badge}</span>` : ''}</button>`;
+  const seal = stkOf(l)[0];
+  return `<button type="button" class="env pp-${paperOf(l)}${open ? '' : ' sealed'}" data-act="l-read" data-v="${esc(l.id)}"><span class="ei${seal ? ' has-seal' : ''}" aria-hidden="true">${seal ? `<i class="seal">${seal.e}</i>` : ''}</span><span class="em"><b>${esc(l.title || (mine ? nm(other()) + '에게' : nm(l.from) + '의 편지'))}</b><span>${l.replyTo ? '답장 · ' : ''}${sub}</span></span>${badge.startsWith('<') ? badge : badge ? `<span class="eb">${badge}</span>` : ''}</button>`;
 }
 function vLetters() {
   const ins = lSort(lIn()), outs = lSort(lOut());
@@ -990,21 +1115,25 @@ function vLetterView() {
   if (!l) { S.letter = null; return ''; }
   const mine = l.from === S.who, open = lOpen(l);
   return `<div class="sheet-bg" data-act="l-close-bg"><div class="sheet" role="dialog" aria-label="편지"><h2>${esc(l.title || '편지')} <small>${open ? `${dotd(l.openAt)}에 열림` : `${dotd(l.openAt)}에 열려요`}</small></h2>
-  ${!mine && !open ? '' : `<div class="paper"><span class="to">${esc(nm(mine ? other() : S.who))}에게</span>${esc(l.text)}<span class="fr">${dotd(ymd(new Date(l.at)))} · ${esc(nm(l.from))}</span></div>`}
+  ${l.replyTo ? `<p class="note" style="margin:0 0 4px">${(() => { const o = S.letters.find(x => x.id === l.replyTo); return o ? `‘${esc(o.title || '편지')}’에 보내는 답장` : '답장'; })()}</p>` : ''}
+  ${!mine && !open ? '' : `<div class="paper pp-${paperOf(l)}" style="--lk:${inkOf(l)}"><span class="to">${esc(nm(mine ? other() : S.who))}에게</span>${esc(l.text)}<span class="fr">${dotd(ymd(new Date(l.at)))} · ${esc(nm(l.from))}</span>${stkHTML(l)}</div>`}
   ${mine && !open ? `<p class="note" style="margin-top:10px">${esc(nm(other()))}님에게는 ${fmtD(l.openAt)}까지 봉투만 보여요.</p>` : ''}
   ${mine && open ? `<p class="note" style="margin-top:10px">${l.readAt ? `${esc(nm(other()))}님이 ${when(l.readAt)}에 읽었어요` : `${esc(nm(other()))}님이 아직 안 읽었어요`}</p>` : ''}
   ${S.letterDel ? `<p class="note" style="margin-top:12px">이 편지를 지울까요? 되돌릴 수 없어요.</p><div class="row"><button class="btn" type="button" data-act="l-del-yes">지우기</button><button class="btn line" type="button" data-act="l-del-no">취소</button></div>`
-    : `<div class="row"><button class="btn line" type="button" data-act="l-close" style="flex:1">닫기</button>${mine ? '<button class="btn ghost" type="button" data-act="l-del">삭제</button>' : ''}</div>`}</div></div>`;
+    : `<div class="row">${!mine && open ? `<button class="btn" type="button" data-act="l-reply" data-v="${esc(l.id)}" style="flex:1">💌 답장 쓰기</button>` : ''}<button class="btn line" type="button" data-act="l-close" style="flex:1">닫기</button>${mine ? '<button class="btn ghost" type="button" data-act="l-del">삭제</button>' : ''}</div>`}</div></div>`;
 }
 function vLetterSheet() {
   const t = today(), td = ymd(t), opts = [['오늘 바로', td]];
   const na = annivs().find(a => diff(t, a.d) > 0);
   if (na) opts.push([`${na.label} (${dlab(na.d)})`, ymd(na.d)]);
   opts.push(['1년 뒤', ymd(new Date(t.getFullYear() + 1, t.getMonth(), t.getDate()))]);
-  const L = S.lsheet;
-  return `<div class="sheet-bg"><form class="sheet" id="lf" role="dialog" aria-label="편지 쓰기"><h2>${esc(nm(other()))}님에게 편지 쓰기</h2>
-  <label class="f" for="l-title" style="margin-top:4px">제목 (선택)</label><input type="text" id="l-title" maxlength="30" placeholder="예: 300일 축하해">
-  <label class="f" for="l-text">편지</label><textarea id="l-text" maxlength="3000" style="min-height:180px" placeholder="하고 싶은 말을 천천히 적어 보세요" required></textarea>
+  const L = S.lsheet, pp = paperOf(L), ink = (INKS.find(x => x[0] === L.ink) || INKS[0])[0];
+  return `<div class="sheet-bg"><form class="sheet" id="lf" role="dialog" aria-label="편지 쓰기"><h2>${esc(nm(other()))}님에게 ${L.replyTo ? '답장 쓰기' : '편지 쓰기'}</h2>
+  <label class="f" for="l-title" style="margin-top:4px">제목 (선택)</label><input type="text" id="l-title" maxlength="30" placeholder="예: 300일 축하해" value="${esc(L.title || '')}">
+  <p class="f">편지지</p><div class="lpps" role="group" aria-label="편지지">${PAPERS.map(([k, t]) => `<button type="button" class="lpp" data-act="l-paper" data-v="${k}" aria-pressed="${pp === k}"><span class="sw pp-${k}"></span>${t}</button>`).join('')}</div>
+  <p class="f">글씨 색</p><div class="links" role="group" aria-label="글씨 색">${INKS.map(([k, c, t]) => `<button type="button" class="lnk" data-act="l-ink" data-v="${k}" aria-pressed="${ink === k}" aria-label="${t}" style="--c:${c}"></button>`).join('')}</div>
+  <p class="f">스티커 <small class="note">눌러서 붙이고, 끌어서 옮기고, 붙인 걸 톡 누르면 떼요 (${stkOf(L).length}/12)</small></p><div class="lstks">${STICKERS.map(e => `<button type="button" class="lsb" data-act="l-stk" data-v="${e}" aria-label="스티커 ${e} 붙이기">${e}</button>`).join('')}</div>
+  <label class="f" for="l-text">편지</label><div class="paper lpaper pp-${pp}" style="--lk:${inkOf(L)}"><span class="to">${esc(nm(other()))}에게</span><textarea id="l-text" maxlength="3000" placeholder="하고 싶은 말을 천천히 적어 보세요" required>${esc(L.text || '')}</textarea><span class="fr">${dotd(ymd(today()))} · ${esc(nm(S.who))}</span>${stkHTML(L)}</div>
   <label class="f" for="l-open">여는 날</label><input type="date" id="l-open" min="${td}" value="${esc(L.openAt || td)}" required>
   <div class="chips" style="margin-top:8px">${opts.map(o => `<button type="button" class="chip" data-act="l-when" data-v="${o[1]}">${esc(o[0])}</button>`).join('')}</div>
   <p class="note" style="margin-top:10px">여는 날 전까지 ${esc(nm(other()))}님에게는 봉투만 보이고, 그날 아침 9시에 알림이 가요.</p>
@@ -1062,7 +1191,7 @@ function vQ() {
   const td = ymd(today()), mine = ans(td, S.who), theirs = ans(td, other());
   const edit = !mine || S.editing;
   const past = [...new Set(Object.values(S.answers).map(a => a.date))].filter(d => d < td).sort().reverse().slice(0, 30);
-  return `<div class="sec"><p class="sh">함께 키우는 캐릭터</p>${vGrow()}<p class="sh">오늘의 질문 · ${dayNo()}일째</p><div class="card"><p class="q">${esc(qOf(td))}</p>
+  return `<div class="sec"><p class="sh">함께 키우는 캐릭터</p>${vGrow()}<p class="sh">오늘의 질문 · ${dayNo()}일째</p><div class="card"><p class="q">${esc(qOf(td))}</p>${!mine && !theirs ? (S.qswap || {})[td] ? `<p class="note qsw">오늘은 질문을 한 번 바꿨어요</p>` : `<button type="button" class="qsw-b" data-act="q-swap">🔄 다른 질문 받기 <small>하루 한 번 · 둘 다 바뀌어요</small></button>` : ''}
   <span class="who-l">${S.look === 'cute' ? mini(S.who, 24) : ''}${esc(nm(S.who))} (나)</span>
   ${edit ? `<textarea id="ans" maxlength="500" placeholder="솔직하게 적어 보세요. 둘 다 답하면 서로의 답이 열려요">${esc(S.draft)}</textarea><div class="row"><button class="btn" type="button" data-act="save-ans">${mine ? '수정 저장' : '답 저장하기'}</button>${mine ? '<button class="btn line" type="button" data-act="cancel-edit">취소</button>' : ''}</div>`
     : `<div class="bub me">${esc(mine.text)}</div><div class="row"><button class="btn line" type="button" data-act="edit-ans">수정</button></div>`}
@@ -1362,7 +1491,7 @@ function vMemSheet() {
 }
 
 /* ---------- character growth ---------- */
-const STN = ['아기', '새싹', '꽃봉오리', '활짝', '왕관'], STT = [0, 3, 7, 14, 30];
+const STN = ['아기', '새싹', '꽃봉오리', '활짝', '왕관', '단짝 목도리', '하트 풍선', '무지개', '천사 날개'], STT = [0, 3, 7, 14, 30, 50, 100, 200, 365];
 const stageOf = n => STT.reduce((s, t, i) => n >= t ? i : s, 0);
 function streak() {
   const both = ds => ans(ds, 'me') && ans(ds, 'partner');
@@ -1378,7 +1507,8 @@ function vGrow() {
   return `<div class="card grow">${scene(s)}<div class="gw"><b>${STN[s]}</b><span>둘 다 답한 지 ${n}일 연속</span></div>
   <div class="pbar"><i style="width:${pct}%"></i></div>
   <p class="note" style="margin-top:8px">${nx ? `${nx - n}일 더 이어가면 '${STN[s + 1]}' 단계로 자라요` : '최고 단계예요. 계속 이어가 보세요'}${todayBoth ? '' : ' · 오늘 둘 다 답하면 +1일'}</p>
-  <div class="ladder">${STN.map((x, i) => `<span class="${i <= s ? 'on' : ''}">${x}<small>${STT[i]}일</small></span>`).join('')}</div></div>`;
+  <div class="ladder">${STN.map((x, i) => [x, i]).slice(Math.max(0, Math.min(s - 2, STN.length - 5)), Math.max(0, Math.min(s - 2, STN.length - 5)) + 5).map(([x, i]) => `<span class="${i <= s ? 'on' : ''}${i === s ? ' cur' : ''}">${x}<small>${STT[i]}일</small></span>`).join('')}</div>
+  ${nx ? `<p class="note" style="margin-top:8px">다음 선물: ${['', '새싹이 돋아요', '꽃봉오리가 맺혀요', '꽃이 활짝 피어요', '왕관을 써요', '커플 목도리를 둘러요', '하트 풍선을 들어요', '뒤에 무지개가 떠요', '천사 날개가 돋아요'][s + 1]}</p>` : ''}</div>`;
 }
 
 /* ---------- year recap ---------- */
@@ -1506,7 +1636,8 @@ function vViewer() {
 
 function render() {
   $('.app').dataset.look = S.look;
-  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter) ? 'hidden' : '';
+  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter || S.mcal) ? 'hidden' : '';
+  const lt = $('#l-text'); if (lt) growTA(lt);
   const a = document.activeElement, aid = a && a.id, ss = a && a.selectionStart;
   for (const w of ['me', 'partner']) { const b = $('#who-' + w); b.innerHTML = (S.look === 'cute' ? mini(w, 22) : '') + `<span>${esc(nm(w))}</span>`; b.setAttribute('aria-pressed', String(S.who === w)); }
   $('.brand').innerHTML = (S.look === 'cute' ? duo(22) : '<i></i>') + '우리 둘';
@@ -1525,7 +1656,7 @@ function render() {
   if (S.clearNote) { delete keep.pnote; S.clearNote = false; }
   $('.app').classList.toggle('gated', !!S.gate || !S.loaded || !S.couple);
   $('#view').innerHTML = S.gate ? vGate() : !S.loaded ? vLoading() : S.err ? `<div class="empty">${esc(S.err)}</div>` : !S.couple ? vSetup() : ({home: vHome, q: vQ, cal: vCal, mem: vMem, ph: vPh, us: vUs})[S.tab]();
-  $('#ov').innerHTML = S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
+  $('#ov').innerHTML = S.mcal ? vMoodCal() : S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
   if (S.recap && S.recap.jump != null) { const tr = $('#rct'); if (tr) tr.scrollLeft = S.recap.jump * tr.clientWidth; S.recap.jump = null; }
   for (const k in keep) { const el = document.getElementById(k); if (el) { if (el.type === 'checkbox') el.checked = keep[k]; else el.value = keep[k]; } }
   tick();
@@ -1588,7 +1719,7 @@ document.addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
   const act = b.dataset.act, v = b.dataset.v;
   if (act === 'tab') go(v);
-  else if (act === 'who') { S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
+  else if (act === 'who') { S.mcal = null; S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
   else if (act === 'save-ans') {
     const text = (S.draft || '').trim(); if (!text) { toast('답을 먼저 적어 주세요'); return; }
     const td = ymd(today());
@@ -1670,8 +1801,38 @@ document.addEventListener('click', async e => {
   else if (act === 'roul-filter') { S.roulFilter = v; S.roul = null; render(); }
   else if (act === 'roul-spin') { spinRoulette(); }
   else if (act === 'roul-plan') { const r = S.roul; if (r) { S.sheetDel = false; S.sheet = {title: r.t, date: ymd(addDays(today(), 7)), kind: 'date', who: 'both', repeat: 'none', alerts: [1, 0], ...(r.bid ? {bucketId: r.bid} : {})}; render(); } }
-  else if (act === 'l-new') { S.viewer = null; S.lsheet = {openAt: ''}; render(); const t = $('#l-text'); if (t) t.focus(); }
+  else if (act === 'l-new') { S.viewer = null; S.lsheet = {openAt: '', title: '', text: '', paper: 'rose', ink: 'berry', stickers: []}; render(); const t = $('#l-text'); if (t) t.focus(); }
   else if (act === 'l-cancel') { S.lsheet = null; render(); }
+  else if (act === 'l-paper') { if (S.lsheet) { S.lsheet.paper = v; render(); } }
+  else if (act === 'l-ink') { if (S.lsheet) { S.lsheet.ink = v; render(); } }
+  else if (act === 'l-stk') {
+    const L = S.lsheet; if (!L) return;
+    L.stickers = stkOf(L);
+    if (L.stickers.length >= 12) { toast('스티커는 12개까지 붙일 수 있어요'); return; }
+    const [x, y] = SLOTS[L.stickers.length % SLOTS.length], j = () => Math.round((Math.random() - .5) * 6);
+    L.stickers.push({e: v, x: Math.min(96, Math.max(4, x + j())), y: Math.min(96, Math.max(4, y + j())), r: Math.round((Math.random() - .5) * 36)}); render();
+  }
+  else if (act === 'l-reply') {
+    const l = S.letters.find(x => x.id === v); if (!l) return;
+    S.letter = null; S.letterDel = false; S.lsheet = {openAt: '', title: ('Re: ' + (l.title || '편지')).slice(0, 30), text: '', paper: paperOf(l), ink: (INKS.find(x => x[0] === l.ink) || INKS[0])[0], stickers: [], replyTo: l.id}; render();
+    const t = $('#l-text'); if (t) t.focus();
+  }
+  else if (act === 'mcal-open') { const t = today(); S.mcal = {y: t.getFullYear(), m: t.getMonth(), sel: ymd(t)}; render(); }
+  else if (act === 'mcal-nav') { const d = new Date(S.mcal.y, S.mcal.m + Number(v), 1); if (d <= today()) { S.mcal = {y: d.getFullYear(), m: d.getMonth(), sel: ''}; render(); } }
+  else if (act === 'mcal-day') { S.mcal.sel = S.mcal.sel === v ? '' : v; render(); }
+  else if (act === 'mcal-close' || (act === 'mcal-close-bg' && e.target === b)) { S.mcal = null; render(); }
+  else if (act === 'q-swap') {
+    const td = ymd(today());
+    if (ans(td, 'me') || ans(td, 'partner')) { toast('벌써 답이 있어서 바꿀 수 없어요'); return; }
+    if ((S.qswap || {})[td]) { toast('오늘은 이미 한 번 바꿨어요'); return; }
+    S.draft = '';
+    if (await W.qswap(td, {n: 1, by: S.who, at: Date.now()})) { burst(8); toast(paired() ? `새 질문이에요. ${nm(other())}님 화면도 같이 바뀌었어요` : '새 질문으로 바꿨어요'); }
+  }
+  else if (act === 'ntog') {
+    const off = nOff(), next = off.includes(v) ? off.filter(k => k !== v) : [...off, v];
+    const t = (NKINDS.find(k => k[0] === v) || [])[1];
+    if (await W.prefs(S.who, {off: next})) toast(next.includes(v) ? `${t} 알림을 껐어요` : `${t} 알림을 켰어요`);
+  }
   else if (act === 'l-when') { const el = $('#l-open'); if (el) el.value = v; if (S.lsheet) S.lsheet.openAt = v; }
   else if (act === 'l-read') {
     const l = S.letters.find(x => x.id === v); if (!l) return;
@@ -1739,12 +1900,38 @@ document.addEventListener('click', async e => {
   else if (act === 'del-no') { S.confirmDel = false; render(); }
   else if (act === 'del-yes') { const p = S.photos.find(x => x.id === S.viewer); S.confirmDel = false; S.viewer = null; if (p && await W.delPhoto(p)) toast('사진을 지웠어요'); render(); }
 });
-document.addEventListener('input', e => { if (e.target.id === 'ans') S.draft = e.target.value; if (e.target.id === 'm-place') { if (S.msheet) S.msheet.place = e.target.value; const sel = ($('#m-geo') || {}).value || ''; const l = $('#m-geo-l'); if (l && !sel) l.textContent = geoLabel(geoFind(e.target.value), sel); } });
+function growTA(t) { t.style.height = 'auto'; t.style.height = Math.max(192, t.scrollHeight) + 'px'; }
+let stk = null;
+document.addEventListener('pointerdown', e => {
+  const el = e.target.closest && e.target.closest('.lpaper .lstk'); if (!el || !S.lsheet) return;
+  e.preventDefault();
+  stk = {el, i: Number(el.dataset.i), x0: e.clientX, y0: e.clientY, moved: false, box: el.parentElement.getBoundingClientRect()};
+  try { el.setPointerCapture(e.pointerId); } catch (_) {}
+  el.classList.add('drag');
+});
+document.addEventListener('pointermove', e => {
+  if (!stk) return;
+  if (Math.hypot(e.clientX - stk.x0, e.clientY - stk.y0) > 6) stk.moved = true;
+  if (!stk.moved) return;
+  const b = stk.box, x = Math.min(97, Math.max(3, (e.clientX - b.left) / b.width * 100)), y = Math.min(97, Math.max(3, (e.clientY - b.top) / b.height * 100));
+  stk.el.style.left = x + '%'; stk.el.style.top = y + '%'; stk.x = x; stk.y = y;
+});
+document.addEventListener('pointerup', () => {
+  if (!stk) return;
+  const {i, moved, x, y, el} = stk, L = S.lsheet; stk = null; el.classList.remove('drag');
+  if (!L) return;
+  L.stickers = stkOf(L);
+  if (!moved) { L.stickers.splice(i, 1); render(); return; }
+  if (L.stickers[i]) { L.stickers[i].x = x; L.stickers[i].y = y; }
+});
+document.addEventListener('pointercancel', () => { if (stk) { stk.el.classList.remove('drag'); stk = null; } });
+document.addEventListener('input', e => { if (e.target.id === 'ans') S.draft = e.target.value; if (S.lsheet && e.target.id === 'l-text') { S.lsheet.text = e.target.value; growTA(e.target); } if (S.lsheet && e.target.id === 'l-title') S.lsheet.title = e.target.value; if (e.target.id === 'm-place') { if (S.msheet) S.msheet.place = e.target.value; const sel = ($('#m-geo') || {}).value || ''; const l = $('#m-geo-l'); if (l && !sel) l.textContent = geoLabel(geoFind(e.target.value), sel); } });
 document.addEventListener('scroll', e => { if (e.target && e.target.id === 'rct') rcSync(); }, true);
 document.addEventListener('change', e => { if (e.target.id === 'm-file') { const f = [...e.target.files]; e.target.value = ''; uploadMem(f); return; } if (e.target.id === 'm-geo') { const sel = e.target.value, pl = $('#m-place'); if (S.msheet) S.msheet.geo = sel; const l = $('#m-geo-l'); if (l) l.textContent = geoLabel(sel && sel !== '-' ? geoByName(sel) : geoFind(pl ? pl.value : ''), sel); return; } if (e.target.id === 'di-always') { S.diAlways = e.target.checked; ls.set('ud-di', S.diAlways ? '1' : '0'); tick(); return; } if (e.target.id === 'file') { const f = [...e.target.files]; e.target.value = ''; upload(f); } });
 document.addEventListener('keydown', e => {
   if (e.target.matches && e.target.matches('label[for=file]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#file').click(); }
   if (e.target.matches && e.target.matches('label[for=m-file]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#m-file').click(); return; }
+  if (S.mcal && e.key === 'Escape') { S.mcal = null; render(); return; }
   if (S.sheet && e.key === 'Escape') { S.sheet = null; S.sheetDel = false; render(); return; }
   if (S.msheet && e.key === 'Escape') { S.msheet = null; S.msheetDel = false; render(); return; }
   if ((S.lsheet || S.letter) && e.key === 'Escape') { S.lsheet = null; S.letter = null; S.letterDel = false; render(); return; }
@@ -1771,7 +1958,8 @@ document.addEventListener('submit', async e => {
     if (!text) { toast('편지 내용을 적어 주세요'); g('l-text').focus(); return; }
     if (!isDate(openAt) || openAt < td) { toast('여는 날은 오늘이나 그 뒤로 골라 주세요'); return; }
     const id = 'l' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    if (await W.letter(id, {from: S.who, title, text, openAt, at: Date.now(), readAt: 0})) { S.lsheet = null; S.memTab = 'lt'; if (S.tab !== 'mem') go('mem'); else render(); burst(18); toast(openAt === td ? '편지를 보냈어요' : `${fmtD(openAt)}에 열리는 편지를 넣었어요`); }
+    const L = S.lsheet || {};
+    if (await W.letter(id, {from: S.who, title, text, openAt, at: Date.now(), readAt: 0, paper: paperOf(L), ink: (INKS.find(x => x[0] === L.ink) || INKS[0])[0], stickers: stkOf(L).map(k => ({e: k.e, x: Math.round(k.x * 10) / 10, y: Math.round(k.y * 10) / 10, r: Math.round(k.r) || 0})), replyTo: L.replyTo || ''})) { S.lsheet = null; S.memTab = 'lt'; if (S.tab !== 'mem') go('mem'); else render(); burst(18); toast(openAt === td ? '편지를 보냈어요' : `${fmtD(openAt)}에 열리는 편지를 넣었어요`); }
     return;
   }
   if (e.target.id === 'bf') {
@@ -1823,7 +2011,7 @@ let sw = null;
 document.addEventListener('touchstart', e => {
   if (e.touches.length !== 1) { sw = null; return; }
   const t = e.touches[0], el = e.target;
-  if (S.sheet || S.msheet || S.recap || S.lsheet || S.letter || el.closest('input,textarea,select,.di,.mstrip,.mpl,.kmap')) { sw = null; return; }
+  if (S.sheet || S.msheet || S.recap || S.lsheet || S.letter || S.mcal || el.closest('input,textarea,select,.di,.mstrip,.mpl,.kmap')) { sw = null; return; }
   if (!S.viewer && !el.closest('#view')) { sw = null; return; }
   sw = {x: t.clientX, y: t.clientY, t: Date.now(), cal: !!el.closest('.calbox')};
 }, {passive: true});
@@ -1929,7 +2117,7 @@ function vPushBanner() {
 function vRealSettings() {
   if (!S.real || !S.info) return '';
   const st = {on: '이 폰에서 알림을 받고 있어요', off: '알림이 꺼져 있어요', denied: '설정 앱 → 알림 → 우리 둘에서 알림을 허용해 주세요', 'need-install': '홈 화면에 추가한 앱에서만 알림을 켤 수 있어요', unsupported: '이 기기에서는 알림을 지원하지 않아요'}[S.push] || '확인하는 중…';
-  return `<p class="sh">알림</p><div class="card"><p style="margin:0">${st}</p><div class="row">${S.push === 'on' ? '<button class="btn ghost" type="button" data-act="push-test">테스트 알림 보내기</button><button class="btn line" type="button" data-act="push-off">끄기</button>' : S.push === 'off' ? '<button class="btn" type="button" data-act="push-on">알림 켜기</button>' : ''}</div><p class="note" style="margin-top:10px">받는 알림: 상대의 답·기분·사진·콕·일정·추억·편지, 아침 9시 기념일/데이트/열리는 편지, 저녁 6시 오늘의 질문</p></div>
+  return `<p class="sh">알림</p><div class="card"><p style="margin:0">${st}</p><div class="row">${S.push === 'on' ? '<button class="btn ghost" type="button" data-act="push-test">테스트 알림 보내기</button><button class="btn line" type="button" data-act="push-off">끄기</button>' : S.push === 'off' ? '<button class="btn" type="button" data-act="push-on">알림 켜기</button>' : ''}</div>${vNotifChoices()}</div>
   <p class="sh">연결</p><div class="card"><p style="margin:0">${S.info.partner_joined ? `${esc(nm('me'))}님과 ${esc(nm('partner'))}님이 연결되어 있어요` : '아직 상대가 들어오지 않았어요'}</p><p class="note" style="margin-top:8px">초대 코드</p><div class="bigcode sm">${esc(S.info.code)}</div>${S.info.partner_joined ? '' : '<div class="row"><button class="btn" type="button" data-act="invite-share">초대 링크 보내기</button></div>'}</div>
   <p class="sh">홈 화면 위젯</p><div class="card"><p style="margin:0">함께한 날, 다음 데이트 D-day, ${esc(nm(other()))}님 기분과 새 사진을 홈 화면과 잠금 화면에 띄워요.</p><p class="note" style="margin-top:6px">웹앱은 아이폰 위젯을 직접 만들 수 없어서, 무료 앱 Scriptable이 대신 보여줘요.</p>
   <ol class="steps"><li>App Store에서 <b>Scriptable</b>(무료)을 설치해요.</li><li>아래 <b>위젯 코드 복사</b>를 눌러요.</li><li>Scriptable을 열고 오른쪽 위 <b>+</b> → 빈 화면을 길게 눌러 <b>붙여넣기</b> → 맨 위 이름을 <b>우리 둘</b>로 바꾸고 <b>완료</b>.</li><li>홈 화면 빈 곳을 길게 누르고 <b>편집 → 위젯 추가 → Scriptable</b>에서 크기를 골라 추가해요.</li><li>추가된 위젯을 길게 눌러 <b>위젯 편집 → Script → 우리 둘</b>을 골라요.</li></ol>
@@ -2009,6 +2197,8 @@ function attachDB(timer) {
   db.collection('events').onSnapshot(s => { S.events = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
   db.doc('pokes/latest').onSnapshot(s => { S.poke = s.exists ? s.data() : null; render(); }, () => {});
   db.collection('moods').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.moods = m; render(); }, () => {});
+  db.collection('qswaps').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.qswap = m; render(); }, () => {});
+  db.collection('prefs').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.prefs = m; render(); }, () => {});
   db.collection('letters').onSnapshot(s => { S.letters = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
 }
 boot();

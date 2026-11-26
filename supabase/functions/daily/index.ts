@@ -1,5 +1,5 @@
 // Called by cron at 09:00 (reminders for dates, anniversaries, birthdays) and 18:00 Korea time (today's question).
-import { addDays, admin, coupleNames, cors, diffDays, fmtTime, json, nextStart, sendToUser, todayKST, trusted, type Ev, type Role } from '../_shared/common.ts';
+import { addDays, admin, coupleNames, cors, diffDays, fmtTime, json, nextStart, sendToUser, todayKST, trusted, wants, type Ev, type Role } from '../_shared/common.ts';
 
 const dl = (n: number) => (n === 0 ? '오늘' : `D-${n}`);
 const sameMD = (a: string, b: string) => a.slice(5) === b.slice(5);
@@ -21,6 +21,7 @@ Deno.serve(async (req) => {
       const has = new Set((ans ?? []).map((a) => a.id));
       for (const role of ['me', 'partner'] as Role[]) {
         if (has.has(`${today}_${role}`)) continue;
+        if (!(await wants(c.id, role, 'evening'))) continue;
         const other: Role = role === 'me' ? 'partner' : 'me';
         const body = has.has(`${today}_${other}`) ? `${names[other]}님은 벌써 답했어요. 내 답을 쓰면 열려요` : '오늘의 질문이 기다리고 있어요';
         sent += await sendToUser(c[role], { title: '오늘의 질문', body, tag: `q-${today}`, url: './#q' });
@@ -34,6 +35,7 @@ Deno.serve(async (req) => {
       const from = (l.data as any).from as Role;
       if (from !== 'me' && from !== 'partner') continue;
       const to: Role = from === 'me' ? 'partner' : 'me';
+      if (!(await wants(c.id, to, 'letters'))) continue;
       sent += await sendToUser(c[to], { title: '편지가 도착했어요 💌', body: `${names[from]}님이 남긴 편지가 오늘 열렸어요`, tag: `letter-${l.id}`, url: './#mem' });
     }
 
@@ -79,8 +81,7 @@ Deno.serve(async (req) => {
       tag: `daily-${today}`,
       url: items.length ? './#cal' : './#home',
     };
-    sent += await sendToUser(c.me, msg);
-    sent += await sendToUser(c.partner, msg);
+    for (const role of ['me', 'partner'] as Role[]) if (await wants(c.id, role, 'morning')) sent += await sendToUser(c[role], msg);
   }
   return json({ slot, today, sent });
 });

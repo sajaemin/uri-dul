@@ -99,3 +99,10 @@ export function snapMoment(coupleId: string, date: string): number {
   return 600 + (h % 66) * 10;
 }
 export const nowMinKST = () => { const d = new Date(Date.now() + KST); return d.getUTCHours() * 60 + d.getUTCMinutes(); };
+
+// Each person can turn off kinds of notifications in settings (docs coll 'prefs', id 'me' or 'partner', data.off = [...kinds]).
+export async function wants(coupleId: string, role: Role, kind: string): Promise<boolean> {
+  const { data } = await admin.from('docs').select('data').eq('couple_id', coupleId).eq('coll', 'prefs').eq('id', role).maybeSingle();
+  const off = (data?.data as any)?.off;
+  return !(Array.isArray(off) && off.includes(kind));
+}

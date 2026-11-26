@@ -73,6 +73,26 @@ try {
     await shot(A, '03-A-mood');
   });
 
+  await step('the mood calendar shows both moods for today', async () => {
+    await A.click('.mchip[data-v=happy]');
+    await A.click('[data-act=mcal-open]');
+    await A.locator('.mc.today .mce', { hasText: '🥺' }).filter({ hasText: '😊' }).waitFor();
+    await shot(A, '03b-A-mood-calendar');
+    await A.click('[data-act=mcal-close]');
+  });
+
+  await step('a swapped question changes on both phones, once a day', async () => {
+    await tab(A, 'q'); await tab(B, 'q');
+    const before = await B.locator('.q').first().innerText();
+    await A.click('[data-act=q-swap]');
+    await A.locator('.qsw').waitFor();
+    const after = await A.locator('.q').first().innerText();
+    if (after === before) throw new Error('question did not change');
+    await B.locator('.q', { hasText: after }).waitFor();
+    await B.locator('.qsw').waitFor();
+    if (await B.locator('[data-act=q-swap]').count()) throw new Error('could swap twice');
+  });
+
   await step('the question opens only after both answer', async () => {
     await tab(A, 'q'); await A.fill('#ans', 'A가 쓴 답이에요'); await A.click('[data-act=save-ans]');
     await tab(B, 'q');
@@ -126,6 +146,23 @@ try {
     await shot(B, '07-B-letter');
     await B.click('[data-act=l-close]');
     await A.locator('.env', { hasText: '오늘 편지' }).filter({ hasText: '읽었어요' }).waitFor();
+  });
+
+  await step('a decorated letter arrives as written, and B replies', async () => {
+    await tab(A, 'mem'); await A.click('[data-act=mem-tab][data-v=lt]');
+    await A.click('[data-act=l-new]');
+    await A.click('[data-act=l-paper][data-v=mint]'); await A.click('[data-act=l-ink][data-v=blue]');
+    await A.click('[data-act=l-stk][data-v="🍓"]'); await A.click('[data-act=l-stk][data-v="🐰"]');
+    await A.fill('#l-title', '꾸민 편지'); await A.fill('#l-text', '스티커 붙인 편지야');
+    await A.click('#lf button[type=submit]');
+    await B.locator('.env', { hasText: '꾸민 편지' }).click();
+    await B.locator('.paper.pp-mint .lstk', { hasText: '🍓' }).waitFor();
+    await B.locator('.paper.pp-mint .lstk', { hasText: '🐰' }).waitFor();
+    await shot(B, '07b-B-decorated-letter');
+    await B.click('[data-act=l-reply]');
+    await B.fill('#l-text', '답장이야');
+    await B.click('#lf button[type=submit]');
+    await A.locator('.env', { hasText: 'Re: 꾸민 편지' }).filter({ hasText: '답장' }).waitFor();
   });
 
   await step('the roulette picks something', async () => {

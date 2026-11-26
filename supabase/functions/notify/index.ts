@@ -1,5 +1,5 @@
 // Called by the docs table trigger. Tells the other person what just happened.
-import { admin, coupleNames, cors, fmtDate, fmtTime, json, sendToUser, todayKST, trusted, type Msg, type Role } from '../_shared/common.ts';
+import { admin, coupleNames, cors, fmtDate, fmtTime, json, sendToUser, todayKST, trusted, wants, type Msg, type Role } from '../_shared/common.ts';
 
 const MOODS: Record<string, string> = { love: '🥰 설레', happy: '😊 좋아', calm: '😌 평온', miss: '🥺 보고 싶어', tired: '😪 피곤해', busy: '🫠 바빠', sad: '🥲 울적해', grr: '😤 짜증 나' };
 
@@ -61,7 +61,9 @@ Deno.serve(async (req) => {
     }
     case 'letters':
       if (!isInsert) break;
-      msg = d.openAt <= todayKST()
+      msg = d.replyTo && d.openAt <= todayKST()
+        ? { title: `${n}님이 답장을 보냈어요 💌`, body: d.title || '지금 열어 볼 수 있어요', tag: `letter-${r.id}`, url: './#mem' }
+        : d.openAt <= todayKST()
         ? { title: `${n}님이 편지를 보냈어요 💌`, body: d.title || '지금 열어 볼 수 있어요', tag: `letter-${r.id}`, url: './#mem' }
         : { title: `${n}님이 편지를 남겼어요 💌`, body: `${fmtDate(d.openAt)}에 열려요. 그날 아침에 알려 드릴게요`, tag: `letter-${r.id}`, url: './#mem' };
       break;
@@ -71,6 +73,8 @@ Deno.serve(async (req) => {
       break;
   }
   if (!msg) return json({ skipped: 'no message' });
+  const toRole: Role | null = to && to === c.me ? 'me' : to && to === c.partner ? 'partner' : null;
+  if (r.coll !== 'pings' && toRole && !(await wants(c.id, toRole, r.coll))) return json({ skipped: 'muted' });
   const sent = await sendToUser(to, msg);
   return json({ sent });
 });

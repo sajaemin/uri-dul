@@ -84,6 +84,18 @@ try {
   }
   const hit = rows.find(r => /"sent"/.test(r.content || ''));
   ok(hit && hit.status_code === 200 && /"sent":1/.test(hit.content), `the change reached the push function and one notification was sent (${hit ? hit.content : 'no response'})`);
+  // B turns off answer notifications: A's next answer is skipped for B
+  await doc(B, 'prefs', 'partner', { off: ['answers'] });
+  const since2 = (await sql(REF, 'select now() as t'))[0].t;
+  await doc(A, 'answers', '2026-01-02_me', { date: '2026-01-02', text: 'e2e 답 2' });
+  let rows2 = [];
+  for (let i = 0; i < 30; i++) {
+    rows2 = await sql(REF, `select status_code, content::text as content from net._http_response where created >= $1 order by created`, [since2]);
+    if (rows2.some(r => /"muted"|"sent"/.test(r.content || ''))) break;
+    await sleep(1000);
+  }
+  ok(rows2.some(r => /"muted"/.test(r.content || '')) && !rows2.some(r => /"sent":1/.test(r.content || '')), 'a notification kind B turned off is not sent');
+  await doc(B, 'prefs', 'partner', { off: [] });
   const fn = u => fetch(`${URL0}/functions/v1/${u}`, { method: 'POST', headers: { 'x-notify-secret': NOTIFY_SECRET, 'Content-Type': 'application/json', apikey: KEY }, body: '{}' });
   const dm = await fn('daily?slot=morning'), de = await fn('daily?slot=evening');
   ok(dm.status === 200 && de.status === 200, `the 9am and 6pm jobs run (${dm.status}, ${de.status})`);
