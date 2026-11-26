@@ -42,6 +42,7 @@ const docs = {
   [`moods/${kst(0)}_partner`]: { date: kst(0), who: 'partner', m: 'miss', note: '주말까지 ' + XSS, at: 4 },
   'letters/l1': { from: 'partner', title: '700일에 열어 봐', text: '사랑해', openAt: kst(30), at: 5, readAt: 0 },
   'letters/l2': { from: 'partner', title: XSS, text: '오늘 고마웠어 ' + XSS, openAt: kst(0), at: 6, readAt: 0, paper: 'sky', ink: 'blue', stickers: [{ e: '🐻', x: 88, y: 10, r: 12 }, { e: '🌙', x: 10, y: 90, r: -8 }, { e: XSS, x: 50, y: 50, r: 0 }] },
+  'photos/p1': { from: 'partner', url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffb3c9'/%3E%3Cstop offset='1' stop-color='%23ffe3a3'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='300' fill='url(%23g)'/%3E%3Ccircle cx='220' cy='80' r='34' fill='%23fff7c2'/%3E%3Cpath d='M0 230Q80 170 150 215T300 200V300H0z' fill='%23a8e6cf'/%3E%3C/svg%3E", at: Date.now() - 40 * 864e5, note: '', savedBy: {} },
   'yard/y1': { k: 'tree', e: '🌳', name: '나무', price: 60, cat: 'flower', placed: true, x: 14, y: 66, by: 'partner', at: 1764000000000 },
   'yard/y2': { k: 'dog', e: '🐶', name: '강아지', price: 150, cat: 'pet', placed: true, x: 80, y: 86, by: 'partner', at: 1764000000001 },
   'yard/y3': { k: 'cloud', e: '☁️', name: '구름', price: 20, cat: 'sky', placed: true, x: 70, y: 22, by: 'me', at: 1764000000002 },
