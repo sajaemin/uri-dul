@@ -668,27 +668,24 @@ ol.steps.big li{margin:10px 0;font-size:16px}
 @media(prefers-reduced-motion:reduce){.hpop{animation:none;opacity:1}}
 
 /* the yard */
-.yard{position:relative;isolation:isolate;width:100%;height:clamp(178px,50vw,214px);overflow:hidden;--sky1:#ffd3e3;--sky2:#fff0f5;--g1:#cdeedb;--g2:#b7e4c9;background:linear-gradient(180deg,var(--sky1),var(--sky2) 52%);user-select:none;-webkit-user-select:none}
-.yard.big{height:clamp(220px,64vw,270px);border-radius:20px}
-.yard::before,.yard::after{content:'';position:absolute;left:-12%;right:-12%;border-radius:50% 50% 0 0/26% 26% 0 0;z-index:1}
-.yard::before{top:48%;bottom:-10%;background:var(--g1)}
-.yard::after{top:62%;bottom:-10%;background:var(--g2);left:-30%;right:20%}
-.yard.th-sakura{--sky1:#ffe0ee;--sky2:#fff6fa;--g1:#ffd6e6;--g2:#ffc3d8}
-.yard.th-beach{--sky1:#bfe4ff;--sky2:#eef8ff;--g1:#8fd3f0;--g2:#ffe6b0}
-.yard.th-beach::before{top:44%}
-.yard.th-snow{--sky1:#dce8f8;--sky2:#f5f9ff;--g1:#f4f8ff;--g2:#ffffff}
-.yard.th-night{--sky1:#2e2f63;--sky2:#6b5a9e;--g1:#3f7263;--g2:#4f8a77}
+.yard{position:relative;isolation:isolate;width:100%;height:clamp(200px,58vw,240px);overflow:hidden;--sky1:#ffd3e3;--sky2:#fff0f5;--g1:#bfe8c9;--g2:#aadfb9;--ge:#86c99c;--gf:#d6f1de;--fence:#fff;background:linear-gradient(180deg,var(--sky1) 0,var(--sky2) 17%,var(--gf) 17%);user-select:none;-webkit-user-select:none}
+.yard.th-sakura{--sky1:#ffe0ee;--sky2:#fff6fa;--g1:#ffd3e2;--g2:#ffc2d6;--ge:#efa3bd;--gf:#ffe8f0}
+.yard.th-beach{--sky1:#bfe4ff;--sky2:#eef8ff;--g1:#ffe7b6;--g2:#ffdda0;--ge:#e9bf7a;--gf:#9fd8f2;--fence:#fff8e8}
+.yard.th-snow{--sky1:#dce8f8;--sky2:#f5f9ff;--g1:#ffffff;--g2:#eef4ff;--ge:#c9d8ee;--gf:#e6effb}
+.yard.th-night{--sky1:#2e2f63;--sky2:#5d4f92;--g1:#4f8a77;--g2:#467e6c;--ge:#2c5a4c;--gf:#34525e;--fence:#d9d4ee}
+.yard.big{height:clamp(250px,74vw,300px);border-radius:20px}
+.yplot{position:absolute;left:0;top:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .yard.th-night .crn{background:#ffffffd9}
 .ysnow,.ystars,.ypetal,.yrain{position:absolute;inset:0;pointer-events:none;z-index:0}
-.ydeco{position:absolute;left:0;top:0;width:100%;height:56%;z-index:0;pointer-events:none}
+.ydeco{position:absolute;left:0;top:0;width:100%;height:19%;z-index:0;pointer-events:none}
 .ydeco .ycl{opacity:.92}
 .yard.th-night .ydeco .ycl{opacity:.25}
 .ysnow{z-index:120;background-image:radial-gradient(circle,#fff 1.6px,transparent 2px),radial-gradient(circle,#fff 1.1px,transparent 1.5px);background-size:34px 34px,22px 22px;animation:snowf 9s linear infinite}
 @keyframes snowf{to{background-position:0 34px,11px 44px}}
-.ystars{background-image:radial-gradient(circle,#fff8 1.2px,transparent 1.6px);background-size:26px 20px;height:46%}
+.ystars{background-image:radial-gradient(circle,#fff8 1.2px,transparent 1.6px);background-size:26px 14px;height:17%}
 .ypetal{z-index:120;background-image:radial-gradient(ellipse 3.5px 2.2px at 30% 40%,#ff9fbb 70%,transparent 72%),radial-gradient(ellipse 2.6px 1.8px at 70% 20%,#ffb8cc 70%,transparent 72%);background-size:53px 61px,37px 43px;animation:petalf 13s linear infinite;opacity:.85}
 @keyframes petalf{to{background-position:-26px 61px,18px 86px}}
-.yrain{background:radial-gradient(ellipse 72% 78% at 50% 92%,transparent 62%,#a9c8ffaa 62.5% 66%,#a8e6cfaa 66.5% 70%,#ffd36baa 70.5% 74%,#ffb3c9aa 74.5% 78%,transparent 78.5%)}
+.yrain{bottom:auto;height:19%;background:radial-gradient(ellipse 60% 190% at 50% 100%,transparent 62%,#a9c8ffaa 62.5% 66%,#a8e6cfaa 66.5% 70%,#ffd36baa 70.5% 74%,#ffb3c9aa 74.5% 78%,transparent 78.5%)}
 .yi{position:absolute;z-index:2;transform:translate(-50%,-90%);line-height:1;filter:drop-shadow(0 3px 2px rgba(60,40,50,.16));pointer-events:none}
 .yi.a-sway{transform-origin:50% 100%;animation:ysway 4s ease-in-out var(--d) infinite}
 .yi.a-bob{animation:ybob 3s ease-in-out var(--d) infinite}
@@ -703,8 +700,8 @@ ol.steps.big li{margin:10px 0;font-size:16px}
 @keyframes yfly{0%,100%{transform:translate(-90%,-90%)}25%{transform:translate(-30%,-150%)}50%{transform:translate(20%,-100%)}75%{transform:translate(-40%,-60%)}}
 @keyframes ydrift{0%,100%{transform:translate(-80%,-90%)}50%{transform:translate(-20%,-90%)}}
 @keyframes ytw{0%,100%{opacity:1;transform:translate(-50%,-90%) scale(1)}50%{opacity:.55;transform:translate(-50%,-90%) scale(.8)}}
-.cr{position:absolute;width:clamp(62px,19vw,80px);padding:0;border:0;background:none;transform:translate(-50%,-92%);cursor:pointer;-webkit-tap-highlight-color:transparent}
-.yard:not(.big) .cr{width:clamp(56px,16vw,70px)}
+.cr{position:absolute;width:calc(clamp(62px,19vw,80px) * var(--s,1));padding:0;border:0;background:none;transform:translate(-50%,-92%);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.yard:not(.big) .cr{width:calc(clamp(56px,16vw,70px) * var(--s,1))}
 .cr svg{display:block;width:100%;height:auto;overflow:visible;transform:scaleX(var(--f,1))}
 .cr .crn{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);background:#ffffffe6;border-radius:999px;padding:0 7px;font-size:10.5px;font-weight:800;color:#5a2b40;white-space:nowrap;line-height:16px}
 .cr.walk .cbody{animation:cwalk .42s ease-in-out infinite}
@@ -749,7 +746,7 @@ ol.steps.big li{margin:10px 0;font-size:16px}
 .sbuy:disabled{background:#ead9e0!important;color:#9b7480;box-shadow:none!important;font-size:11.5px}
 .sown{font-size:13px;font-weight:800;color:var(--acc);min-height:34px;display:flex;align-items:center}
 .sth{display:block;width:100%;height:46px;border-radius:12px;position:relative;overflow:hidden;background:linear-gradient(180deg,var(--sky1),var(--sky2) 50%,var(--g1) 50%)}
-.sth.th-spring{--sky1:#ffd3e3;--sky2:#fff0f5;--g1:#cdeedb}.sth.th-sakura{--sky1:#ffe0ee;--sky2:#fff6fa;--g1:#ffc3d8}.sth.th-beach{--sky1:#bfe4ff;--sky2:#eef8ff;--g1:#ffe6b0}.sth.th-snow{--sky1:#dce8f8;--sky2:#f5f9ff;--g1:#fff}.sth.th-night{--sky1:#2e2f63;--sky2:#6b5a9e;--g1:#3f7263}
+.sth.th-spring{--sky1:#ffd3e3;--sky2:#fff0f5;--g1:#bfe8c9}.sth.th-sakura{--sky1:#ffe0ee;--sky2:#fff6fa;--g1:#ffc2d6}.sth.th-beach{--sky1:#bfe4ff;--sky2:#eef8ff;--g1:#ffe7b6}.sth.th-snow{--sky1:#dce8f8;--sky2:#f5f9ff;--g1:#fff}.sth.th-night{--sky1:#2e2f63;--sky2:#5d4f92;--g1:#4f8a77}
 
 /* today's photo, above the yard */
 .dphoto{display:flex;align-items:center;gap:14px;padding:16px 18px 12px 20px;position:relative}
@@ -1660,7 +1657,7 @@ const spentBy = w => S.yard.filter(y => y.by === w).reduce((n, y) => n + (Number
 const heartsLeft = w => hearts(w).total - spentBy(w);
 const yTheme = () => { const t = (S.ycfg && S.ycfg.theme) || 'spring'; return THEMES.some(x => x[0] === t) ? t : 'spring'; };
 const ownsTheme = t => t === 'spring' || S.yard.some(y => y.k === 'th_' + t);
-const YS = {me: {x: 32, y: 80, f: 1, t: 0}, partner: {x: 64, y: 84, f: -1, t: 0}};
+const YS = {me: {x: 36, y: 70, f: 1, t: 0}, partner: {x: 62, y: 74, f: -1, t: 0}};
 const YLINES = ['헤헤', '오늘도 좋아!', '놀아줘~', '배고파…', '💗', '같이 산책할래?', '쓰담쓰담 해줘', '보고 싶었어!', '하트 더 모으자!', '꺄르르'];
 function charSVG(w, st) {
   const H = 'M12 21s-8-4.6-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.4-8 11-8 11z';
@@ -1678,16 +1675,26 @@ function charSVG(w, st) {
   const body = w === 'me' ? '#ffd9b3' : '#ffc7d8';
   return `<svg viewBox="-70 -100 140 140" aria-hidden="true">${balloon}${wings}<g class="cbody"><ellipse cx="0" cy="32" rx="28" ry="5" fill="#000" opacity=".08"/><g class="cfeet"><ellipse cx="-12" cy="28" rx="8" ry="5" fill="${body}" stroke="#00000010"/><ellipse cx="12" cy="28" rx="8" ry="5" fill="${body}"/></g><ellipse cx="0" cy="0" rx="34" ry="31" fill="${body}"/>${top}${scarf}<ellipse cx="-11" cy="-14" rx="12" ry="7" fill="#fff" opacity=".45"/><g class="ceyes"><ellipse cx="-10" cy="-3" rx="3.2" ry="4.2" fill="#4b2f3a"/><ellipse cx="10" cy="-3" rx="3.2" ry="4.2" fill="#4b2f3a"/></g><ellipse cx="-19" cy="7" rx="6.5" ry="3.6" fill="#ff8fb0" opacity=".65"/><ellipse cx="19" cy="7" rx="6.5" ry="3.6" fill="#ff8fb0" opacity=".65"/><path d="M-5 6q5 5 10 0" stroke="#4b2f3a" stroke-width="2.2" fill="none" stroke-linecap="round"/></g></svg>`;
 }
+let yplotN = 0;
+const ydepth = y => 0.68 + 0.42 * Math.min(1, Math.max(0, (y - 18) / 76));
+function yplotSVG() {
+  const id = 'ys' + (++yplotN), P = 'M46 50Q42 38 58 38H302Q318 38 314 50L351 230Q355 250 334 250H26Q5 250 9 230Z';
+  const posts = []; for (let x = 52; x <= 308; x += 13) posts.push(`<rect x="${x - 2}" y="${x % 39 === 0 ? 20 : 22}" width="4" height="${x % 39 === 0 ? 20 : 18}" rx="2"/>`);
+  return `<svg class="yplot" viewBox="0 0 360 260" preserveAspectRatio="none" aria-hidden="true"><defs><pattern id="${id}" width="30" height="30" patternUnits="userSpaceOnUse" patternTransform="rotate(-24)"><rect width="15" height="30" style="fill:var(--g2)"/></pattern></defs>
+  <path d="${P}" transform="translate(0 9)" style="fill:var(--ge)"/><path d="${P}" style="fill:var(--g1)"/><path d="${P}" fill="url(#${id})" opacity=".55"/>
+  <path d="M40 232Q180 262 320 232" stroke="#fff" stroke-opacity=".25" stroke-width="3" fill="none"/>
+  <g style="fill:var(--fence)" opacity=".95">${posts.join('')}<rect x="48" y="26" width="264" height="3" rx="1.5"/><rect x="48" y="33" width="264" height="3" rx="1.5"/></g></svg>`;
+}
 function vYard(big) {
   const th = yTheme(), sa = heartStage('me'), sb = heartStage('partner');
   const items = S.yard.filter(y => y.placed && ITEM[y.k]);
   const who = ['me', 'partner'].filter(w => w === S.who || paired());
   const HH = 'M12 21s-8-4.6-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.4-8 11-8 11z';
   return `<div class="yard th-${th}${big ? ' big' : ''}${S.yedit && big ? ' edit' : ''}" aria-label="우리 마당">
-  <svg class="ydeco" viewBox="0 0 360 110" preserveAspectRatio="xMidYMin slice" aria-hidden="true"><g class="ycl" fill="#fff"><ellipse cx="58" cy="30" rx="30" ry="11"/><ellipse cx="80" cy="22" rx="19" ry="14"/><ellipse cx="44" cy="24" rx="13" ry="10"/><ellipse cx="300" cy="20" rx="26" ry="9"/><ellipse cx="318" cy="14" rx="14" ry="10"/></g><g class="floaty" fill="#ff9fbb"><path transform="translate(140 40) scale(.55)" d="${HH}"/><path transform="translate(226 30) scale(.4)" d="${HH}" opacity=".75"/><path transform="translate(258 62) scale(.3)" d="${HH}" opacity=".6"/></g></svg>
+  <svg class="ydeco" viewBox="0 0 360 56" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="ycl" fill="#fff"><ellipse cx="58" cy="26" rx="26" ry="9"/><ellipse cx="76" cy="20" rx="16" ry="11"/><ellipse cx="300" cy="22" rx="24" ry="8"/><ellipse cx="316" cy="17" rx="13" ry="9"/></g><g class="floaty" fill="#ff9fbb"><path transform="translate(150 14) scale(.5)" d="${HH}"/><path transform="translate(226 22) scale(.36)" d="${HH}" opacity=".75"/></g></svg>${yplotSVG()}
   ${Math.min(sa, sb) >= 7 ? '<span class="yrain" aria-hidden="true"></span>' : ''}${th === 'snow' ? '<span class="ysnow" aria-hidden="true"></span>' : th === 'night' ? '<span class="ystars" aria-hidden="true"></span>' : th === 'sakura' ? '<span class="ypetal" aria-hidden="true"></span>' : ''}
-  ${items.map(y => { const it = ITEM[y.k], x = Math.min(97, Math.max(3, Number(y.x) || 50)), yy = Math.min(97, Math.max(4, Number(y.y) || 80)); return `<span class="yi${it.anim ? ' a-' + it.anim : ''}" data-yid="${esc(y.id)}" style="left:${x}%;top:${yy}%;z-index:${Math.round(yy)};font-size:${it.size * (big ? 1 : .85)}px;--d:${-(hue(y.id) % 9)}s" title="${esc(it.name)}">${it.e}</span>`; }).join('')}
-  ${who.map(w => { const p = YS[w]; return `<button type="button" class="cr" data-act="cr-tap" data-v="${w}" data-w="${w}" aria-label="${esc(nm(w))} 캐릭터 쓰다듬기" style="left:${p.x}%;top:${p.y}%;z-index:${Math.round(p.y) + 1};--f:${p.f}">${charSVG(w, w === 'me' ? sa : sb)}<span class="crn">${esc(cut(nm(w), 5))}</span></button>`; }).join('')}
+  ${items.map(y => { const it = ITEM[y.k], x = Math.min(96, Math.max(4, Number(y.x) || 50)), raw = Math.min(97, Math.max(4, Number(y.y) || 80)), yy = it.cat === 'sky' ? Math.min(raw, 15) : Math.max(raw, 24), sz = it.size * (big ? 1 : .85) * (it.cat === 'sky' ? .8 : ydepth(yy)); return `<span class="yi${it.anim ? ' a-' + it.anim : ''}" data-yid="${esc(y.id)}" style="left:${x}%;top:${yy}%;z-index:${Math.round(yy) + 2};font-size:${sz.toFixed(1)}px;--d:${-(hue(y.id) % 9)}s" title="${esc(it.name)}">${it.e}</span>`; }).join('')}
+  ${who.map(w => { const p = YS[w]; return `<button type="button" class="cr" data-act="cr-tap" data-v="${w}" data-w="${w}" aria-label="${esc(nm(w))} 캐릭터 쓰다듬기" style="left:${p.x}%;top:${p.y}%;z-index:${Math.round(p.y) + 3};--f:${p.f};--s:${ydepth(p.y).toFixed(3)}">${charSVG(w, w === 'me' ? sa : sb)}<span class="crn">${esc(cut(nm(w), 5))}</span></button>`; }).join('')}
   </div>`;
 }
 function vYardTools() {
@@ -1724,11 +1731,11 @@ function yardTick() {
     if (r < 0.32) { st.t = now + 1400 + Math.random() * 2600; continue; }
     let nx, ny;
     if (r < 0.48 && els.length > 1) { nx = o.x + (st.x < o.x ? -11 : 11); ny = o.y + (Math.random() - .5) * 4; }
-    else { nx = 8 + Math.random() * 84; ny = 64 + Math.random() * 28; }
-    nx = Math.min(92, Math.max(8, nx)); ny = Math.min(93, Math.max(62, ny));
+    else { nx = 12 + Math.random() * 76; ny = 34 + Math.random() * 56; }
+    nx = Math.min(88, Math.max(12, nx)); ny = Math.min(91, Math.max(32, ny));
     const dur = Math.min(4.5, Math.max(0.9, Math.hypot(nx - st.x, (ny - st.y) * 2) / 13));
     st.f = nx < st.x ? -1 : 1; st.x = nx; st.y = ny; st.t = now + dur * 1000 + 500 + Math.random() * 1800;
-    el.style.transition = `left ${dur}s linear, top ${dur}s linear`; el.style.left = nx + '%'; el.style.top = ny + '%'; el.style.zIndex = Math.round(ny) + 1; el.style.setProperty('--f', st.f);
+    el.style.transition = `left ${dur}s linear, top ${dur}s linear, width ${dur}s linear`; el.style.left = nx + '%'; el.style.top = ny + '%'; el.style.zIndex = Math.round(ny) + 3; el.style.setProperty('--f', st.f); el.style.setProperty('--s', ydepth(ny).toFixed(3));
     el.classList.add('walk'); clearTimeout(el._w); el._w = setTimeout(() => el.classList.remove('walk'), dur * 1000);
   }
   // when they meet, a heart floats up
@@ -2113,7 +2120,7 @@ document.addEventListener('click', async e => {
     const id = 'y' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     const sky = it && it.cat === 'sky';
     const d = th ? {k: v, e: '🎨', name: th[1], price, cat: 'theme', placed: false, x: 0, y: 0, by: S.who, at: Date.now()}
-      : {k: v, e: it.e, name: it.name, price, cat: it.cat, placed: true, x: Math.round(10 + Math.random() * 80), y: Math.round(sky ? 10 + Math.random() * 22 : 52 + Math.random() * 38), by: S.who, at: Date.now()};
+      : {k: v, e: it.e, name: it.name, price, cat: it.cat, placed: true, x: Math.round(10 + Math.random() * 80), y: Math.round(sky ? 4 + Math.random() * 10 : 30 + Math.random() * 58), by: S.who, at: Date.now()};
     if (await W.yard(id, d)) {
       burst(14);
       if (th) { await W.ycfg({theme: th[0], by: S.who, at: Date.now()}); toast(`마당이 '${th[1]}'(으)로 바뀌었어요!`); }
@@ -2122,7 +2129,7 @@ document.addEventListener('click', async e => {
   }
   else if (act === 'theme-use') { if (ownsTheme(v)) { await W.ycfg({theme: v, by: S.who, at: Date.now()}); toast('마당 테마를 바꿨어요'); } }
   else if (act === 'yedit') { S.yedit = !S.yedit; render(); if (S.yedit) toast('끌어서 옮기고, 톡 누르면 보관함에 들어가요'); }
-  else if (act === 'y-place') { const y = S.yard.find(x => x.id === v); if (y) { const sky = y.cat === 'sky'; await W.yardUpd(v, {placed: true, x: 50, y: sky ? 20 : 78}); } }
+  else if (act === 'y-place') { const y = S.yard.find(x => x.id === v); if (y) { const sky = y.cat === 'sky'; await W.yardUpd(v, {placed: true, x: 50, y: sky ? 10 : 62}); } }
   else if (act === 'mcal-open') { const t = today(); S.mcal = {y: t.getFullYear(), m: t.getMonth(), sel: ymd(t)}; render(); }
   else if (act === 'mcal-nav') { const d = new Date(S.mcal.y, S.mcal.m + Number(v), 1); if (d <= today()) { S.mcal = {y: d.getFullYear(), m: d.getMonth(), sel: ''}; render(); } }
   else if (act === 'mcal-day') { S.mcal.sel = S.mcal.sel === v ? '' : v; render(); }

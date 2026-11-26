@@ -43,11 +43,14 @@ const docs = {
   'letters/l1': { from: 'partner', title: '700일에 열어 봐', text: '사랑해', openAt: kst(30), at: 5, readAt: 0 },
   'letters/l2': { from: 'partner', title: XSS, text: '오늘 고마웠어 ' + XSS, openAt: kst(0), at: 6, readAt: 0, paper: 'sky', ink: 'blue', stickers: [{ e: '🐻', x: 88, y: 10, r: 12 }, { e: '🌙', x: 10, y: 90, r: -8 }, { e: XSS, x: 50, y: 50, r: 0 }] },
   'photos/p1': { from: 'partner', url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffb3c9'/%3E%3Cstop offset='1' stop-color='%23ffe3a3'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='300' fill='url(%23g)'/%3E%3Ccircle cx='220' cy='80' r='34' fill='%23fff7c2'/%3E%3Cpath d='M0 230Q80 170 150 215T300 200V300H0z' fill='%23a8e6cf'/%3E%3C/svg%3E", at: Date.now() - 40 * 864e5, note: '', savedBy: {} },
-  'yard/y1': { k: 'tree', e: '🌳', name: '나무', price: 60, cat: 'flower', placed: true, x: 14, y: 66, by: 'partner', at: 1764000000000 },
-  'yard/y2': { k: 'dog', e: '🐶', name: '강아지', price: 150, cat: 'pet', placed: true, x: 80, y: 86, by: 'partner', at: 1764000000001 },
-  'yard/y3': { k: 'cloud', e: '☁️', name: '구름', price: 20, cat: 'sky', placed: true, x: 70, y: 22, by: 'me', at: 1764000000002 },
+  'yard/y1': { k: 'tree', e: '🌳', name: '나무', price: 60, cat: 'flower', placed: true, x: 18, y: 38, by: 'partner', at: 1764000000000 },
+  'yard/y2': { k: 'dog', e: '🐶', name: '강아지', price: 150, cat: 'pet', placed: true, x: 78, y: 84, by: 'partner', at: 1764000000001 },
+  'yard/y3': { k: 'cloud', e: '☁️', name: '구름', price: 20, cat: 'sky', placed: true, x: 70, y: 8, by: 'me', at: 1764000000002 },
   'yard/y4': { k: 'tulip', e: '🌷', name: '튤립', price: 20, cat: 'flower', placed: false, x: 0, y: 0, by: 'me', at: 1764000000003 },
   'yard/y5': { k: 'nope', e: XSS, name: XSS, price: 5, cat: 'flower', placed: true, x: 40, y: 80, by: 'me', at: 1764000000004 },
+  'yard/y6': { k: 'house', e: '🏡', name: '우리 집', price: 300, cat: 'home', placed: true, x: 76, y: 40, by: 'partner', at: 1764000000006 },
+  'yard/y7': { k: 'sunf', e: '🌻', name: '해바라기', price: 25, cat: 'flower', placed: true, x: 30, y: 88, by: 'partner', at: 1764000000007 },
+  'yard/y8': { k: 'fountain', e: '⛲', name: '분수', price: 200, cat: 'home', placed: true, x: 50, y: 56, by: 'partner', at: 1764000000008 },
   'yard/t1': { k: 'th_sakura', e: '🎨', name: '벚꽃 동산', price: 150, cat: 'theme', placed: false, x: 0, y: 0, by: 'partner', at: 1764000000005 },
   'letters/l3': { from: 'me', title: 'Re: 답장', text: '나도 고마워', openAt: kst(0), at: 7, readAt: 0, paper: 'lilac', ink: 'violet', stickers: [{ e: '💗', x: 90, y: 88, r: 5 }], replyTo: 'l2' },
   ...Object.fromEntries([2, 3, 4, 5, 6, 8, 9, 11, 12, 15].flatMap((n, i) => [[`moods/${kst(-n)}_me`, { date: kst(-n), who: 'me', m: ['happy', 'love', 'tired', 'calm', 'happy', 'busy', 'miss', 'happy', 'sad', 'love'][i], note: i === 2 ? '야근 ' + XSS : '', at: 10 + i }], [`moods/${kst(-n)}_partner`, { date: kst(-n), who: 'partner', m: ['happy', 'love', 'calm', 'calm', 'grr', 'busy', 'miss', 'love', 'sad', 'love'][i], note: '', at: 30 + i }]])),
@@ -107,7 +110,7 @@ async function run(label, device, scheme, look) {
       try {
         const el = p.locator(sel).first();
         if (!(await el.isVisible())) continue;
-        await el.click({ timeout: 1500, force: a.act === 'cr-tap' });
+        await el.click({ timeout: 1500, force: a.act === 'cr-tap' }); if (a.act === 'di-open') await p.waitForTimeout(900);
         await p.waitForTimeout(150);
         await check(`${t} → ${a.act}${a.v ? '(' + a.v + ')' : ''}`);
         // look at overlays briefly, then close them
