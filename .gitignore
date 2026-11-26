@@ -5,3 +5,4 @@ supabase/.branches/
 *.env
 keys.json
 tests/e2e/shots/
+node_modules
