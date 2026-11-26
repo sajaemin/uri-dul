@@ -1990,7 +1990,7 @@ async function savePhoto(p) {
 }
 
 /* ---------- events ---------- */
-function go(tab) { S.tab = tab; S.viewer = null; ls.set('ud-tab', tab); try { history.replaceState(null, '', '#' + tab); } catch (e) {} render(); window.scrollTo(0, 0); const v = $('#view'); v.classList.remove('in-l', 'in-r', 'in-f'); void v.offsetWidth; v.classList.add('in-' + (S.slide || 'f')); S.slide = null; }
+function go(tab) { S.tab = tab; S.viewer = null; ls.set('ud-tab', tab); try { history.replaceState(null, '', '#' + tab); } catch (e) {} render(); window.scrollTo(0, 0); const v = $('#view'); v.classList.remove('in-l', 'in-r', 'in-f'); void v.offsetWidth; v.classList.add('in-' + (S.slide || 'f')); S.slide = null; clearTimeout(v._anim); v._anim = setTimeout(() => v.classList.remove('in-l', 'in-r', 'in-f'), 500); }
 let diTimer = 0;
 document.addEventListener('click', async e => {
   // an opened island folds back when anything else is tapped, so it never covers the controls under it
