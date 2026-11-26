@@ -52,8 +52,11 @@ try {
   const ch = B.c.channel('t-' + cid).on('postgres_changes', { event: '*', schema: 'public', table: 'docs', filter: 'couple_id=eq.' + cid }, p => { if (p.new && p.new.coll === 'moods') heard = p.new; });
   await new Promise(res => ch.subscribe(s => { if (s === 'SUBSCRIBED') res(); }));
   await sleep(1500);
-  await doc(A, 'moods', '2026-01-01_me', { date: '2026-01-01', who: 'me', m: 'love', note: 'e2e' });
-  for (let i = 0; i < 40 && !heard; i++) await sleep(250);
+  // the change feed can take a few seconds to warm up after a deploy, so A writes again if B has not heard yet
+  for (let k = 0; k < 4 && !heard; k++) {
+    await doc(A, 'moods', '2026-01-01_me', { date: '2026-01-01', who: 'me', m: 'love', note: 'e2e ' + k });
+    for (let i = 0; i < 32 && !heard; i++) await sleep(250);
+  }
   ok(heard && heard.data.m === 'love', 'B got A\'s mood live (realtime)');
   await B.c.removeChannel(ch);
 
