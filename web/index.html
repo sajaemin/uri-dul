@@ -306,6 +306,24 @@ legend{font-size:13px;color:var(--mut);padding:0 2px;margin-bottom:2px;font-weig
 .bi.done b{color:var(--mut);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--mut) 60%,transparent)}
 .bi .s{font-size:14px;color:var(--mut)}
 .bact{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+button.bk{background:none;padding:0;cursor:pointer}
+button.bk:not(.on):active{background:var(--acc2)}
+.bk.on{background:var(--acc);border-color:var(--acc)}
+.bmeta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:3px;font-size:13px;color:var(--mut)}
+.bwho{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:1px 8px;line-height:18px}
+.bwho.me{background:color-mix(in srgb,#ffb37a 26%,transparent);color:light-dark(#b0602a,#ffc89f)}
+.bwho.pt{background:var(--acc2);color:var(--acc)}
+.bcat{font-weight:600}
+.badd{margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.badd .chips{margin:0}
+.bfil{margin-top:10px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.bfil::-webkit-scrollbar{display:none}
+.bfil .chip{flex:none}
+.csep{flex:none;width:1px;align-self:stretch;background:var(--line);margin:4px 2px}
+.chip.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.linkb{border:0;background:none;color:var(--acc);font-weight:700;padding:0 0 0 6px;font-size:inherit}
+.rbox small.rk{display:block;font-size:12px;font-weight:600;color:var(--mut);margin-top:2px}
+.rbox{flex-direction:column}
 .ib.acc{background:var(--acc);color:#fff}
 /* growth */
 .grow .scene{height:150px;border-radius:16px;background:linear-gradient(180deg,light-dark(#ffd6e2,#4a2433),light-dark(#fff0f4,#2a1d23));margin-bottom:12px}
@@ -387,7 +405,7 @@ legend{font-size:13px;color:var(--mut);padding:0 2px;margin-bottom:2px;font-weig
 /* today's snap */
 .snapc.live{box-shadow:0 0 0 2px var(--acc),0 10px 30px color-mix(in srgb,var(--acc) 22%,transparent)}
 .snapc h2 .cd{font-variant-numeric:tabular-nums;color:var(--acc);font-weight:800}
-.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;padding:4px 2px}
+.spair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;padding:4px 2px}
 .pol{border:0;padding:6px 6px 8px;background:light-dark(#fff,#2a2226);border-radius:8px;box-shadow:0 6px 16px rgba(60,20,40,.14);transform:rotate(-2.2deg);display:flex;flex-direction:column;gap:6px;text-align:left;color:var(--ink);width:100%}
 .pol:nth-child(2){transform:rotate(2deg)}
 .pol .ph{aspect-ratio:3/4;border-radius:4px;overflow:hidden;background:var(--fill);display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;color:var(--mut);padding:8px}
@@ -400,7 +418,7 @@ legend{font-size:13px;color:var(--mut);padding:0 2px;margin-bottom:2px;font-weig
 .snapbtns .btn{flex:1}
 .sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}
 .sday{display:flex;flex-direction:column;gap:6px}
-.sday .pair{margin:0;gap:6px;padding:0}
+.sday .spair{margin:0;gap:6px;padding:0}
 .sday .pol{padding:4px 4px 5px;box-shadow:0 3px 8px rgba(60,20,40,.12)}
 .sday .pol .cap{font-size:11px}
 .sday p{margin:0;font-size:12.5px;font-weight:700;color:var(--mut)}
@@ -851,13 +869,13 @@ function vSnap() {
   const head = both ? '오늘의 한 장이 공개됐어요 ✨' : live ? (st.left > 0 ? `📸 지금 찍을 시간! <span class="cd" data-snapcd>${Math.floor(st.left / 60)}:${String(st.left % 60).padStart(2, '0')}</span>` : '📸 오늘의 한 장, 늦었지만 지금도 돼요') : st.mine ? `${esc(nm(other()))}님의 한 장을 기다리는 중` : '📸 오늘의 한 장';
   const sub = both ? `${hm(st.m)}에 알림이 왔던 오늘의 우리예요` : live ? '꾸미지 말고 지금 모습 그대로! 둘 다 올리면 함께 공개돼요' : st.mine ? '올라오면 바로 알려 드릴게요' : `오늘 언젠가 알림이 와요. 그때 10분 안에 지금 모습을 찍어 올려요${S.real ? '' : '<br>(테스트 모드는 바로 찍어 볼 수 있어요)'}`;
   const btns = live || (!st.mine && st.open) ? `<div class="snapbtns"><label class="btn" for="snapcam" tabindex="0">지금 찍기</label><label class="btn line" for="snapfile" tabindex="0">앨범에서</label></div><input type="file" id="snapcam" accept="image/*" capture="environment" hidden><input type="file" id="snapfile" accept="image/*" hidden>` : '';
-  const pair = st.mine || st.theirs || st.open ? `<div class="pair">${polHTML(S.who, st.mine, true)}${polHTML(other(), st.theirs, !!st.mine)}</div>` : '';
+  const pair = st.mine || st.theirs || st.open ? `<div class="spair">${polHTML(S.who, st.mine, true)}${polHTML(other(), st.theirs, !!st.mine)}</div>` : '';
   return `<div class="card snapc${live ? ' live' : ''}"><h2>${head}</h2><p class="note" style="margin-top:2px">${sub}</p>${S.snapBusy ? `<p class="note" style="margin-top:10px">${esc(S.snapBusy)}</p>` : btns}${pair}${!st.theirs && st.mine && paired() ? '<div class="row"><button class="btn ghost" type="button" data-act="poke">콕 찌르기</button></div>' : ''}</div>`;
 }
 function vSnapArchive() {
   const days = [...new Set(Object.values(S.snaps).map(x => x.date))].sort().reverse();
   if (!days.length) return `<div class="empty">${emptyArt()}아직 오늘의 한 장이 없어요.<br>홈에서 알림이 온 날 함께 찍어 보세요.</div>`;
-  return `<p class="note" style="margin:0 4px 12px">둘 다 올린 날은 서로의 사진이 보여요. 내가 안 올린 날 상대 사진은 잠겨 있어요.</p><div class="sgrid">${days.map(ds => { const a = S.snaps[ds + '_' + S.who], b = S.snaps[ds + '_' + other()]; return `<div class="sday"><p>${dotd(ds)}</p><div class="pair">${polHTML(S.who, a, true)}${polHTML(other(), b, !!a)}</div></div>`; }).join('')}</div>`;
+  return `<p class="note" style="margin:0 4px 12px">둘 다 올린 날은 서로의 사진이 보여요. 내가 안 올린 날 상대 사진은 잠겨 있어요.</p><div class="sgrid">${days.map(ds => { const a = S.snaps[ds + '_' + S.who], b = S.snaps[ds + '_' + other()]; return `<div class="sday"><p>${dotd(ds)}</p><div class="spair">${polHTML(S.who, a, true)}${polHTML(other(), b, !!a)}</div></div>`; }).join('')}</div>`;
 }
 function vSnapView() {
   const x = S.snaps[S.snapView]; if (!x) { S.snapView = null; return ''; }
@@ -947,25 +965,42 @@ function vLetterSheet() {
 }
 
 /* ---------- date roulette ---------- */
-const FOODS = ['떡볶이','삼겹살','초밥','파스타','치킨','마라탕','쌀국수','수제버거','곱창','피자','돈까스','샤브샤브','냉면','타코','브런치','라멘','족발','김치찌개','양꼬치','닭갈비','훠궈','오마카세','칼국수','회'];
+const FOOD_KINDS = [
+  ['ko', '한식', ['김치찌개','된장찌개','삼겹살','갈비','불고기','보쌈','칼국수','냉면','비빔밥','순대국','감자탕','부대찌개','해장국','육회','쭈꾸미','아구찜','닭볶음탕','한정식','닭갈비','곰탕','수제비','전과 막걸리','생선구이','간장게장']],
+  ['cn', '중식', ['짜장면','짬뽕','탕수육','마라탕','마라샹궈','훠궈','양꼬치','딤섬','꿔바로우','멘보샤','우육면']],
+  ['jp', '일식', ['초밥','라멘','돈까스','우동','규동','오마카세','텐동','이자카야','샤브샤브','야키토리','오코노미야키','장어덮밥']],
+  ['we', '양식', ['파스타','피자','스테이크','수제버거','브런치','리조또','감바스','샐러드 볼','샌드위치','피시앤칩스']],
+  ['as', '아시안', ['쌀국수','팟타이','분짜','카레','타코','부리또','케밥','나시고렝','반미','똠얌꿍']],
+  ['sn', '분식', ['떡볶이','김밥','라볶이','순대','튀김','어묵','즉석떡볶이','쫄면']],
+  ['nt', '야식', ['치킨','족발','곱창','막창','닭발','회','조개구이','삼겹살에 소주','편의점 털기','라면']],
+  ['ds', '디저트', ['빙수','크로플','케이크','와플','마카롱','탕후루','붕어빵','젤라또','도넛','타르트','호떡']],
+];
+const FOODS = FOOD_KINDS.flatMap(k => k[2]);
 function roulPool() {
-  if (S.roulKind === 'eat') return FOODS.map(t => ({t}));
-  const b = S.bucket.filter(x => !x.done).map(x => ({t: x.title, bid: x.id}));
-  const extra = IDEAS.filter(x => !b.some(y => y.t === x)).map(t => ({t}));
+  const f = S.roulFilter || 'all';
+  if (S.roulKind === 'eat') return FOOD_KINDS.filter(k => f === 'all' || k[0] === f).flatMap(k => k[2].map(t => ({t, k: k[1]})));
+  const b = f === 'all' || f === 'bk' ? S.bucket.filter(x => !x.done).map(x => ({t: x.title, bid: x.id, k: '버킷리스트'})) : [];
+  if (f === 'bk') return b;
+  const extra = IDEA_KINDS.filter(k => f === 'all' || k[0] === f).flatMap(k => k[2].filter(x => !b.some(y => y.t === x)).map(t => ({t, k: k[1]})));
   return [...b, ...extra];
 }
+const roulRecent = [];
 function vRoulette() {
   const r = S.roul;
-  return `<div class="card roul" style="margin-top:12px"><h2>오늘 뭐 할까? <small>${S.roulKind === 'eat' ? '메뉴 고르기' : '버킷리스트 + 추천'}</small></h2>
+  return `<div class="card roul" style="margin-top:12px"><h2>오늘 뭐 할까? <small>${S.roulKind === 'eat' ? `메뉴 ${roulPool().length}가지` : `할 거리 ${roulPool().length}가지`}</small></h2>
   <div class="seg" role="group" aria-label="룰렛 종류" style="margin:4px 0 0"><button type="button" data-act="roul-kind" data-v="do" aria-pressed="${S.roulKind === 'do'}">할 것</button><button type="button" data-act="roul-kind" data-v="eat" aria-pressed="${S.roulKind === 'eat'}">먹을 것</button></div>
-  <div class="rbox${r ? ' hit' : ''}" id="rbox" aria-live="polite">${r ? esc(r.t) : '두근두근'}</div>
+  <div class="chips" style="margin-top:10px">${(S.roulKind === 'eat' ? [['all', '전체'], ...FOOD_KINDS.map(k => [k[0], k[1]])] : [['all', '전체'], ['bk', '버킷리스트'], ...IDEA_KINDS.map(k => [k[0], k[1]])]).map(([k, l]) => `<button type="button" class="chip${(S.roulFilter || 'all') === k ? ' on' : ''}" data-act="roul-filter" data-v="${k}" aria-pressed="${(S.roulFilter || 'all') === k}">${l}</button>`).join('')}</div>
+  <div class="rbox${r ? ' hit' : ''}" id="rbox" aria-live="polite">${r ? `${esc(r.t)}${r.k ? `<small class="rk">${esc(r.k)}</small>` : ''}` : '두근두근'}</div>
   <div class="row"><button class="btn" type="button" data-act="roul-spin" style="flex:1">${r ? '다시 돌리기' : '룰렛 돌리기'}</button>${r && S.roulKind === 'do' ? '<button class="btn ghost" type="button" data-act="roul-plan">일정 잡기</button>' : ''}</div></div>`;
 }
 let spinning = false;
 async function spinRoulette() {
   if (spinning) return;
-  const pool = roulPool(); if (!pool.length) return;
-  const pick = pool[Math.floor(Math.random() * pool.length)];
+  const pool = roulPool(); if (!pool.length) { toast('고를 게 없어요. 다른 종류를 골라 보세요'); return; }
+  const fresh = pool.filter(x => !roulRecent.includes(x.t));
+  const from = fresh.length ? fresh : pool;
+  const pick = from[Math.floor(Math.random() * from.length)];
+  roulRecent.push(pick.t); if (roulRecent.length > 8) roulRecent.shift();
   const box = $('#rbox');
   if (box && !matchMedia('(prefers-reduced-motion: reduce)').matches && pool.length > 1) {
     spinning = true; box.classList.remove('hit'); box.classList.add('spin');
@@ -1122,10 +1157,10 @@ function placeAgg() {
 }
 function vMap() {
   const list = placeAgg(), kr = list.filter(a => a.g.lat), abroad = list.filter(a => !a.g.lat);
-  const seoul = kr.filter(a => a.g.r === '서울'), rest = kr.filter(a => a.g.r !== '서울');
+  const seoul = [], rest = kr;
   const loose = S.memories.filter(m => !memGeo(m)).length;
   let svg;
-  if (S.mapView === 'seoul') {
+  if (false) {
     svg = `<svg class="kmap" viewBox="0 0 292 270" role="img" aria-label="서울에서 가본 곳 지도"><rect class="land" x="3" y="3" width="286" height="264" rx="26"/><path class="river" d="${HANP}"/><text class="lab" x="40" y="70">강북</text><text class="lab" x="200" y="232">강남</text><text class="lab riv" x="22" y="${(SXp(37.57, 126.83)[1] + 20).toFixed(0)}">한강</text>${seoul.map(a => pinSVG(SXp(a.g.lat, a.g.lng), a.n, a.g.n, S.mapSel === a.g.n, 'map-pin')).join('')}</svg>`;
   } else {
     const refs = [['서울',37.5665,126.978],['부산',35.1796,129.0756],['대전',36.35,127.38],['대구',35.87,128.6],['광주',35.16,126.85],['강릉',37.75,128.88]];
@@ -1137,9 +1172,8 @@ function vMap() {
     ${seoul.length ? pinSVG(PX(37.5665, 126.978), seoul.reduce((s, a) => s + a.n, 0), '서울', false, 'map-seoul') : ''}</svg>`;
   }
   const sel = S.mapSel && list.find(a => a.g.n === S.mapSel);
-  return `<div class="seg" role="group" aria-label="지도 범위" style="margin-top:0"><button type="button" data-act="map-view" data-v="kr" aria-pressed="${S.mapView !== 'seoul'}">전국</button><button type="button" data-act="map-view" data-v="seoul" aria-pressed="${S.mapView === 'seoul'}">서울 확대</button></div>
-  <div class="mapbox">${svg}</div>
-  <p class="note" style="margin:10px 6px 0">가본 곳 ${kr.length}곳${abroad.length ? ` · 해외 ${abroad.length}곳` : ''}${loose ? ` · 위치 없는 추억 ${loose}개` : ''}${S.mapView !== 'seoul' && seoul.length ? ' · 서울 핀을 누르면 확대돼요' : ''}</p>
+  return `<div class="mapbox">${svg}</div>
+  <p class="note" style="margin:10px 6px 0">가본 곳 ${kr.length}곳${abroad.length ? ` · 해외 ${abroad.length}곳` : ''}${loose ? ` · 위치 없는 추억 ${loose}개` : ''}</p>
   ${sel ? `<p class="sh">${esc(sel.g.n)}에서의 추억 ${sel.n}개</p><div class="card"><ul class="list">${sel.ms.sort((a, b) => b.date.localeCompare(a.date)).map(m => `<li><span><b>${esc(m.title)}</b> <span class="date">${dotd(m.date)}</span></span><button class="ib sm" type="button" data-act="mem-edit" data-v="${esc(m.id)}">보기</button></li>`).join('')}</ul><div class="row"><button class="btn ghost" type="button" data-act="mem-filter" data-v="${esc(sel.g.n)}">타임라인에서 보기</button></div></div>` : ''}
   <p class="sh">가본 곳 순위</p>${list.length ? `<div class="card"><ul class="list">${list.map((a, i) => `<li><button class="plb${S.mapSel === a.g.n ? ' on' : ''}" type="button" data-act="map-pin" data-v="${esc(a.g.n)}"><span class="rk">${i + 1}</span><b>${esc(a.g.n)}</b> <span class="date">${esc(a.g.r)}</span></button><span class="dd">${a.n}번</span></li>`).join('')}</ul></div>` : emptyArt() + '<div class="empty" style="padding-top:4px">장소를 넣어 추억을 남기면 지도에 핀이 꽂혀요.</div>'}`;
 }
@@ -1171,20 +1205,43 @@ function vTimeline() {
   for (const m of ms) { const k = m.date.slice(0, 7); if (k !== cur) { cur = k; out += `<p class="sh">${k.slice(0, 4)}년 ${Number(k.slice(5))}월</p>`; } out += memCard(m); }
   return out;
 }
-const IDEAS = ['한강 피크닉','커플 사진관','같이 요리하기','야경 드라이브','캠핑','놀이공원','벚꽃 구경','일출 보기','전시회','방탈출','같이 운동하기','기차 여행'];
+const IDEA_KINDS = [
+  ['in', '실내', ['방탈출','보드게임 카페','만화카페','영화 보기','전시회','미술관','공방에서 커플링 만들기','향수 공방','도자기 공방','볼링','오락실','코인 노래방','찜질방','아쿠아리움','실내 클라이밍','VR 체험','쿠킹 클래스','북카페','LP 바','셀프 사진관','플라워 클래스','원데이 베이킹','뮤지컬·연극','팝업스토어 구경','스크린 야구','당구','네컷 사진 찍기','소품샵 투어']],
+  ['out', '야외', ['공원 피크닉','자전거 타기','야경 드라이브','별 보러 가기','일출 보기','가벼운 등산','수목원 산책','동물원','놀이공원','글램핑','바다 보러 가기','호수 산책','전통시장 구경','플리마켓','꽃구경','단풍 구경','당일치기 기차 여행','루프탑 카페','캠핑','낚시카페','골프 연습장','온천 여행','템플스테이','눈썰매장','야구장 직관','불꽃놀이 보기']],
+  ['home', '집에서', ['같이 요리하기','영화 정주행','홈카페 놀이','퍼즐 맞추기','같이 홈트','서로 머리 해주기','손편지 쓰기','사진 정리하기','레고 조립','게임 대결','와인과 치즈','거실 캠핑','홈 스파 데이','서로 초상화 그리기','플레이리스트 만들기','배달 맛집 탐방','보드게임','드라마 몰아보기','같이 낮잠','베이킹','마스크팩 데이','추억 사진 보기']],
+  ['spec', '특별한 날', ['커플 사진관','호캉스','오마카세','파인다이닝','커플 반지 맞추기','타임캡슐 편지 쓰기','깜짝 선물 교환','처음 만난 곳 다시 가기','커플 여권 사진','열기구 타기','스냅 촬영','1박 2일 여행']],
+];
+const IDEAS = IDEA_KINDS.flatMap(k => k[2]);
 const CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const BCATS = [['trip', '여행', '✈️'], ['food', '맛집', '🍽️'], ['play', '놀거리', '🎡'], ['home', '집에서', '🏠'], ['day', '기념일', '🎉'], ['etc', '기타', '✨']];
+const bcat = k => BCATS.find(c => c[0] === k) || BCATS[5];
 function bItem(b) {
-  const ev = b.eventId && S.events.find(e => e.id === b.eventId), mem = b.memoryId && S.memories.find(m => m.id === b.memoryId);
-  if (b.done) return `<li class="bi done"><span class="bk on">${CHECK}</span><span class="m"><b>${esc(b.title)}</b><br><span class="s">${b.doneAt ? dotd(b.doneAt) + ' 함께 했어요' : '함께 했어요'}${mem ? ' · 추억 있음' : ''}</span><span class="bact">${mem ? `<button class="ib sm" type="button" data-act="mem-edit" data-v="${esc(mem.id)}">추억 보기</button>` : `<button class="ib sm" type="button" data-act="b-mem" data-v="${esc(b.id)}">추억 남기기</button>`}<button class="ib sm" type="button" data-act="b-undo" data-v="${esc(b.id)}">되돌리기</button></span></span></li>`;
-  return `<li class="bi"><span class="bk"></span><span class="m"><b>${esc(b.title)}</b>${ev ? `<br><span class="s">일정 잡힘 · ${dotd(ev.date).slice(5)} ${esc(ev.title)}</span>` : ''}<span class="bact">${ev ? `<button class="ib sm" type="button" data-act="ev-edit" data-v="${esc(ev.id)}">일정 보기</button>` : `<button class="ib sm" type="button" data-act="b-plan" data-v="${esc(b.id)}">일정 잡기</button>`}<button class="ib sm acc" type="button" data-act="b-done" data-v="${esc(b.id)}">했어요</button><button class="ib sm" type="button" data-act="b-del" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 삭제">삭제</button></span></span></li>`;
+  const ev = b.eventId && S.events.find(e => e.id === b.eventId), mem = b.memoryId && S.memories.find(m => m.id === b.memoryId), c = bcat(b.cat);
+  const who = `<span class="bwho ${b.by === S.who ? 'me' : 'pt'}">${esc(nm(b.by || S.who))}</span>`;
+  const meta = `${who}<span class="bcat">${c[2]} ${c[1]}</span>${b.at ? `<span>${dotd(ymd(new Date(b.at))).slice(5)}</span>` : ''}`;
+  if (b.done) return `<li class="bi done"><button type="button" class="bk on" data-act="b-undo" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 되돌리기">${CHECK}</button><span class="m"><b>${esc(b.title)}</b><span class="bmeta">${meta}<span>${b.doneAt ? dotd(b.doneAt) + ' 함께 했어요' : '함께 했어요'}</span></span><span class="bact">${mem ? `<button class="ib sm" type="button" data-act="mem-edit" data-v="${esc(mem.id)}">추억 보기</button>` : `<button class="ib sm" type="button" data-act="b-mem" data-v="${esc(b.id)}">추억 남기기</button>`}</span></span></li>`;
+  return `<li class="bi"><button type="button" class="bk" data-act="b-done" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 했어요"></button><span class="m"><b>${esc(b.title)}</b><span class="bmeta">${meta}${ev ? `<span>📅 ${dotd(ev.date).slice(5)} 일정 잡힘</span>` : ''}</span><span class="bact">${ev ? `<button class="ib sm" type="button" data-act="ev-edit" data-v="${esc(ev.id)}">일정 보기</button>` : `<button class="ib sm" type="button" data-act="b-plan" data-v="${esc(b.id)}">일정 잡기</button>`}<button class="ib sm" type="button" data-act="b-del" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 삭제">삭제</button></span></span></li>`;
 }
 function vBucket() {
-  const all = [...S.bucket].sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0) || (b.at || 0) - (a.at || 0)), done = all.filter(b => b.done).length;
-  const ideas = IDEAS.filter(x => !all.some(b => b.title === x)).slice(0, 8);
-  return `<div class="card"><h2>함께 한 것 <small>${done} / ${all.length}</small></h2><div class="pbar"><i style="width:${all.length ? Math.round(done / all.length * 100) : 0}%"></i></div></div>
-  <form id="bf" class="addrow"><input type="text" id="b-new" maxlength="40" placeholder="같이 하고 싶은 것"><button class="btn" type="submit">추가</button></form>
-  ${ideas.length ? `<div class="chips">${ideas.map(x => `<button type="button" class="chip" data-act="b-idea" data-v="${esc(x)}">+ ${esc(x)}</button>`).join('')}</div>` : ''}
-  ${all.length ? `<div class="card" style="margin-top:12px"><ul class="list">${all.map(bItem).join('')}</ul></div>` : emptyArt() + '<div class="empty" style="padding-top:4px">같이 하고 싶은 걸 적어 보세요. \'일정 잡기\'를 누르면 바로 데이트로 잡혀요.</div>'}${vRoulette()}`;
+  const all = [...S.bucket], done = all.filter(b => b.done), todo = all.filter(b => !b.done);
+  const tab = S.bkTab || 'todo', fw = S.bkWho || 'all', fc = S.bkCat || 'all';
+  const list = (tab === 'done' ? done : todo).filter(b => (fw === 'all' || (b.by || 'me') === fw) && (fc === 'all' || (b.cat || 'etc') === fc))
+    .sort((a, b) => tab === 'done' ? String(b.doneAt || '').localeCompare(String(a.doneAt || '')) : (b.at || 0) - (a.at || 0));
+  const mine = all.filter(b => b.by === S.who).length, theirs = all.length - mine;
+  const nc = S.bkNewCat || 'etc';
+  const pool = IDEAS.filter(x => !all.some(b => b.title === x));
+  const off = (S.bkIdeaOff || 0) % Math.max(1, pool.length);
+  const ideas = [...pool.slice(off), ...pool.slice(0, off)].slice(0, 6);
+  const chip = (act, v, label, on) => `<button type="button" class="chip${on ? ' on' : ''}" data-act="${act}" data-v="${v}" aria-pressed="${on}">${label}</button>`;
+  return `<div class="card bhead"><h2>우리 버킷리스트 <small>함께 한 것 ${done.length} / ${all.length}</small></h2><div class="pbar"><i style="width:${all.length ? Math.round(done.length / all.length * 100) : 0}%"></i></div>
+  <p class="note" style="margin-top:8px">둘이 각자 담아도 한 리스트로 같이 봐요 · <span class="bwho me">${esc(nm(S.who))}</span> ${mine}개 · <span class="bwho pt">${esc(nm(other()))}</span> ${theirs}개</p></div>
+  <form id="bf" class="card badd"><input type="text" id="b-new" maxlength="40" placeholder="같이 하고 싶은 것을 적어요" aria-label="같이 하고 싶은 것">
+  <div class="chips" role="group" aria-label="종류">${BCATS.map(c => chip('bk-newcat', c[0], c[2] + ' ' + c[1], nc === c[0])).join('')}</div>
+  <button class="btn wide" type="submit">버킷리스트에 담기</button>
+  ${ideas.length ? `<p class="note" style="margin:12px 0 6px">이런 건 어때요? <button type="button" class="linkb" data-act="bk-more">다른 추천</button></p><div class="chips">${ideas.map(x => `<button type="button" class="chip" data-act="b-idea" data-v="${esc(x)}">+ ${esc(x)}</button>`).join('')}</div>` : ''}</form>
+  <div class="seg" role="group" aria-label="보기"><button type="button" data-act="bk-tab" data-v="todo" aria-pressed="${tab === 'todo'}">하고 싶은 것 ${todo.length}</button><button type="button" data-act="bk-tab" data-v="done" aria-pressed="${tab === 'done'}">함께 한 것 ${done.length}</button></div>
+  <div class="chips bfil">${chip('bk-who', 'all', '모두', fw === 'all')}${chip('bk-who', S.who, '내가 담은 것', fw === S.who)}${chip('bk-who', other(), esc(nm(other())) + '님이 담은 것', fw === other())}<span class="csep"></span>${chip('bk-cat', 'all', '전체', fc === 'all')}${BCATS.map(c => chip('bk-cat', c[0], c[2] + ' ' + c[1], fc === c[0])).join('')}</div>
+  ${list.length ? `<div class="card" style="margin-top:10px"><ul class="list">${list.map(bItem).join('')}</ul></div>` : `<div class="empty" style="padding-top:10px">${all.length ? '조건에 맞는 게 없어요.' : emptyArt() + '같이 하고 싶은 걸 담아 보세요. \'일정 잡기\'를 누르면 바로 데이트로 잡혀요.'}</div>`}${vRoulette()}`;
 }
 function vMem() {
   const Y = recapYear();
@@ -1471,7 +1528,7 @@ document.addEventListener('click', async e => {
   else if (act === 'mem-tab') { S.memTab = v; render(); }
   else if (act === 'map-view') { S.mapView = v; render(); }
   else if (act === 'map-seoul') { S.mapView = 'seoul'; render(); }
-  else if (act === 'map-pin') { S.mapSel = S.mapSel === v ? null : v; const g = geoByName(v); if (g && g.r === '서울' && S.mapView !== 'seoul' && S.mapSel) S.mapView = 'seoul'; render(); }
+  else if (act === 'map-pin') { S.mapSel = S.mapSel === v ? null : v; render(); }
   else if (act === 'mem-filter') { S.memFilter = v; S.memTab = 'tl'; render(); window.scrollTo(0, 0); }
   else if (act === 'mem-new') { S.viewer = null; S.msheetDel = false; S.msheet = {date: ymd(today()), photos: [], geo: ''}; render(); }
   else if (act === 'mem-from') {
@@ -1493,7 +1550,12 @@ document.addEventListener('click', async e => {
     S.msheet.photos = a.some(same) ? a.filter(x => !same(x)) : [...a, {assetId: p.assetId || null, url: p.url || '', type: p.type}];
     render();
   }
-  else if (act === 'b-idea') { const id = 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); await W.bucket(id, {title: v, done: false, doneAt: '', eventId: '', memoryId: '', by: S.who, at: Date.now()}); }
+  else if (act === 'b-idea') { const k = IDEA_KINDS.find(x => x[2].includes(v)), cat = k ? ({in: 'play', out: 'play', home: 'home', spec: 'day'})[k[0]] : 'etc'; const id = 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); if (await W.bucket(id, {title: v, cat, done: false, doneAt: '', eventId: '', memoryId: '', by: S.who, at: Date.now()})) toast(`'${v}' 담았어요`); }
+  else if (act === 'bk-newcat') { S.bkNewCat = v; render(); }
+  else if (act === 'bk-tab') { S.bkTab = v; render(); }
+  else if (act === 'bk-who') { S.bkWho = v; render(); }
+  else if (act === 'bk-cat') { S.bkCat = v; render(); }
+  else if (act === 'bk-more') { S.bkIdeaOff = (S.bkIdeaOff || 0) + 6; render(); }
   else if (act === 'reload') { location.reload(); }
   else if (act === 'snap-open') { S.snapView = v; render(); }
   else if (act === 'snap-close') { if (e.target === b || b.tagName === 'BUTTON') { S.snapView = null; render(); } }
@@ -1510,7 +1572,8 @@ document.addEventListener('click', async e => {
     if (await W.mood(id, {date: td, who: S.who, m: v, note: (cur && cur.note) || '', at: Date.now()})) { burst(6); toast(`${nm(other())}님에게 내 기분을 알렸어요`); }
   }
   else if (act === 'roul-go') { S.memTab = 'bk'; go('mem'); setTimeout(() => { const r = $('.roul'); if (r) r.scrollIntoView({block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }, 60); }
-  else if (act === 'roul-kind') { S.roulKind = v; S.roul = null; render(); }
+  else if (act === 'roul-kind') { S.roulKind = v; S.roul = null; S.roulFilter = 'all'; render(); }
+  else if (act === 'roul-filter') { S.roulFilter = v; S.roul = null; render(); }
   else if (act === 'roul-spin') { spinRoulette(); }
   else if (act === 'roul-plan') { const r = S.roul; if (r) { S.sheetDel = false; S.sheet = {title: r.t, date: ymd(addDays(today(), 7)), kind: 'date', who: 'both', repeat: 'none', alerts: [1, 0], ...(r.bid ? {bucketId: r.bid} : {})}; render(); } }
   else if (act === 'l-new') { S.viewer = null; S.lsheet = {openAt: ''}; render(); const t = $('#l-text'); if (t) t.focus(); }
@@ -1623,7 +1686,7 @@ document.addEventListener('submit', async e => {
   if (e.target.id === 'bf') {
     e.preventDefault(); const t = $('#b-new'), title = t.value.trim(); if (!title) { toast('하고 싶은 걸 적어 주세요'); return; }
     const id = 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
-    if (await W.bucket(id, {title, done: false, doneAt: '', eventId: '', memoryId: '', by: S.who, at: Date.now()})) { const el = $('#b-new'); if (el) el.value = ''; toast('버킷리스트에 넣었어요'); }
+    if (await W.bucket(id, {title, cat: S.bkNewCat || 'etc', done: false, doneAt: '', eventId: '', memoryId: '', by: S.who, at: Date.now()})) { const el = $('#b-new'); if (el) el.value = ''; S.bkTab = 'todo'; render(); toast(`담았어요. ${nm(other())}님도 같이 볼 수 있어요`); }
     return;
   }
   if (e.target.id === 'mf') {
