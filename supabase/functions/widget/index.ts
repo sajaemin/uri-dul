@@ -1,5 +1,5 @@
 // Read-only summary for the home-screen / lock-screen widget (Scriptable), unlocked by a per-person widget key.
-import { addDays, admin, cors, diffDays, json, nextStart, todayKST, type Ev, type Role } from '../_shared/common.ts';
+import { addDays, admin, cors, diffDays, json, nextStart, nowMinKST, snapMoment, todayKST, type Ev, type Role } from '../_shared/common.ts';
 
 const MOODS: Record<string, [string, string]> = { love: ['🥰', '설레'], happy: ['😊', '좋아'], calm: ['😌', '평온'], miss: ['🥺', '보고 싶어'], tired: ['😪', '피곤해'], busy: ['🫠', '바빠'], sad: ['🥲', '울적해'], grr: ['😤', '짜증 나'] };
 
@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
   const other: Role = role === 'me' ? 'partner' : 'me';
   const today = todayKST();
 
-  const { data: rows } = await admin.from('docs').select('coll, id, data').eq('couple_id', c.id).in('coll', ['couple', 'events', 'moods', 'answers', 'letters', 'photos']);
+  const { data: rows } = await admin.from('docs').select('coll, id, data').eq('couple_id', c.id).in('coll', ['couple', 'events', 'moods', 'answers', 'letters', 'photos', 'snaps']);
   const docs = rows ?? [];
   const main = docs.find((d) => d.coll === 'couple' && d.id === 'main')?.data as any;
   if (!main?.start) return json({ ready: false, message: '앱에서 우리 정보를 먼저 넣어 주세요' });
@@ -64,8 +64,13 @@ Deno.serve(async (req) => {
   const progress = { label: `${nextHundred.toLocaleString('ko-KR')}일`, left: nextHundred - dayNo, pct: Math.round(((dayNo - (nextHundred - 100)) / 100) * 100) / 100 };
   const cover = typeof main.cover?.url === 'string' && main.cover.url.startsWith('https://') ? main.cover.url : null;
 
+  const snapOpen = nowMinKST() >= snapMoment(c.id, today);
+  const snapped = (r: Role) => docs.some((x) => x.coll === 'snaps' && x.id === `${today}_${r}`);
+  const snap = { open: snapOpen, me: snapped(role), partner: snapped(other) };
+
   return json({
     ready: true,
+    snap,
     upcoming: upcoming.slice(0, 4), progress, cover,
     me: name(role), partner: name(other),
     days: dayNo, start: main.start,

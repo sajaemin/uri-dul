@@ -384,6 +384,29 @@ legend{font-size:13px;color:var(--mut);padding:0 2px;margin-bottom:2px;font-weig
 .app.real .who,.app.real .tag{display:none}
 .app.real .gear{margin-left:auto}
 .app.gated nav.tabs,.app.gated .gear{display:none}
+/* today's snap */
+.snapc.live{box-shadow:0 0 0 2px var(--acc),0 10px 30px color-mix(in srgb,var(--acc) 22%,transparent)}
+.snapc h2 .cd{font-variant-numeric:tabular-nums;color:var(--acc);font-weight:800}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;padding:4px 2px}
+.pol{border:0;padding:6px 6px 8px;background:light-dark(#fff,#2a2226);border-radius:8px;box-shadow:0 6px 16px rgba(60,20,40,.14);transform:rotate(-2.2deg);display:flex;flex-direction:column;gap:6px;text-align:left;color:var(--ink);width:100%}
+.pol:nth-child(2){transform:rotate(2deg)}
+.pol .ph{aspect-ratio:3/4;border-radius:4px;overflow:hidden;background:var(--fill);display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;color:var(--mut);padding:8px}
+.pol .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.pol .ph.lock{background:linear-gradient(140deg,#ffd1df,#ffe9c9 50%,#d9e8ff);filter:saturate(.9);color:#7a5162;font-weight:600}
+.app[data-theme=dark] .pol .ph.lock,.pol .ph.lock{color:#6b4352}
+.pol .cap{font-size:12.5px;font-weight:700;display:flex;justify-content:space-between;gap:6px;padding:0 2px}
+.pol .cap span{color:var(--mut);font-weight:600}
+.snapbtns{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.snapbtns .btn{flex:1}
+.sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}
+.sday{display:flex;flex-direction:column;gap:6px}
+.sday .pair{margin:0;gap:6px;padding:0}
+.sday .pol{padding:4px 4px 5px;box-shadow:0 3px 8px rgba(60,20,40,.12)}
+.sday .pol .cap{font-size:11px}
+.sday p{margin:0;font-size:12.5px;font-weight:700;color:var(--mut)}
+.snapview{position:fixed;inset:0;z-index:40;background:rgba(10,4,8,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:calc(20px + env(safe-area-inset-top,0px)) 16px calc(20px + env(safe-area-inset-bottom,0px))}
+.snapview img{max-width:100%;max-height:78vh;border-radius:12px}
+.snapview p{color:#fff;margin:0;font-weight:600}
 /* floating tab bar */
 nav.tabs{position:fixed;left:0;right:0;bottom:calc(8px + env(safe-area-inset-bottom,0px));width:min(536px,calc(100% - 20px));margin:0 auto;border:0;border-radius:30px;padding:5px;gap:2px;background:color-mix(in srgb,var(--card) 70%,transparent);box-shadow:0 10px 30px rgba(70,20,45,.16),0 1px 3px rgba(70,20,45,.08),inset 0 0 0 .5px color-mix(in srgb,var(--ink) 12%,transparent);padding-bottom:5px}
 nav.tabs button{min-height:52px;border-radius:25px;font-size:11.5px;gap:2px;transition:background .25s,color .25s}
@@ -546,7 +569,7 @@ const dlab = d => { const n = diff(today(), d); return n === 0 ? '오늘' : n > 
 S.diAlways = ls.get('ud-di') !== '0'; S.diExp = false; S.look = ls.get('ud-look') === 'modern' ? 'modern' : 'cute';
 S.memories = []; S.bucket = []; S.memTab = 'tl'; S.mapView = 'kr'; S.mapSel = null; S.memFilter = ''; S.msheet = null; S.msheetDel = false; S.recap = null;
 S.events = []; S.calMode = 'month'; S.sheet = null; S.sheetDel = false;
-S.moods = {}; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
+S.moods = {}; S.snaps = {}; S.snapView = null; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
 { const t = today(); S.calMonth = new Date(t.getFullYear(), t.getMonth(), 1); S.calSel = ymd(t); }
 function starts(ev, s0, from, to) {
   const r = ev.repeat || 'none', res = [];
@@ -610,6 +633,7 @@ const W = {
   bucketUpd: (id, d) => guard(async () => { if (db) await db.doc('bucket/' + id).update(d); else { S.bucket = S.bucket.map(x => x.id === id ? {...x, ...d} : x); render(); } }),
   delBucket: id => guard(async () => { if (db) await db.doc('bucket/' + id).delete(); else { S.bucket = S.bucket.filter(x => x.id !== id); render(); } }),
   poke: d => guard(async () => { if (db) await db.doc('pokes/latest').set(d); else { S.poke = d; render(); } }),
+  snap: (id, d) => guard(async () => { if (db) await db.doc('snaps/' + id).set(d); else { S.snaps = {...S.snaps, [id]: d}; render(); } }),
   mood: (id, d) => guard(async () => { if (db) await db.doc('moods/' + id).set(d); else { S.moods = {...S.moods, [id]: d}; render(); } }),
   letter: (id, d) => guard(async () => { if (db) await db.doc('letters/' + id).set(d); else { S.letters = [...S.letters.filter(x => x.id !== id), {...d, id}]; render(); } }),
   letterUpd: (id, d) => guard(async () => { if (db) await db.doc('letters/' + id).update(d); else { S.letters = S.letters.map(x => x.id === id ? {...x, ...d} : x); render(); } }),
@@ -746,7 +770,11 @@ function renderDI() {
   }
   return L;
 }
+let snapWasOpen = null;
 function tick() {
+  const cd = document.querySelector('[data-snapcd]');
+  if (cd) { const st = snapState(); cd.textContent = `${Math.floor(st.left / 60)}:${String(st.left % 60).padStart(2, '0')}`; if (!st.left) render(); }
+  if (S.couple && S.tab === 'home') { const o = snapState().open; if (snapWasOpen === false && o) render(); snapWasOpen = o; }
   const L = renderDI(); if (!L) return;
   document.querySelectorAll('[data-cd]').forEach(el => { const v = L[el.dataset.cd] || ''; if (el.textContent !== v) el.textContent = v; });
   const p = L.p, off = (1 - p) * 15 - p * 11;
@@ -784,7 +812,7 @@ function vHome() {
   const rec = received().slice(0, 4), na = av[0];
   return `${S.update ? '<div class="banner">새 버전이 나왔어요<button type="button" data-act="reload">새로고침</button></div>' : ''}${pk ? `<div class="banner">${esc(nm(other()))}님이 콕 찔렀어요 · ${ago(S.poke.at)}<button type="button" data-act="seen-poke">확인</button></div>` : ''}
   ${vGreet()}${heroHTML()}
-  <div class="sec">${vInvite()}${vPushBanner()}${vLetterHome()}<p class="sh">오늘 우리 기분</p>${vMood()}${vRemind() ? `<p class="sh">미리 알림</p>${vRemind()}` : ''}
+  <div class="sec">${vInvite()}${vPushBanner()}${vLetterHome()}<p class="sh">오늘의 한 장</p>${vSnap()}<p class="sh">오늘 우리 기분</p>${vMood()}${vRemind() ? `<p class="sh">미리 알림</p>${vRemind()}` : ''}
   <p class="sh">다음 데이트</p>${vNext()}
   ${memPrompt() ? `<p class="sh">기록할 데이트</p>${memPrompt()}` : ''}${vRecapCard()}
   <p class="sh">오늘의 질문</p><div class="card"><p class="q">${esc(Q[qIdx(td)])}</p><p class="note" style="margin-top:8px">${qs}</p>
@@ -795,6 +823,62 @@ function vHome() {
   <div class="row"><button class="btn ghost" type="button" data-act="tab" data-v="ph">${nc ? '받으러 가기' : '사진함 열기'}</button></div></div>
   <p class="sh">다가오는 기념일</p><div class="card"><ul class="list">${av.map(a => `<li><span><b>${esc(a.label)}</b> <span class="date">${dotd(ymd(a.d))}</span></span><span class="dd">${dlab(a.d) === '오늘' ? 'D-DAY' : dlab(a.d)}</span></li>`).join('')}</ul></div></div>`;
 }
+/* ---------- today's snap: both take a photo within 10 minutes of a surprise moment ---------- */
+// same moment as the server: FNV-1a of couple id + date -> a 10-minute slot between 10:00 and 20:50 KST
+function snapMoment(ds) {
+  const id = (S.info && S.info.couple_id) || 'test';
+  let h = 0x811c9dc5; const t = id + ':' + ds;
+  for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return 600 + (h % 66) * 10;
+}
+const kstNow = () => { const d = new Date(Date.now() + 9 * 3600e3); return {ds: d.toISOString().slice(0, 10), min: d.getUTCHours() * 60 + d.getUTCMinutes(), sec: d.getUTCSeconds()}; };
+const hm = m => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+function snapState() {
+  const k = kstNow(), m = S.real ? snapMoment(k.ds) : Math.min(k.min, snapMoment(k.ds));
+  return {ds: k.ds, m, open: k.min >= m, left: Math.max(0, (m + 10) * 60 - (k.min * 60 + k.sec)), mine: S.snaps[k.ds + '_' + S.who], theirs: S.snaps[k.ds + '_' + other()]};
+}
+function polHTML(w, x, showIt, big) {
+  const cap = x ? `<span>${hm(x.min)}${x.late ? ` · ${x.late}분 늦음` : ''}</span>` : '<span>아직</span>';
+  const ph = x && showIt ? `<img src="${esc(x.url)}" alt="${esc(nm(w))}의 한 장" loading="lazy"${S.real ? ' crossorigin="anonymous"' : ''}>`
+    : x ? `<span>${esc(nm(w))}님은 올렸어요<br>내 것을 올리면 보여요</span>` : `<span>${w === S.who ? '아직 안 찍었어요' : `${esc(nm(w))}님을<br>기다리는 중`}</span>`;
+  const tag = x && showIt ? 'button' : 'div';
+  return `<${tag}${tag === 'button' ? ` type="button" data-act="snap-open" data-v="${esc(x.date + '_' + w)}"` : ''} class="pol"><span class="ph${x && !showIt ? ' lock' : ''}">${ph}</span><span class="cap">${esc(nm(w))}${cap}</span></${tag}>`;
+}
+function vSnap() {
+  if (!paired()) return '';
+  const st = snapState(), both = st.mine && st.theirs;
+  const live = st.open && !st.mine;
+  const head = both ? '오늘의 한 장이 공개됐어요 ✨' : live ? (st.left > 0 ? `📸 지금 찍을 시간! <span class="cd" data-snapcd>${Math.floor(st.left / 60)}:${String(st.left % 60).padStart(2, '0')}</span>` : '📸 오늘의 한 장, 늦었지만 지금도 돼요') : st.mine ? `${esc(nm(other()))}님의 한 장을 기다리는 중` : '📸 오늘의 한 장';
+  const sub = both ? `${hm(st.m)}에 알림이 왔던 오늘의 우리예요` : live ? '꾸미지 말고 지금 모습 그대로! 둘 다 올리면 함께 공개돼요' : st.mine ? '올라오면 바로 알려 드릴게요' : `오늘 언젠가 알림이 와요. 그때 10분 안에 지금 모습을 찍어 올려요${S.real ? '' : '<br>(테스트 모드는 바로 찍어 볼 수 있어요)'}`;
+  const btns = live || (!st.mine && st.open) ? `<div class="snapbtns"><label class="btn" for="snapcam" tabindex="0">지금 찍기</label><label class="btn line" for="snapfile" tabindex="0">앨범에서</label></div><input type="file" id="snapcam" accept="image/*" capture="environment" hidden><input type="file" id="snapfile" accept="image/*" hidden>` : '';
+  const pair = st.mine || st.theirs || st.open ? `<div class="pair">${polHTML(S.who, st.mine, true)}${polHTML(other(), st.theirs, !!st.mine)}</div>` : '';
+  return `<div class="card snapc${live ? ' live' : ''}"><h2>${head}</h2><p class="note" style="margin-top:2px">${sub}</p>${S.snapBusy ? `<p class="note" style="margin-top:10px">${esc(S.snapBusy)}</p>` : btns}${pair}${!st.theirs && st.mine && paired() ? '<div class="row"><button class="btn ghost" type="button" data-act="poke">콕 찌르기</button></div>' : ''}</div>`;
+}
+function vSnapArchive() {
+  const days = [...new Set(Object.values(S.snaps).map(x => x.date))].sort().reverse();
+  if (!days.length) return `<div class="empty">${emptyArt()}아직 오늘의 한 장이 없어요.<br>홈에서 알림이 온 날 함께 찍어 보세요.</div>`;
+  return `<p class="note" style="margin:0 4px 12px">둘 다 올린 날은 서로의 사진이 보여요. 내가 안 올린 날 상대 사진은 잠겨 있어요.</p><div class="sgrid">${days.map(ds => { const a = S.snaps[ds + '_' + S.who], b = S.snaps[ds + '_' + other()]; return `<div class="sday"><p>${dotd(ds)}</p><div class="pair">${polHTML(S.who, a, true)}${polHTML(other(), b, !!a)}</div></div>`; }).join('')}</div>`;
+}
+function vSnapView() {
+  const x = S.snaps[S.snapView]; if (!x) { S.snapView = null; return ''; }
+  return `<div class="snapview" data-act="snap-close"><img src="${esc(x.url)}" alt=""><p>${esc(nm(x.who))} · ${dotd(x.date)} ${hm(x.min)}${x.late ? ` · ${x.late}분 늦음` : ''}</p><button class="btn line" type="button" data-act="snap-close">닫기</button></div>`;
+}
+async function uploadSnap(f) {
+  if (!f) return;
+  const st = snapState(), id = st.ds + '_' + S.who;
+  if (st.mine) { toast('오늘의 한 장은 이미 올렸어요'); return; }
+  S.snapBusy = '올리는 중…'; render();
+  try {
+    const small = await toJpeg(f, 1600);
+    const r = await putBlob(new File([small], 'snap.jpg', {type: 'image/jpeg'}));
+    const k = kstNow(), late = k.min >= st.m + 10 ? Math.max(1, k.min - (st.m + 10)) : 0;
+    if (await W.snap(id, {date: st.ds, who: S.who, url: r.url, assetId: r.assetId, at: Date.now(), min: k.min, late})) {
+      burst(20); toast(st.theirs ? '오늘의 한 장이 공개됐어요!' : `올렸어요! ${nm(other())}님이 올리면 함께 공개돼요`);
+    }
+  } catch (e) { toast('올리지 못했어요. 다시 해 주세요'); }
+  S.snapBusy = ''; render();
+}
+
 /* ---------- today's mood ---------- */
 const MOODS = [['love', '🥰', '설레'], ['happy', '😊', '좋아'], ['calm', '😌', '평온'], ['miss', '🥺', '보고 싶어'], ['tired', '😪', '피곤해'], ['busy', '🫠', '바빠'], ['sad', '🥲', '울적해'], ['grr', '😤', '짜증 나']];
 const moodOf = k => MOODS.find(m => m[0] === k);
@@ -917,9 +1001,9 @@ function vPh() {
   <input type="text" id="pnote" maxlength="60" placeholder="한마디 남기기 (선택)" style="margin-top:10px">
   ${S.busy ? `<p class="note" style="margin-top:10px">${esc(S.busy)}</p>` : `<label class="btn" for="file" tabindex="0">사진 고르기</label>`}
   <input type="file" id="file" accept="image/*" multiple hidden></div>
-  <div class="seg" role="group" aria-label="사진 종류"><button type="button" data-act="seg" data-v="in" aria-pressed="${S.phTab === 'in'}">받은 사진 ${rin.length}${nc ? ` · 새 ${nc}` : ''}</button><button type="button" data-act="seg" data-v="out" aria-pressed="${S.phTab === 'out'}">보낸 사진 ${rout.length}</button></div>
+  <div class="seg seg3" role="group" aria-label="사진 종류"><button type="button" data-act="seg" data-v="in" aria-pressed="${S.phTab === 'in'}">받은 사진 ${rin.length}${nc ? ` · 새 ${nc}` : ''}</button><button type="button" data-act="seg" data-v="out" aria-pressed="${S.phTab === 'out'}">보낸 사진 ${rout.length}</button><button type="button" data-act="seg" data-v="snap" aria-pressed="${S.phTab === 'snap'}">오늘의 한 장</button></div>
   ${S.phTab === 'in' && nc ? `<button class="btn wide" type="button" data-act="save-all" style="margin-bottom:12px">새 사진 ${nc}장 모두 저장</button>` : ''}
-  ${list.length ? tiles(list, S.phTab) : `<div class="empty">${emptyArt()}${S.phTab === 'in' ? `${esc(nm(other()))}님이 올린 사진이 아직 없어요.${S.real ? `<br>${esc(nm(other()))}님이 사진을 올리면 여기 모이고 알림이 가요.` : `<br>테스트하려면 오른쪽 위에서 '${esc(nm(other()))}'로 바꿔 사진을 올려 보세요.`}` : '아직 올린 사진이 없어요.'}</div>`}
+  ${S.phTab === 'snap' ? vSnapArchive() : list.length ? tiles(list, S.phTab) : `<div class="empty">${emptyArt()}${S.phTab === 'in' ? `${esc(nm(other()))}님이 올린 사진이 아직 없어요.${S.real ? `<br>${esc(nm(other()))}님이 사진을 올리면 여기 모이고 알림이 가요.` : `<br>테스트하려면 오른쪽 위에서 '${esc(nm(other()))}'로 바꿔 사진을 올려 보세요.`}` : '아직 올린 사진이 없어요.'}</div>`}
   ${!dl && S.loaded ? '<p class="note" style="margin-top:12px">이 화면에서는 저장 버튼이 막혀 있어요. 사진을 열고 길게 눌러 저장할 수 있어요.</p>' : ''}</div>`;
 }
 function vUs() {
@@ -1279,7 +1363,7 @@ function vViewer() {
 
 function render() {
   $('.app').dataset.look = S.look;
-  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter) ? 'hidden' : '';
+  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter || S.snapView) ? 'hidden' : '';
   const a = document.activeElement, aid = a && a.id, ss = a && a.selectionStart;
   for (const w of ['me', 'partner']) { const b = $('#who-' + w); b.innerHTML = (S.look === 'cute' ? mini(w, 22) : '') + `<span>${esc(nm(w))}</span>`; b.setAttribute('aria-pressed', String(S.who === w)); }
   $('.brand').innerHTML = (S.look === 'cute' ? duo(22) : '<i></i>') + '우리 둘';
@@ -1298,7 +1382,7 @@ function render() {
   if (S.clearNote) { delete keep.pnote; S.clearNote = false; }
   $('.app').classList.toggle('gated', !!S.gate || !S.loaded || !S.couple);
   $('#view').innerHTML = S.gate ? vGate() : !S.loaded ? vLoading() : S.err ? `<div class="empty">${esc(S.err)}</div>` : !S.couple ? vSetup() : ({home: vHome, q: vQ, cal: vCal, mem: vMem, ph: vPh, us: vUs})[S.tab]();
-  $('#ov').innerHTML = S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
+  $('#ov').innerHTML = S.snapView ? vSnapView() : S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
   if (S.recap && S.recap.jump != null) { const tr = $('#rct'); if (tr) tr.scrollLeft = S.recap.jump * tr.clientWidth; S.recap.jump = null; }
   for (const k in keep) { const el = document.getElementById(k); if (el) { if (el.type === 'checkbox') el.checked = keep[k]; else el.value = keep[k]; } }
   tick();
@@ -1307,11 +1391,11 @@ function render() {
 }
 
 /* ---------- photos ---------- */
-async function toJpeg(f) {
+async function toJpeg(f, max = 4096) {
   const u = URL.createObjectURL(f);
   try {
     const img = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = u; });
-    const k = Math.min(1, 4096 / Math.max(img.naturalWidth, img.naturalHeight));
+    const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
     const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
     c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
     return await new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error('변환 실패')), 'image/jpeg', 0.9));
@@ -1361,7 +1445,7 @@ document.addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
   const act = b.dataset.act, v = b.dataset.v;
   if (act === 'tab') go(v);
-  else if (act === 'who') { S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
+  else if (act === 'who') { S.snapView = null; S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
   else if (act === 'save-ans') {
     const text = (S.draft || '').trim(); if (!text) { toast('답을 먼저 적어 주세요'); return; }
     const td = ymd(today());
@@ -1411,6 +1495,8 @@ document.addEventListener('click', async e => {
   }
   else if (act === 'b-idea') { const id = 'b' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5); await W.bucket(id, {title: v, done: false, doneAt: '', eventId: '', memoryId: '', by: S.who, at: Date.now()}); }
   else if (act === 'reload') { location.reload(); }
+  else if (act === 'snap-open') { S.snapView = v; render(); }
+  else if (act === 'snap-close') { if (e.target === b || b.tagName === 'BUTTON') { S.snapView = null; render(); } }
   else if (act === 'copy-url') { copyText(location.origin + location.pathname + (joinParam ? '?join=' + joinParam : ''), '주소를 복사했어요. Safari에 붙여넣어 주세요'); }
   else if (act === 'wg-copy') {
     if (!S.wgCode) { toast('위젯 코드를 준비하는 중이에요. 잠시 뒤 다시 눌러 주세요'); prepWidget(); return; }
@@ -1499,10 +1585,12 @@ document.addEventListener('click', async e => {
 });
 document.addEventListener('input', e => { if (e.target.id === 'ans') S.draft = e.target.value; if (e.target.id === 'm-place') { if (S.msheet) S.msheet.place = e.target.value; const sel = ($('#m-geo') || {}).value || ''; const l = $('#m-geo-l'); if (l && !sel) l.textContent = geoLabel(geoFind(e.target.value), sel); } });
 document.addEventListener('scroll', e => { if (e.target && e.target.id === 'rct') rcSync(); }, true);
-document.addEventListener('change', e => { if (e.target.id === 'm-file') { const f = [...e.target.files]; e.target.value = ''; uploadMem(f); return; } if (e.target.id === 'm-geo') { const sel = e.target.value, pl = $('#m-place'); if (S.msheet) S.msheet.geo = sel; const l = $('#m-geo-l'); if (l) l.textContent = geoLabel(sel && sel !== '-' ? geoByName(sel) : geoFind(pl ? pl.value : ''), sel); return; } if (e.target.id === 'di-always') { S.diAlways = e.target.checked; ls.set('ud-di', S.diAlways ? '1' : '0'); tick(); return; } if (e.target.id === 'file') { const f = [...e.target.files]; e.target.value = ''; upload(f); } });
+document.addEventListener('change', e => { if (e.target.id === 'snapcam' || e.target.id === 'snapfile') { const f = e.target.files[0]; e.target.value = ''; uploadSnap(f); return; } if (e.target.id === 'm-file') { const f = [...e.target.files]; e.target.value = ''; uploadMem(f); return; } if (e.target.id === 'm-geo') { const sel = e.target.value, pl = $('#m-place'); if (S.msheet) S.msheet.geo = sel; const l = $('#m-geo-l'); if (l) l.textContent = geoLabel(sel && sel !== '-' ? geoByName(sel) : geoFind(pl ? pl.value : ''), sel); return; } if (e.target.id === 'di-always') { S.diAlways = e.target.checked; ls.set('ud-di', S.diAlways ? '1' : '0'); tick(); return; } if (e.target.id === 'file') { const f = [...e.target.files]; e.target.value = ''; upload(f); } });
 document.addEventListener('keydown', e => {
   if (e.target.matches && e.target.matches('label[for=file]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#file').click(); }
   if (e.target.matches && e.target.matches('label[for=m-file]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#m-file').click(); return; }
+  if (e.target.matches && e.target.matches('label[for=snapcam],label[for=snapfile]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#' + e.target.getAttribute('for')).click(); return; }
+  if (S.snapView && e.key === 'Escape') { S.snapView = null; render(); return; }
   if (S.sheet && e.key === 'Escape') { S.sheet = null; S.sheetDel = false; render(); return; }
   if (S.msheet && e.key === 'Escape') { S.msheet = null; S.msheetDel = false; render(); return; }
   if ((S.lsheet || S.letter) && e.key === 'Escape') { S.lsheet = null; S.letter = null; S.letterDel = false; render(); return; }
@@ -1685,7 +1773,7 @@ function vPushBanner() {
 function vRealSettings() {
   if (!S.real || !S.info) return '';
   const st = {on: '이 폰에서 알림을 받고 있어요', off: '알림이 꺼져 있어요', denied: '설정 앱 → 알림 → 우리 둘에서 알림을 허용해 주세요', 'need-install': '홈 화면에 추가한 앱에서만 알림을 켤 수 있어요', unsupported: '이 기기에서는 알림을 지원하지 않아요'}[S.push] || '확인하는 중…';
-  return `<p class="sh">알림</p><div class="card"><p style="margin:0">${st}</p><div class="row">${S.push === 'on' ? '<button class="btn ghost" type="button" data-act="push-test">테스트 알림 보내기</button><button class="btn line" type="button" data-act="push-off">끄기</button>' : S.push === 'off' ? '<button class="btn" type="button" data-act="push-on">알림 켜기</button>' : ''}</div><p class="note" style="margin-top:10px">받는 알림: 상대의 답·기분·사진·콕·일정·추억·편지, 아침 9시 기념일/데이트/열리는 편지, 저녁 6시 오늘의 질문</p></div>
+  return `<p class="sh">알림</p><div class="card"><p style="margin:0">${st}</p><div class="row">${S.push === 'on' ? '<button class="btn ghost" type="button" data-act="push-test">테스트 알림 보내기</button><button class="btn line" type="button" data-act="push-off">끄기</button>' : S.push === 'off' ? '<button class="btn" type="button" data-act="push-on">알림 켜기</button>' : ''}</div><p class="note" style="margin-top:10px">받는 알림: 오늘의 한 장(하루 한 번 깜짝 알림), 상대의 답·기분·사진·콕·일정·추억·편지, 아침 9시 기념일/데이트/열리는 편지, 저녁 6시 오늘의 질문</p></div>
   <p class="sh">연결</p><div class="card"><p style="margin:0">${S.info.partner_joined ? `${esc(nm('me'))}님과 ${esc(nm('partner'))}님이 연결되어 있어요` : '아직 상대가 들어오지 않았어요'}</p><p class="note" style="margin-top:8px">초대 코드</p><div class="bigcode sm">${esc(S.info.code)}</div>${S.info.partner_joined ? '' : '<div class="row"><button class="btn" type="button" data-act="invite-share">초대 링크 보내기</button></div>'}</div>
   <p class="sh">홈 화면 위젯</p><div class="card"><p style="margin:0">함께한 날, 다음 데이트 D-day, ${esc(nm(other()))}님 기분과 새 사진을 홈 화면과 잠금 화면에 띄워요.</p><p class="note" style="margin-top:6px">웹앱은 아이폰 위젯을 직접 만들 수 없어서, 무료 앱 Scriptable이 대신 보여줘요.</p>
   <ol class="steps"><li>App Store에서 <b>Scriptable</b>(무료)을 설치해요.</li><li>아래 <b>위젯 코드 복사</b>를 눌러요.</li><li>Scriptable을 열고 오른쪽 위 <b>+</b> → 빈 화면을 길게 눌러 <b>붙여넣기</b> → 맨 위 이름을 <b>우리 둘</b>로 바꾸고 <b>완료</b>.</li><li>홈 화면 빈 곳을 길게 누르고 <b>편집 → 위젯 추가 → Scriptable</b>에서 크기를 골라 추가해요.</li><li>추가된 위젯을 길게 눌러 <b>위젯 편집 → Script → 우리 둘</b>을 골라요.</li></ol>
@@ -1764,6 +1852,7 @@ function attachDB(timer) {
   db.collection('bucket').onSnapshot(s => { S.bucket = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
   db.collection('events').onSnapshot(s => { S.events = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
   db.doc('pokes/latest').onSnapshot(s => { S.poke = s.exists ? s.data() : null; render(); }, () => {});
+  db.collection('snaps').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.snaps = m; render(); }, () => {});
   db.collection('moods').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.moods = m; render(); }, () => {});
   db.collection('letters').onSnapshot(s => { S.letters = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
 }

@@ -131,6 +131,8 @@ if (!d || !d.ready) {
   const pm = d.mood && d.mood.partner, mm = d.mood && d.mood.me;
   const prog = d.progress || { label: '', left: 0, pct: 0 };
   const extras = [];
+  if (d.snap && d.snap.open && !d.snap.me) extras.push('📸 오늘의 한 장');
+  else if (d.snap && d.snap.me && d.snap.partner) extras.push('✨ 한 장 공개');
   if (d.newPhotos) extras.push('📷 새 사진 ' + d.newPhotos);
   if (d.letters && d.letters.unread) extras.push('💌 편지 ' + d.letters.unread);
   if (d.question && !d.question.me) extras.push(d.question.partner ? '❓ 답 기다려요' : '❓ 오늘의 질문');

@@ -90,3 +90,12 @@ export function nextStart(ev: Ev, today: string): string | null {
   }
   return null;
 }
+
+// ---- 오늘의 한 장: the same surprise moment the app computes (FNV-1a of couple id + date) ----
+export function snapMoment(coupleId: string, date: string): number {
+  let h = 0x811c9dc5;
+  const t = `${coupleId}:${date}`;
+  for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return 600 + (h % 66) * 10;
+}
+export const nowMinKST = () => { const d = new Date(Date.now() + KST); return d.getUTCHours() * 60 + d.getUTCMinutes(); };

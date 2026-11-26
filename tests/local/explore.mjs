@@ -39,6 +39,9 @@ const docs = {
   'letters/l1': { from: 'partner', title: '700일에 열어 봐', text: '사랑해', openAt: kst(30), at: 5, readAt: 0 },
   'letters/l2': { from: 'partner', title: XSS, text: '오늘 고마웠어 ' + XSS, openAt: kst(0), at: 6, readAt: 0 },
   'pokes/latest': { from: 'partner', at: Date.now() - 60000 },
+  [`snaps/${kst(0)}_partner`]: { date: kst(0), who: 'partner', url: 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400"><rect width="300" height="400" fill="#ffc7d8"/><circle cx="150" cy="170" r="70" fill="#fff"/></svg>'), at: Date.now() - 120000, min: 600, late: 0 },
+  [`snaps/${kst(-1)}_me`]: { date: kst(-1), who: 'me', url: 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400"><rect width="300" height="400" fill="#c7e3ff"/></svg>'), at: Date.now() - 864e5, min: 800, late: 3 },
+  [`snaps/${kst(-1)}_partner`]: { date: kst(-1), who: 'partner', url: 'data:image/svg+xml;utf8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400"><rect width="300" height="400" fill="#ffe9c9"/></svg>'), at: Date.now() - 864e5, min: 795, late: 0 },
 };
 const seed = { info: { couple_id: 'c1', code: 'K7QM2D', role: 'me', rc: 'RCAB12CD', partner_joined: true }, docs };
 
@@ -111,6 +114,17 @@ async function run(label, device, scheme, look) {
   const png = await p.evaluate(() => { const c = document.createElement('canvas'); c.width = 640; c.height = 480; const g = c.getContext('2d'); g.fillStyle = '#7fd19b'; g.fillRect(0, 0, 640, 480); return c.toDataURL('image/png').split(',')[1]; });
   await p.setInputFiles('#file', { name: 'a.png', mimeType: 'image/png', buffer: Buffer.from(png, 'base64') }).catch(e => say(label, 'upload: ' + e.message));
   await p.waitForTimeout(800); await check('after upload');
+  // today's snap: take mine, then both show
+  await p.click('#t-home');
+  if (await p.locator('#snapfile').count()) {
+    await p.screenshot({ path: `${out}/${label}-snap-before.png` });
+    await p.setInputFiles('#snapfile', { name: 's.png', mimeType: 'image/png', buffer: Buffer.from(png, 'base64') });
+    await p.waitForTimeout(900); await check('after snap');
+    const imgs = await p.locator('.snapc .pol img').count();
+    if (imgs !== 2) say(label, `snap: expected both photos after posting, saw ${imgs}`);
+    await p.locator('.snapc').screenshot({ path: `${out}/${label}-snap-after.png` });
+  } else say(label, 'snap: no upload button at ' + new Date().toISOString());
+  await p.click('#t-ph'); await p.click('[data-act=seg][data-v=snap]'); await p.waitForTimeout(200); await p.screenshot({ path: `${out}/${label}-snap-archive.png` }); await check('snap archive');
   await ctx.close();
 }
 

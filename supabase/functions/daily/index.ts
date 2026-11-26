@@ -1,5 +1,5 @@
 // Called by cron at 09:00 (reminders for dates, anniversaries, birthdays) and 18:00 Korea time (today's question).
-import { addDays, admin, coupleNames, cors, diffDays, fmtTime, json, nextStart, sendToUser, todayKST, trusted, type Ev, type Role } from '../_shared/common.ts';
+import { addDays, admin, coupleNames, cors, diffDays, fmtTime, json, nextStart, nowMinKST, sendToUser, snapMoment, todayKST, trusted, type Ev, type Role } from '../_shared/common.ts';
 
 const dl = (n: number) => (n === 0 ? '오늘' : `D-${n}`);
 const sameMD = (a: string, b: string) => a.slice(5) === b.slice(5);
@@ -13,6 +13,18 @@ Deno.serve(async (req) => {
   let sent = 0;
 
   for (const c of couples ?? []) {
+    if (slot === 'snap') {
+      // runs every 10 minutes; fires once, in the 10 minutes after this couple's moment
+      if (!c.me || !c.partner) continue;
+      const m = snapMoment(c.id, today), now = nowMinKST();
+      if (now < m || now >= m + 10) continue;
+      const { error } = await admin.from('snap_sent').insert({ couple_id: c.id, date: today });
+      if (error) continue; // already sent today
+      for (const role of ['me', 'partner'] as Role[]) {
+        sent += await sendToUser(c[role], { title: '📸 오늘의 한 장 시간이에요!', body: '10분 안에 지금 모습을 찍어 올려요. 둘 다 올리면 함께 공개돼요', tag: `snap-${today}`, url: './#home' });
+      }
+      continue;
+    }
     const names = await coupleNames(c.id);
     if (slot === 'evening') {
       if (!c.me || !c.partner) continue;

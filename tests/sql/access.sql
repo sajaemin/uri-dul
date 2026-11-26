@@ -80,6 +80,7 @@ select public.expect_error(format('insert into storage.objects (bucket_id, name)
 select public.expect_error($q$select public.save_push('{"endpoint":"https://push.example/c"}')$q$, 'no_couple');
 select public.expect_error('select public.widget_token()', 'no_couple');
 select public.expect_error('select * from private.config', 'permission denied');
+select public.expect_error('select * from public.snap_sent', 'permission denied');
 select public.expect_error($q$update public.couples set partner = auth.uid()$q$, 'permission denied');
 reset role;
 
@@ -108,16 +109,17 @@ do $$ begin
   assert (select count(*) from net.calls where url like '%/notify') = 1, 'one notify call so far (the answer)';
   assert (select headers->>'x-notify-secret' from net.calls limit 1) = 's3cret', 'secret header';
   assert (select body->'record'->>'coll' from net.calls limit 1) = 'answers', 'record in body';
-  assert (select count(*) from cron.job where jobname like 'uridul-%') = 2, 'two daily jobs';
+  assert (select count(*) from cron.job where jobname like 'uridul-%') = 3, 'morning, evening and snap jobs';
 end $$;
 select set_config('request.jwt.claim.sub', :'A', false);
 set role authenticated;
 insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'moods', '2026-11-24_me', '{"m":"happy"}');
 insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'letters', 'l1', '{"text":"hi"}');
 insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'settings', 's1', '{}');
+insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'snaps', '2026-11-24_me', '{"date":"2026-11-24"}');
 reset role;
 do $$ begin
-  assert (select count(*) from net.calls) = 3, 'moods and letters notify, settings does not';
+  assert (select count(*) from net.calls) = 4, 'moods, letters and snaps notify, settings does not';
   assert (select body->>'type' from net.calls order by id desc limit 1) = 'INSERT', 'type is INSERT';
 end $$;
 select private.call_daily('evening');
@@ -131,7 +133,7 @@ select public.expect_error(format('select public.recover_couple(%L, %L)', :'code
 select public.recover_couple(:'code', :'rc_a');
 do $$ declare i jsonb := public.my_info(); begin
   assert i->>'role' = 'me', 'D took A''s place';
-  assert (select count(*) from public.docs) = 5, 'D sees the couple''s docs';
+  assert (select count(*) from public.docs) = 6, 'D sees the couple''s docs';
 end $$;
 select public.my_info()->>'rc' as rc_d \gset
 reset role;
