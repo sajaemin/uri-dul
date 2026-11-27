@@ -247,6 +247,8 @@ try {
     await tab(A, 'ph'); await A.locator('[data-act=seg][data-v=out]').click();
     await A.locator('.tile').first().click(); await A.click('[data-act=del]'); await A.click('[data-act=del-yes]');
     await A.locator('.tile').waitFor({ state: 'detached' });
+    await tab(B, 'home'); await B.locator('.dphoto').waitFor({ state: 'detached' });
+    await A.waitForTimeout(6000); // the file itself is removed a few seconds after the record
   });
 } finally {
   const uids = [];

@@ -917,7 +917,7 @@ const W = {
   answer: (id, d) => guard(async () => { if (db) await db.doc('answers/' + id).set(d); else { S.answers = {...S.answers, [id]: d}; render(); } }),
   addPhoto: d => guard(async () => { const {id, ...body} = d; if (db) await db.collection('photos').doc(id).set(body); else { S.photos = [d, ...S.photos]; render(); } }),
   savedBy: (id, w) => guard(async () => { if (db) await db.doc('photos/' + id).update({savedBy: {[w]: true}}); else { S.photos = S.photos.map(p => p.id === id ? {...p, savedBy: {...(p.savedBy || {}), [w]: true}} : p); render(); } }),
-  delPhoto: p => guard(async () => { if (db) await db.doc('photos/' + p.id).delete(); else { S.photos = S.photos.filter(x => x.id !== p.id); render(); } if (assets && p.assetId) { try { await assets.delete(p.assetId); } catch (e) {} } }),
+  delPhoto: p => guard(async () => { if (db) await db.doc('photos/' + p.id).delete(); else { S.photos = S.photos.filter(x => x.id !== p.id); render(); } if (assets && p.assetId) { const id = p.assetId; setTimeout(() => { assets.delete(id).catch(() => {}); }, 5000); } }), // the file goes a little after the record, so the other phone stops showing it first
   event: (id, d) => guard(async () => { if (db) await db.doc('events/' + id).set(d); else { S.events = [...S.events.filter(x => x.id !== id), {...d, id}]; render(); } }),
   delEvent: id => guard(async () => { if (db) await db.doc('events/' + id).delete(); else { S.events = S.events.filter(x => x.id !== id); render(); } }),
   mem: (id, d) => guard(async () => { if (db) await db.doc('memories/' + id).set(d); else { S.memories = [...S.memories.filter(x => x.id !== id), {...d, id}]; render(); } }),
