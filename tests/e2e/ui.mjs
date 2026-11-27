@@ -29,13 +29,15 @@ async function phone(name) {
   const page = await ctx.newPage();
   page.on('pageerror', e => errors.push(`${name}: ${e.message}`));
   page.on('console', m => { if (m.type() === 'error' && !/favicon|fonts\.g/.test(m.text())) errors.push(`${name} console: ${m.text()}`); });
+  page.on('response', r => { if (r.status() >= 400) errors.push(`${name} got ${r.status()} for ${r.url().replace(/token=[^&]+/, 'token=…').slice(0, 160)} (step: ${current})`); });
   page.setDefaultTimeout(20000);
   return page;
 }
 const shot = (p, n) => p.screenshot({ path: SHOTS + n + '.png', fullPage: false }).catch(() => {});
 const tab = async (p, t) => { if (t === 'q') { await p.click('#t-mem'); await p.click('[data-act=mem-tab][data-v=q]'); } else await p.click(`#t-${t}`); };
 let nfail = 0;
-const step = async (label, fn) => { try { await fn(); ok(true, label); } catch (e) { ok(false, `${label} — ${e.message.split('\n')[0]}`); nfail++; await shot(A, `fail-${nfail}-A`); await shot(B, `fail-${nfail}-B`); } };
+let current = 'start';
+const step = async (label, fn) => { current = label; try { await fn(); ok(true, label); } catch (e) { ok(false, `${label} — ${e.message.split('\n')[0]}`); nfail++; await shot(A, `fail-${nfail}-A`); await shot(B, `fail-${nfail}-B`); } };
 
 const A = await phone('A'), B = await phone('B');
 let code = '';
