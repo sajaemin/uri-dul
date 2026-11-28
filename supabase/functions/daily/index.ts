@@ -14,11 +14,19 @@ Deno.serve(async (req) => {
   if (!trusted(req)) return json({ error: 'forbidden' }, 403);
   const slot = new URL(req.url).searchParams.get('slot') || 'morning';
   const today = todayKST();
-  const { data: couples } = await admin.from('couples').select('id, me, partner');
+  // ?couple=<id> runs it for one couple only (the deploy test uses this, so it never reaches real people)
+  const only = new URL(req.url).searchParams.get('couple');
+  let q = admin.from('couples').select('id, me, partner');
+  if (only) q = q.eq('id', only);
+  const { data: couples } = await q;
   let sent = 0;
 
   for (const c of couples ?? []) {
     if (slot === 'snap') continue; // 오늘의 한 장 was turned off
+    if (slot !== 'morning' && slot !== 'evening') continue;
+    // at most once a day per couple and slot
+    const { error: dup } = await admin.from('daily_sent').insert({ couple_id: c.id, slot, day: today });
+    if (dup) continue;
     const names = await coupleNames(c.id);
     if (slot === 'evening') {
       if (!c.me || !c.partner) continue;

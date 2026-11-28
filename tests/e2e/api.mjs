@@ -100,7 +100,9 @@ try {
   ok(rows2.some(r => /"muted"/.test(r.content || '')) && !rows2.some(r => /"sent":1/.test(r.content || '')), 'a notification kind B turned off is not sent');
   await doc(B, 'prefs', 'partner', { off: [] });
   const fn = u => fetch(`${URL0}/functions/v1/${u}`, { method: 'POST', headers: { 'x-notify-secret': NOTIFY_SECRET, 'Content-Type': 'application/json', apikey: KEY }, body: '{}' });
-  const dm = await fn('daily?slot=morning'), de = await fn('daily?slot=evening');
+  const dm = await fn(`daily?slot=morning&couple=${cid}`), de = await fn(`daily?slot=evening&couple=${cid}`);
+  const again = await (await fn(`daily?slot=morning&couple=${cid}`)).json().catch(() => ({}));
+  ok(again.sent === 0, 'the 9am job sends at most once a day');
   ok(dm.status === 200 && de.status === 200, `the 9am and 6pm jobs run (${dm.status}, ${de.status})`);
   const bad = await fetch(`${URL0}/functions/v1/notify`, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: KEY }, body: '{}' });
   ok(bad.status === 403, 'outsiders cannot trigger notifications');
