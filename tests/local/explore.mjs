@@ -44,6 +44,11 @@ const docs = {
   'letters/l2': { from: 'partner', title: XSS, text: '오늘 고마웠어 ' + XSS, openAt: kst(0), at: 6, readAt: 0, paper: 'sky', ink: 'blue', stickers: [{ e: '🐻', x: 88, y: 10, r: 12 }, { e: '🌙', x: 10, y: 90, r: -8 }, { e: XSS, x: 50, y: 50, r: 0 }] },
   'photos/p1': { from: 'partner', url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffb3c9'/%3E%3Cstop offset='1' stop-color='%23ffe3a3'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='300' fill='url(%23g)'/%3E%3Ccircle cx='220' cy='80' r='34' fill='%23fff7c2'/%3E%3Cpath d='M0 230Q80 170 150 215T300 200V300H0z' fill='%23a8e6cf'/%3E%3C/svg%3E", at: Date.now() - 40 * 864e5, note: '', savedBy: {} },
   'photos/p2': { from: 'me', url: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect width='300' height='300' fill='%23cfe6ff'/%3E%3Ccircle cx='80' cy='90' r='30' fill='%23fff'/%3E%3Ccircle cx='110' cy='80' r='26' fill='%23fff'/%3E%3Crect y='200' width='300' height='100' fill='%23ffd6a8'/%3E%3Cpath d='M150 150l20 60h-40z' fill='%23ff8fb1'/%3E%3C/svg%3E", at: Date.parse(yago + 'T03:00:00Z'), note: '', savedBy: {} },
+  'comments/c1': { on: 'memories/m3', by: 'partner', text: '여기 또 가자 ' + XSS, at: Date.now() - 3600e3 },
+  'comments/c2': { on: 'memories/m3', by: 'me', text: '좋아!', at: Date.now() - 600e3 },
+  'comments/c3': { on: 'photos/p1', by: 'me', text: '이 사진 너무 좋다', at: Date.now() - 86400e3 },
+  'comments/c4': { on: 'events/e1', by: 'partner', text: '몇 시에 만나?', at: Date.now() - 7200e3 },
+  'comments/c5': { on: 'bucket/b1', by: 'partner', text: XSS, at: Date.now() - 100e3 },
   'yard/y1': { k: 'tree', e: '🌳', name: '나무', price: 60, cat: 'flower', placed: true, x: 18, y: 38, by: 'partner', at: 1764000000000 },
   'yard/y2': { k: 'dog', e: '🐶', name: '강아지', price: 150, cat: 'pet', placed: true, x: 78, y: 84, by: 'partner', at: 1764000000001 },
   'yard/y3': { k: 'cloud', e: '☁️', name: '구름', price: 20, cat: 'sky', placed: true, x: 70, y: 8, by: 'me', at: 1764000000002 },
@@ -145,6 +150,14 @@ async function run(label, device, scheme, look) {
     const shot = async n => { await p.waitForTimeout(300); await p.screenshot({ path: `${out}/${label}-x-${n}.png` }); };
     await p.keyboard.press('Escape'); await p.keyboard.press('Escape');
     await p.click('#t-home'); await p.click('[data-act=mcal-open]'); await shot('mcal'); await p.keyboard.press('Escape');
+    // comment threads
+    await p.click('#t-mem'); await p.click('[data-act=mem-tab][data-v=tl]');
+    await p.locator('article.mem').first().locator('[data-act=cmt-open]').click(); await p.locator('article.mem').first().locator('[data-cref]').fill('나도 좋아');
+    await p.evaluate(() => document.querySelectorAll('nav.tabs,.toast').forEach(e => { e.style.visibility = 'hidden'; }));
+    await p.locator('article.mem').first().screenshot({ path: `${out}/${label}-x-cmt-mem.png` });
+    await p.evaluate(() => document.querySelectorAll('nav.tabs,.toast').forEach(e => { e.style.visibility = ''; }));
+    await p.click('#t-home'); await p.locator('#view [data-act=ev-edit]').first().click(); await p.locator('#ef .cmts').scrollIntoViewIfNeeded(); await shot('cmt-ev'); await p.keyboard.press('Escape');
+    await p.click('#t-ph'); await p.locator('.tile').first().click(); await shot('cmt-photo'); await p.keyboard.press('Escape');
     // a year of both answering (the character's last stage), and nobody has answered today yet
     await p.evaluate(([t0]) => { const st = JSON.parse(localStorage.getItem('mock-udb')); for (const k of Object.keys(st.docs)) if (k.startsWith('answers/' + t0)) delete st.docs[k];
       for (let n = 1; n <= 370; n++) { const ds = new Date(Date.now() + 9 * 3600e3 - n * 864e5).toISOString().slice(0, 10); for (const w of ['me', 'partner']) st.docs[`answers/${ds}_${w}`] = st.docs[`answers/${ds}_${w}`] || { date: ds, text: '답', at: n }; }

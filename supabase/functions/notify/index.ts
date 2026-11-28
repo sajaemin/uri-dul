@@ -67,6 +67,14 @@ Deno.serve(async (req) => {
         ? { title: `${n}님이 편지를 보냈어요 💌`, body: d.title || '지금 열어 볼 수 있어요', tag: `letter-${r.id}`, url: './#mem' }
         : { title: `${n}님이 편지를 남겼어요 💌`, body: `${fmtDate(d.openAt)}에 열려요. 그날 아침에 알려 드릴게요`, tag: `letter-${r.id}`, url: './#mem' };
       break;
+    case 'comments': {
+      if (!isInsert) break;
+      const on = String(d.on || ''), coll = on.split('/')[0];
+      const what = ({ photos: '사진', memories: '추억', events: '일정', bucket: '버킷리스트' } as Record<string, string>)[coll] || '기록';
+      const url = ({ photos: './#ph', memories: './#mem', events: './#cal', bucket: './#mem' } as Record<string, string>)[coll] || './';
+      msg = { title: `${n}님이 ${what}에 댓글을 남겼어요 💬`, body: String(d.text || '').slice(0, 80), tag: `cmt-${on}`, url };
+      break;
+    }
     case 'yard':
       if (!isInsert) break;
       msg = d.cat === 'theme'

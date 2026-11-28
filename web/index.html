@@ -770,6 +770,29 @@ ol.steps.big li{margin:10px 0;font-size:16px}
 .dphoto.two .polaroid.dp:last-child{margin-top:14px}
 .pcap{position:absolute;left:0;right:0;bottom:3px;text-align:center;font-size:11.5px;font-weight:800;color:#a8738a}
 .app[data-look=cute] .pcap{font-family:Jua,sans-serif;font-weight:400;font-size:13px}
+
+/* comments */
+.cmts{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.cmt{position:relative;background:var(--fill);border-radius:14px 14px 14px 4px;padding:7px 30px 7px 11px;font-size:14.5px;line-height:1.4;align-self:flex-start;max-width:92%;overflow-wrap:anywhere}
+.cmt.me{background:#ffe1eb;border-radius:14px 14px 4px 14px;align-self:flex-end}
+.cmt .cb{display:block;font-size:11.5px;font-weight:800;color:var(--acc)}
+.cmt .cw{display:block;font-size:11px;color:var(--mut);margin-top:1px}
+.cdel{position:absolute;top:4px;right:4px;width:24px;height:24px;border:0;background:none;color:var(--mut);font-size:16px;line-height:1;padding:0}
+.cmt-in{display:flex;gap:6px;margin-top:2px}
+.cmt-in input{flex:1;min-width:0;min-height:40px;border-radius:999px;padding:0 14px;font-size:16px}
+.cmt-go{flex:none;border:0;border-radius:999px;background:var(--acc);color:#fff;font-weight:800;padding:0 14px;min-height:40px;font-size:14px}
+.cmt-t{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:10px;border:0;background:none;padding:2px 0;color:var(--acc);font-weight:800;font-size:13.5px;text-align:left;width:100%}
+.cmt-last{display:block;color:var(--mut);font-weight:500;font-size:13px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bi .cmt-t{margin-top:6px}
+.cmc{color:var(--acc)!important;font-weight:700}
+.tile .tcm{position:absolute;left:6px;bottom:6px;background:rgba(255,255,255,.92);color:#5a2b40;border-radius:999px;font-size:11px;font-weight:800;padding:1px 7px}
+.cmts.dark{max-height:30vh;overflow-y:auto;margin:0 0 10px;-webkit-overflow-scrolling:touch}
+.cmts.dark .cmt{background:rgba(255,255,255,.14);color:#fff}
+.cmts.dark .cmt.me{background:rgba(255,120,165,.35)}
+.cmts.dark .cmt .cb{color:#ffc2d5}
+.cmts.dark .cmt .cw,.cmts.dark .cdel{color:rgba(255,255,255,.6)}
+.cmts.dark .cmt-in input{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25)}
+.cmts.dark .cmt-in input::placeholder{color:rgba(255,255,255,.55)}
 </style>
 </head>
 <body>
@@ -862,7 +885,7 @@ const dlab = d => { const n = diff(today(), d); return n === 0 ? '오늘' : n > 
 S.diAlways = ls.get('ud-di') !== '0'; S.diExp = false; S.look = 'cute';
 S.memories = []; S.bucket = []; S.memTab = 'tl'; S.mapView = 'kr'; S.mapSel = null; S.memFilter = ''; S.memPlace = ''; S.msheet = null; S.msheetDel = false; S.recap = null;
 S.events = []; S.calMode = 'month'; S.sheet = null; S.sheetDel = false;
-S.moods = {}; S.stages = {}; S.yard = []; S.ycfg = null; S.yedit = false; S.shop = null; S.qswap = {}; S.prefs = {}; S.mcal = null; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
+S.moods = {}; S.comments = []; S.cmtOpen = ''; S.stages = {}; S.yard = []; S.ycfg = null; S.yedit = false; S.shop = null; S.qswap = {}; S.prefs = {}; S.mcal = null; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
 { const t = today(); S.calMonth = new Date(t.getFullYear(), t.getMonth(), 1); S.calSel = ymd(t); }
 function starts(ev, s0, from, to) {
   const r = ev.repeat || 'none', res = [];
@@ -931,6 +954,8 @@ const W = {
   yard: (id, d) => guard(async () => { if (db) await db.doc('yard/' + id).set(d); else { S.yard = [...S.yard.filter(x => x.id !== id), {...d, id}]; render(); } }),
   yardUpd: (id, d) => guard(async () => { S.yard = S.yard.map(x => x.id === id ? {...x, ...d} : x); render(); if (db) await db.doc('yard/' + id).update(d); }),
   ycfg: d => guard(async () => { S.ycfg = d; render(); if (db) await db.doc('yardcfg/main').set(d); }),
+  cmt: (id, d) => guard(async () => { S.comments = [...S.comments.filter(c => c.id !== id), {...d, id}]; render(); if (db) await db.doc('comments/' + id).set(d); }),
+  cmtDel: id => guard(async () => { S.comments = S.comments.filter(c => c.id !== id); render(); if (db) await db.doc('comments/' + id).delete(); }),
   qswap: (id, d) => guard(async () => { S.qswap = {...S.qswap, [id]: d}; render(); if (db) await db.doc('qswaps/' + id).set(d); }),
   prefs: (w, d) => guard(async () => { S.prefs = {...S.prefs, [w]: d}; render(); if (db) await db.doc('prefs/' + w).set(d); }),
   letter: (id, d) => guard(async () => { if (db) await db.doc('letters/' + id).set(d); else { S.letters = [...S.letters.filter(x => x.id !== id), {...d, id}]; render(); } }),
@@ -1161,8 +1186,29 @@ function vMood() {
   <button type="button" class="mcal-open" data-act="mcal-open">📅 기분 달력 보기</button></div>`;
 }
 
+/* ---------- comments on events, photos, memories and bucket-list items ---------- */
+const cmtsOf = ref => S.comments.filter(c => c.on === ref).sort((a, b) => (a.at || 0) - (b.at || 0));
+const cago = t => { const m = Math.floor((Date.now() - t) / 60000); return m < 1 ? '방금' : m < 60 ? m + '분 전' : m < 1440 ? Math.floor(m / 60) + '시간 전' : dotd(ymd(new Date(t))).slice(5); };
+function cmtThread(ref, dark) {
+  const list = cmtsOf(ref), key = 'ci-' + ref.replace(/[^a-zA-Z0-9]/g, '_');
+  return `<div class="cmts${dark ? ' dark' : ''}">${list.map(c => `<div class="cmt${c.by === S.who ? ' me' : ''}"><span class="cb">${esc(nm(c.by))}</span><span class="ct">${esc(c.text)}</span><span class="cw">${cago(c.at)}</span>${c.by === S.who ? `<button type="button" class="cdel" data-act="cmt-del" data-v="${esc(c.id)}" aria-label="내 댓글 지우기">×</button>` : ''}</div>`).join('')}
+  <div class="cmt-in"><input type="text" id="${key}" data-cref="${esc(ref)}" maxlength="200" enterkeyhint="send" autocomplete="off" placeholder="${list.length ? '댓글 달기' : '첫 댓글을 남겨 보세요'}" aria-label="댓글"><button type="button" class="cmt-go" data-act="cmt-send" data-v="${esc(ref)}" aria-label="댓글 남기기">남기기</button></div></div>`;
+}
+// a compact "💬 N" that opens the thread in place (memories, bucket list)
+function cmtToggle(ref) {
+  const n = cmtsOf(ref).length, open = S.cmtOpen === ref, last = cmtsOf(ref).slice(-1)[0];
+  return `<button type="button" class="cmt-t${open ? ' on' : ''}" data-act="cmt-open" data-v="${esc(ref)}" aria-expanded="${open}">💬 ${n ? `댓글 ${n}` : '댓글 달기'}${!open && last ? `<span class="cmt-last">${esc(nm(last.by))}: ${esc(last.text)}</span>` : ''}</button>${open ? cmtThread(ref) : ''}`;
+}
+async function sendCmt(ref) {
+  const el = document.querySelector(`[data-cref="${CSS.escape(ref)}"]`), text = (el ? el.value : '').trim();
+  if (!text) { toast('댓글을 적어 주세요'); if (el) el.focus(); return; }
+  const id = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  if (el) el.value = '';
+  if (await W.cmt(id, {on: ref, by: S.who, text: text.slice(0, 200), at: Date.now()})) { const n = document.querySelector(`[data-cref="${CSS.escape(ref)}"]`); if (n) n.focus({preventScroll: true}); }
+}
+
 /* ---------- which notifications each person wants ---------- */
-const NKINDS = [['answers', '질문 답', '상대가 답하거나 둘 다 답했을 때'], ['moods', '기분', '상대가 기분이나 한마디를 남겼을 때'], ['photos', '사진', '새 사진이 올라왔을 때'], ['pokes', '콕 찌르기', '상대가 콕 찔렀을 때'], ['events', '일정', '새 데이트나 일정이 잡혔을 때'], ['memories', '추억', '새 추억, 둘 다 또 갈래'], ['bucket', '버킷리스트', '담거나 함께 해냈을 때'], ['letters', '편지', '편지가 오거나 열리는 날'], ['yard', '마당 꾸미기', '상대가 마당에 새 물건을 들였을 때'], ['morning', '아침 9시 알림', '기념일·생일·데이트·1년 전 오늘'], ['evening', '저녁 6시 알림', '아직 오늘의 질문에 답하지 않았을 때']];
+const NKINDS = [['answers', '질문 답', '상대가 답하거나 둘 다 답했을 때'], ['moods', '기분', '상대가 기분이나 한마디를 남겼을 때'], ['photos', '사진', '새 사진이 올라왔을 때'], ['pokes', '콕 찌르기', '상대가 콕 찔렀을 때'], ['events', '일정', '새 데이트나 일정이 잡혔을 때'], ['memories', '추억', '새 추억, 둘 다 또 갈래'], ['bucket', '버킷리스트', '담거나 함께 해냈을 때'], ['letters', '편지', '편지가 오거나 열리는 날'], ['yard', '마당 꾸미기', '상대가 마당에 새 물건을 들였을 때'], ['comments', '댓글', '일정·사진·추억·버킷리스트에 댓글이 달렸을 때'], ['morning', '아침 9시 알림', '기념일·생일·데이트·1년 전 오늘'], ['evening', '저녁 6시 알림', '아직 오늘의 질문에 답하지 않았을 때']];
 const nOff = () => ((S.prefs[S.who] || {}).off || []);
 function vNotifChoices() {
   const off = nOff();
@@ -1366,7 +1412,7 @@ function vQuestion() {
 function tiles(list, kind) {
   return `<div class="grid">${list.map(p => {
     const b = kind === 'in' ? (isNew(p) ? '<span class="tb">NEW</span>' : '<span class="tb ok">저장함</span>') : (p.savedBy && p.savedBy[other()] ? '<span class="tb ok">받아감</span>' : '<span class="tb">대기</span>');
-    return `<button class="tile" type="button" data-act="open" data-v="${esc(p.id)}" data-k="${kind}" aria-label="${when(p.at)} 사진 열기"><img src="${esc(src(p))}" alt="" loading="lazy" decoding="async">${b}</button>`;
+    return `<button class="tile" type="button" data-act="open" data-v="${esc(p.id)}" data-k="${kind}" aria-label="${when(p.at)} 사진 열기"><img src="${esc(src(p))}" alt="" loading="lazy" decoding="async">${b}${cmtsOf('photos/' + p.id).length ? `<span class="tcm">💬${cmtsOf('photos/' + p.id).length}</span>` : ''}</button>`;
   }).join('')}</div>`;
 }
 function vPh() {
@@ -1394,7 +1440,7 @@ function vUs() {
 function agItem(o, withDate) {
   const meta = [withDate ? `${o.d.getMonth() + 1}.${o.d.getDate()} (${WD[o.d.getDay()]})` : '', o.part, o.sub, o.ev && o.ev.who && o.ev.who !== 'both' ? whoL(o.ev.who) : '', o.ev && o.ev.place].filter(Boolean).map(esc).join(' · ');
   const right = withDate ? `<span class="dd">${dlab(o.d)}</span>` : (o.ev ? `<button class="ib sm" type="button" data-act="ev-edit" data-v="${esc(o.ev.id)}" aria-label="${esc(o.title)} 수정">수정</button>` : '');
-  return `<li><span class="t">${o.time ? esc(o.time) : '종일'}</span><span class="m"><span class="tagk k-${o.kind}">${KL[o.kind]}</span> <b>${esc(o.title)}</b>${meta ? `<br><span class="s">${meta}</span>` : ''}${o.ev && o.ev.memo && !withDate ? `<br><span class="s">${esc(o.ev.memo)}</span>` : ''}</span>${right}</li>`;
+  return `<li><span class="t">${o.time ? esc(o.time) : '종일'}</span><span class="m"><span class="tagk k-${o.kind}">${KL[o.kind]}</span> <b>${esc(o.title)}</b>${meta ? `<br><span class="s">${meta}</span>` : ''}${o.ev && o.ev.memo && !withDate ? `<br><span class="s">${esc(o.ev.memo)}</span>` : ''}${o.ev && cmtsOf('events/' + o.ev.id).length ? `<br><span class="s cmc">💬 댓글 ${cmtsOf('events/' + o.ev.id).length}</span>` : ''}</span>${right}</li>`;
 }
 function vRemind() {
   const r = reminders(); if (!r.length) return '';
@@ -1460,6 +1506,7 @@ function vSheet() {
   <p class="note" style="margin-top:6px">기념일을 '매년'으로 두면 몇 주년인지 함께 보여줘요.</p>
   ${S.sheetDel ? `<p class="note" style="margin-top:14px;color:var(--ink)">이 일정을 지울까요? ${esc(nm(other()))}님 캘린더에서도 사라져요.</p><div class="row"><button class="btn" type="button" data-act="ev-del-yes">지우기</button><button class="btn ghost" type="button" data-act="ev-del-no">취소</button></div>`
     : `<div class="row"><button class="btn" type="submit" style="flex:1">저장</button>${e.id ? '<button class="btn ghost" type="button" data-act="ev-del">삭제</button>' : ''}</div>`}
+  ${e.id ? `<p class="f" style="margin-top:16px">💬 댓글</p>${cmtThread('events/' + e.id)}` : ''}
   </form></div>`;
 }
 /* ---------- places & map ---------- */
@@ -1561,7 +1608,7 @@ function memCard(m) {
   return `<article class="mem">${ph.length ? `<div class="mstrip">${ph.map(p => `<img src="${esc(src(p))}" alt="" loading="lazy">`).join('')}</div>${ph.length > 1 ? `<span class="mcount">${ph.length}장 · 옆으로 넘겨 보기</span>` : ''}` : `<div class="mph" style="--h:${hue(m.title + m.date)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.4 7-12a7 7 0 0 0-14 0c0 5.6 7 12 7 12z"/><circle cx="12" cy="10" r="2.6"/></svg><span>${esc(m.place || m.title)}</span></div>`}
   <div class="mbody"><div class="mt"><b>${esc(m.title)}</b><button class="ib sm" type="button" data-act="mem-edit" data-v="${esc(m.id)}">수정</button></div>
   <p class="note">${dotd(m.date)} (${WD[parse(m.date).getDay()]})${dn > 0 ? ` · ${dn.toLocaleString('ko-KR')}일째` : ''}${m.place ? ` · ${esc(m.place)}` : ''}${g && g.lat ? '' : (m.place && !g ? '' : '')}</p>
-  ${m.text ? `<p class="mtext">${esc(m.text)}</p>` : ''}<p class="note" style="margin-top:6px">${esc(nm(m.by))} 기록</p>${rateRow(m)}</div></article>`;
+  ${m.text ? `<p class="mtext">${esc(m.text)}</p>` : ''}<p class="note" style="margin-top:6px">${esc(nm(m.by))} 기록</p>${rateRow(m)}${cmtToggle('memories/' + m.id)}</div></article>`;
 }
 function memPrompt() {
   const t = today(), list = occ(addDays(t, -14), addDays(t, -1)).filter(o => o.kind === 'date' && !o.cont);
@@ -1597,8 +1644,8 @@ function bItem(b) {
   const ev = b.eventId && S.events.find(e => e.id === b.eventId), mem = b.memoryId && S.memories.find(m => m.id === b.memoryId), c = bcat(b.cat);
   const who = `<span class="bwho ${b.by === S.who ? 'me' : 'pt'}">${esc(nm(b.by || S.who))}</span>`;
   const meta = `${who}<span class="bcat">${c[2]} ${c[1]}</span>${b.at ? `<span>${dotd(ymd(new Date(b.at))).slice(5)}</span>` : ''}`;
-  if (b.done) return `<li class="bi done"><button type="button" class="bk on" data-act="b-undo" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 되돌리기">${CHECK}</button><span class="m"><b>${esc(b.title)}</b><span class="bmeta">${meta}<span>${b.doneAt ? dotd(b.doneAt) + ' 함께 했어요' : '함께 했어요'}</span></span><span class="bact">${mem ? `<button class="ib sm" type="button" data-act="mem-edit" data-v="${esc(mem.id)}">추억 보기</button>` : `<button class="ib sm" type="button" data-act="b-mem" data-v="${esc(b.id)}">추억 남기기</button>`}</span></span></li>`;
-  return `<li class="bi"><button type="button" class="bk" data-act="b-done" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 했어요"></button><span class="m"><b>${esc(b.title)}</b><span class="bmeta">${meta}${ev ? `<span>📅 ${dotd(ev.date).slice(5)} 일정 잡힘</span>` : ''}</span><span class="bact">${ev ? `<button class="ib sm" type="button" data-act="ev-edit" data-v="${esc(ev.id)}">일정 보기</button>` : `<button class="ib sm" type="button" data-act="b-plan" data-v="${esc(b.id)}">일정 잡기</button>`}<button class="ib sm" type="button" data-act="b-del" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 삭제">삭제</button></span></span></li>`;
+  if (b.done) return `<li class="bi done"><button type="button" class="bk on" data-act="b-undo" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 되돌리기">${CHECK}</button><span class="m"><b>${esc(b.title)}</b><span class="bmeta">${meta}<span>${b.doneAt ? dotd(b.doneAt) + ' 함께 했어요' : '함께 했어요'}</span></span><span class="bact">${mem ? `<button class="ib sm" type="button" data-act="mem-edit" data-v="${esc(mem.id)}">추억 보기</button>` : `<button class="ib sm" type="button" data-act="b-mem" data-v="${esc(b.id)}">추억 남기기</button>`}</span>${cmtToggle('bucket/' + b.id)}</span></li>`;
+  return `<li class="bi"><button type="button" class="bk" data-act="b-done" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 했어요"></button><span class="m"><b>${esc(b.title)}</b><span class="bmeta">${meta}${ev ? `<span>📅 ${dotd(ev.date).slice(5)} 일정 잡힘</span>` : ''}</span><span class="bact">${ev ? `<button class="ib sm" type="button" data-act="ev-edit" data-v="${esc(ev.id)}">일정 보기</button>` : `<button class="ib sm" type="button" data-act="b-plan" data-v="${esc(b.id)}">일정 잡기</button>`}<button class="ib sm" type="button" data-act="b-del" data-v="${esc(b.id)}" aria-label="${esc(b.title)} 삭제">삭제</button></span>${cmtToggle('bucket/' + b.id)}</span></li>`;
 }
 function vBucket() {
   const all = [...S.bucket], done = all.filter(b => b.done), todo = all.filter(b => !b.done);
@@ -1768,7 +1815,7 @@ function yardTick() {
 setInterval(yardTick, 300);
 
 /* ---------- hearts: every activity grows your own character ---------- */
-const HR = {answer: ['오늘의 질문 답하기', 10], both: ['둘 다 답하면 보너스', 5], mood: ['오늘 기분 남기기', 3], note: ['기분에 한마디 더하기', 2], photo: ['사진 올리기 (하루 5장까지)', 2], memory: ['추억 남기기', 15], rate: ['추억에 별점·또 갈래', 2], letter: ['편지 보내기', 10], event: ['데이트·일정 잡기', 5], bucket: ['버킷리스트 담기', 3], bdone: ['버킷리스트 함께 해내기', 10]};
+const HR = {answer: ['오늘의 질문 답하기', 10], both: ['둘 다 답하면 보너스', 5], mood: ['오늘 기분 남기기', 3], note: ['기분에 한마디 더하기', 2], photo: ['사진 올리기 (하루 5장까지)', 2], memory: ['추억 남기기', 15], rate: ['추억에 별점·또 갈래', 2], letter: ['편지 보내기', 10], event: ['데이트·일정 잡기', 5], bucket: ['버킷리스트 담기', 3], bdone: ['버킷리스트 함께 해내기', 10], comment: ['댓글 남기기 (하루 5개까지)', 2]};
 const HT = [0, 30, 80, 160, 280, 450, 700, 1000, 1400];
 const GIFT = ['', '새싹이 돋아요', '꽃봉오리가 맺혀요', '꽃이 활짝 피어요', '왕관을 써요', '커플 목도리를 둘러요', '하트 풍선을 들어요', '무지개 단계예요 (둘 다 되면 무지개가 떠요)', '천사 날개가 돋아요'];
 const hStage = n => HT.reduce((s, t, i) => n >= t ? i : s, 0);
@@ -1787,6 +1834,8 @@ function hearts(w) {
   for (const l of S.letters) if (l.from === w) add('letter', dayOf(l.at), tsOf(l.at));
   for (const e of S.events) if (e.by === w) add('event', dayOf(e.at), tsOf(e.at));
   for (const b of S.bucket) { if (b.by === w) add('bucket', dayOf(b.at), tsOf(b.at)); if (b.done) add('bdone', b.doneAt, tsOf(b.doneTs, b.doneAt)); }
+  const cper = {};
+  for (const c of S.comments) { if (c.by !== w) continue; const ds = dayOf(c.at); cper[ds] = (cper[ds] || 0) + 1; if (cper[ds] <= 5) add('comment', ds, tsOf(c.at)); }
   const tl = log.filter(x => x[1] === td);
   return {since, total: log.reduce((n, x) => n + x[2], 0), today: tl.reduce((n, x) => n + x[2], 0), kinds: new Set(tl.map(x => x[0])), photosToday: Math.min(5, per[td] || 0)};
 }
@@ -1799,7 +1848,7 @@ function vGrow() {
     <p class="gh">💗 ${h.total.toLocaleString('ko-KR')}${h.today ? `<small> 오늘 +${h.today}</small>` : ''}</p><div class="pbar"><i style="width:${pct}%"></i></div>
     <p class="note gx">${nx ? `'${STN[st + 1]}'까지 💗${(nx - h.total).toLocaleString('ko-KR')}` : '최고 단계예요!'}</p><p class="note gx">🛍️ 쓸 수 있는 하트 ${heartsLeft(w).toLocaleString('ko-KR')}</p></div>`;
   };
-  const daily = ['answer', 'both', 'mood', 'note', 'photo'], anytime = ['memory', 'letter', 'event', 'bucket', 'bdone', 'rate'];
+  const daily = ['answer', 'both', 'mood', 'note', 'photo'], anytime = ['memory', 'letter', 'event', 'bucket', 'bdone', 'rate', 'comment'];
   const done = k => k === 'photo' ? hm.photosToday >= 5 : hm.kinds.has(k);
   return `<div class="card grow">${vYard(true)}${vYardTools()}
   <div class="gcols">${col(me, hm, sm)}${paired() ? col(pt, hp, sp) : ''}</div>
@@ -1927,6 +1976,7 @@ function vViewer() {
   return `<div class="ov" role="dialog" aria-label="사진 보기"><div class="bar"><button type="button" data-act="close" aria-label="닫기">닫기</button><span style="margin-left:auto;opacity:.8">${i + 1} / ${list.length}</span><button type="button" data-act="set-cover">위젯 배경으로</button></div>
   <div class="pic"><img src="${esc(src(p))}" alt="${when(p.at)}에 ${esc(nm(p.from))}님이 올린 사진"></div>
   <p class="meta">${esc(nm(p.from))} · ${when(p.at)} · ${status}${p.note ? `<br>“${esc(p.note)}”` : ''}</p>
+  ${S.confirmDel ? '' : cmtThread('photos/' + p.id, true)}
   ${S.confirmDel ? `<p class="meta">이 사진을 지울까요? ${esc(nm(other()))}님도 더 이상 볼 수 없어요.</p><div class="row" style="margin:0"><button class="btn" type="button" data-act="del-yes">지우기</button><button class="btn ghost" type="button" data-act="del-no">취소</button></div>`
   : `<div class="row" style="margin:0"><button class="btn ghost" type="button" data-act="prev" ${i ? '' : 'disabled'} aria-label="이전 사진">이전</button>
   ${mine ? '<button class="btn ghost" type="button" data-act="del">삭제</button>' : (dl ? `<button class="btn" type="button" data-act="save-one" style="flex:1">${isNew(p) ? '내 폰에 저장' : '다시 저장'}</button>` : (isNew(p) ? '<button class="btn" type="button" data-act="mark" style="flex:1">받음으로 표시</button>' : '<span style="flex:1"></span>'))}
@@ -2054,6 +2104,9 @@ document.addEventListener('click', async e => {
   }
   else if (act === 'save-all') { const list = received().filter(isNew); let n = 0; for (const p of list) { if (!(await savePhoto(p))) break; n++; } if (n) toast(`${n}장 저장했어요`); }
   else if (act === 'mem-tab') { S.memTab = v; render(); }
+  else if (act === 'cmt-open') { S.cmtOpen = S.cmtOpen === v ? '' : v; render(); if (S.cmtOpen) { const n = document.querySelector(`[data-cref="${CSS.escape(v)}"]`); if (n) n.focus({preventScroll: true}); } }
+  else if (act === 'cmt-send') await sendCmt(v);
+  else if (act === 'cmt-del') { if (await W.cmtDel(v)) toast('댓글을 지웠어요'); }
   else if (act === 'mem-rate') {
     const [id, k] = v.split('|'), m = S.memories.find(x => x.id === id);
     if (m) { const n = Number(k) === rateOf(m, S.who) ? 0 : Number(k); const patch = {['rate_' + S.who]: n, ['rated_' + S.who]: Date.now()}; Object.assign(m, patch); render(); await W.memUpd(id, patch); if (n) toast(n >= 4 ? `별 ${n}개! 또 가고 싶으면 '또 갈래'도 눌러 보세요` : `별 ${n}개를 줬어요`); }
@@ -2285,6 +2338,10 @@ document.addEventListener('pointerup', () => {
   if (L.stickers[i]) { L.stickers[i].x = x; L.stickers[i].y = y; }
 });
 document.addEventListener('pointercancel', () => { if (stk) { stk.el.classList.remove('drag'); stk = null; } });
+document.addEventListener('keydown', e => {
+  const ref = e.target && e.target.dataset && e.target.dataset.cref;
+  if (ref && e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); sendCmt(ref); }
+}, true);
 document.addEventListener('input', e => { if (e.target.id === 'ans') S.draft = e.target.value; if (S.lsheet && e.target.id === 'l-text') { S.lsheet.text = e.target.value; growTA(e.target); } if (S.lsheet && e.target.id === 'l-title') S.lsheet.title = e.target.value; if (e.target.id === 'm-place') { if (S.msheet) S.msheet.place = e.target.value; const sel = ($('#m-geo') || {}).value || ''; const l = $('#m-geo-l'); if (l && !sel) l.textContent = geoLabel(geoFind(e.target.value), sel); } });
 document.addEventListener('scroll', e => { if (e.target && e.target.id === 'rct') rcSync(); }, true);
 document.addEventListener('change', e => { if (e.target.id === 'm-file') { const f = [...e.target.files]; e.target.value = ''; uploadMem(f); return; } if (e.target.id === 'm-geo') { const sel = e.target.value, pl = $('#m-place'); if (S.msheet) S.msheet.geo = sel; const l = $('#m-geo-l'); if (l) l.textContent = geoLabel(sel && sel !== '-' ? geoByName(sel) : geoFind(pl ? pl.value : ''), sel); return; } if (e.target.id === 'di-always') { S.diAlways = e.target.checked; ls.set('ud-di', S.diAlways ? '1' : '0'); tick(); return; } if (e.target.id === 'file') { const f = [...e.target.files]; e.target.value = ''; upload(f); } });
@@ -2559,6 +2616,7 @@ function attachDB(timer) {
   db.collection('events').onSnapshot(s => { S.events = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
   db.doc('pokes/latest').onSnapshot(s => { S.poke = s.exists ? s.data() : null; render(); }, () => {});
   db.collection('moods').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.moods = m; render(); }, () => {});
+  db.collection('comments').onSnapshot(s => { S.comments = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
   db.collection('stages').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.stages = m; }, () => {});
   db.collection('yard').onSnapshot(s => { S.yard = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
   db.doc('yardcfg/main').onSnapshot(s => { S.ycfg = s.exists ? s.data() : null; render(); }, () => {});

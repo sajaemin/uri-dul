@@ -120,9 +120,10 @@ insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 
 insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'settings', 's1', '{}');
 insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'yard', 'y1', '{"k":"tulip","x":50,"y":80}');
 update public.docs set data = '{"k":"tulip","x":20,"y":70}' where coll = 'yard' and id = 'y1';
+insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'comments', 'c1', '{"on":"photos/p1","text":"hi"}');
 reset role;
 do $$ begin
-  assert (select count(*) from net.calls) = 4, 'moods, letters and a new yard item notify; settings and moving a yard item do not';
+  assert (select count(*) from net.calls) = 5, 'moods, letters, a new yard item and a comment notify; settings and moving a yard item do not';
   assert (select body->>'type' from net.calls order by id desc limit 1) = 'INSERT', 'type is INSERT';
 end $$;
 select private.call_daily('evening');
@@ -136,7 +137,7 @@ select public.expect_error(format('select public.recover_couple(%L, %L)', :'code
 select public.recover_couple(:'code', :'rc_a');
 do $$ declare i jsonb := public.my_info(); begin
   assert i->>'role' = 'me', 'D took A''s place';
-  assert (select count(*) from public.docs) = 6, 'D sees the couple''s docs';
+  assert (select count(*) from public.docs) = 7, 'D sees the couple''s docs';
 end $$;
 select public.my_info()->>'rc' as rc_d \gset
 reset role;

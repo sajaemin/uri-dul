@@ -202,6 +202,27 @@ try {
     await A.locator('.regs li', { hasText: '★ 5.0' }).waitFor();
   });
 
+  await step('comments: A comments on a memory and B on a date; each sees the other\'s', async () => {
+    await tab(A, 'mem'); await A.click('[data-act=mem-tab][data-v=tl]');
+    const card = p => p.locator('article.mem', { hasText: '1년 전 테스트 추억' });
+    await card(A).locator('[data-act=cmt-open]').click();
+    await card(A).locator('[data-cref]').fill('여기 또 가자');
+    await card(A).locator('[data-act=cmt-send]').click();
+    await tab(B, 'mem'); await B.click('[data-act=mem-tab][data-v=tl]');
+    await card(B).locator('.cmt-t', { hasText: '여기 또 가자' }).waitFor();
+    await tab(B, 'home');
+    await B.locator('#view [data-act=ev-edit]').first().click();
+    await B.locator('#ef [data-cref]').fill('몇 시에 만나?');
+    await B.locator('#ef [data-cref]').press('Enter');
+    await B.locator('#ef .cmt.me', { hasText: '몇 시에 만나?' }).waitFor();
+    await B.click('[data-act=sheet-close]');
+    await tab(A, 'home');
+    await A.locator('#view [data-act=ev-edit]').first().click();
+    await A.locator('#ef .cmt', { hasText: '몇 시에 만나?' }).waitFor();
+    await shot(A, '10b-A-comments');
+    await A.click('[data-act=sheet-close]');
+  });
+
   await step('A buys a tulip with hearts; it shows up in B\'s yard', async () => {
     await tab(A, 'grow');
     await A.locator('.yard .cr[data-w=me]').waitFor();
