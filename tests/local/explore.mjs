@@ -50,6 +50,10 @@ const docs = {
   'comments/c4': { on: 'events/e1', by: 'partner', text: '몇 시에 만나?', at: Date.now() - 7200e3 },
   'comments/c5': { on: 'bucket/b1', by: 'partner', text: XSS, at: Date.now() - 100e3 },
   'feeds/f1': { to: 'partner', by: 'me', k: 'cake', e: '🍰', name: '케이크', price: 15, full: 40, at: Date.now() - 3 * 3600e3 },
+  'feeds/f2': { to: 'me', by: 'me', k: 'rice', e: '🍙', name: '주먹밥', price: 5, full: 20, at: Date.now() - 70 * 3600e3 },
+  'feeds/f3': { to: 'me', by: 'me', k: 'straw', e: '🍓', name: '딸기', price: 6, full: 18, at: Date.now() - 64 * 3600e3 },
+  'feeds/f5': { to: 'me', by: 'me', k: 'rice', e: '🍙', name: '주먹밥', price: 5, full: 20, at: Date.now() - 58 * 3600e3 },
+  'feeds/f4': { to: 'me', by: 'me', k: 'ramen', e: '🍜', name: '라면', price: 10, full: 35, x: 70, y: 80, at: Date.now() - 60e3 },
   ...Object.fromEntries([1, 2, 3, 4, 5, 6].map(n => [`checkins/${kst(-n)}_me`, { date: kst(-n), who: 'me', at: Date.now() - n * 864e5 }])),
   'yard/y1': { k: 'tree', e: '🌳', name: '나무', price: 60, cat: 'flower', placed: true, x: 18, y: 38, by: 'partner', at: 1764000000000 },
   'yard/y2': { k: 'dog', e: '🐶', name: '강아지', price: 150, cat: 'pet', placed: true, x: 78, y: 84, by: 'partner', at: 1764000000001 },
@@ -133,7 +137,7 @@ async function run(label, device, scheme, look) {
         }
       } catch (e) { const why = (e.message.split('\n').find(l => /intercepts|not visible|outside of the viewport|not stable/.test(l)) || '').trim(); say(label, `${t} → ${a.act}: ${e.message.split('\n')[0]} ${why}`); }
       await p.keyboard.press('Escape');
-      for (const c of ['sheet-close', 'msheet-close', 'close', 'l-close', 'l-cancel', 'rc-close', 'rc-img-close', 'mcal-close', 'shop-close', 'box-close']) { const x = p.locator(`#ov [data-act="${c}"]`).first(); if (await x.isVisible().catch(() => false)) await x.click({ timeout: 800 }).catch(() => {}); }
+      for (const c of ['sheet-close', 'msheet-close', 'close', 'l-close', 'l-cancel', 'rc-close', 'rc-img-close', 'mcal-close', 'shop-close', 'box-close', 'cl-close']) { const x = p.locator(`#ov [data-act="${c}"]`).first(); if (await x.isVisible().catch(() => false)) await x.click({ timeout: 800 }).catch(() => {}); }
       if ((await p.locator('#t-' + t).getAttribute('aria-current').catch(() => null)) !== 'page') await p.click('#t-' + t).catch(() => {});
     }
   }
@@ -153,7 +157,7 @@ async function run(label, device, scheme, look) {
     await p.keyboard.press('Escape'); await p.keyboard.press('Escape');
     await p.click('#t-home'); await p.click('[data-act=mcal-open]'); await shot('mcal'); await p.keyboard.press('Escape');
     // feeding and picking up
-    await p.click('#t-grow'); await p.locator('[data-act=feed-open]').first().click(); await shot('feed'); await p.click('[data-act=feed-buy][data-v=rice]'); await p.waitForTimeout(900); await shot('fed');
+    await p.click('#t-grow'); if (await p.locator('.yard.edit').count()) await p.click('.yedit-bar [data-act=yedit]'); await p.locator('[data-act=feed-open]').first().click(); await shot('feed'); await p.click('[data-act=feed-buy][data-v=rice]'); await p.waitForTimeout(400); await shot('fed'); for (const n of [1, 2, 3, 4, 5, 6]) { await p.waitForTimeout(1400); await shot('eat' + n); } if (await p.locator('[data-act=cl-open]').count()) { await p.locator('[data-act=cl-open]').first().click(); await shot('cletter'); await p.keyboard.press('Escape'); }
     { const c = p.locator('.yard .cr').first(), bb = await c.boundingBox(); await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2); await p.mouse.down(); await p.waitForTimeout(500); await p.mouse.move(bb.x + bb.width / 2 + 60, bb.y + bb.height / 2 + 30, { steps: 6 }); await shot('held'); await p.mouse.up(); }
     await p.click('[data-act=shop-open]'); await p.click('[data-act=shop-cat][data-v=pet]'); await shot('shop-pets'); await p.keyboard.press('Escape');
     // comment threads
@@ -172,7 +176,7 @@ async function run(label, device, scheme, look) {
     await p.click('#t-grow'); await p.waitForTimeout(2500); await shot('yard');
     await p.click('[data-act=shop-open]'); await shot('shop'); await p.click('[data-act=shop-cat][data-v=pet]'); await shot('shop-pet');
     await p.click('[data-act=shop-buy][data-v=chick]'); await p.waitForTimeout(300);
-    await p.click('[data-act=shop-cat][data-v=theme]'); await shot('shop-theme'); await p.click('[data-act=theme-use][data-v=sakura]'); await p.keyboard.press('Escape'); await p.waitForTimeout(1500); await shot('yard-sakura');
+    await p.click('[data-act=shop-cat][data-v=theme]'); await shot('shop-theme'); await p.locator('#ov [data-act=theme-use][data-v=sakura]').click({ timeout: 1500 }).catch(() => {}); await p.keyboard.press('Escape'); await p.waitForTimeout(1500); await shot('yard-sakura');
     await p.click('[data-act=yedit]'); await p.locator('.yard.edit .yi').first().dragTo(p.locator('.yard.edit'), { targetPosition: { x: 60, y: 120 } }); await shot('yedit'); await p.click('[data-act=yedit]');
     await p.click('#t-grow'); await shot('grow'); await p.click('#t-mem'); await p.click('[data-act=mem-tab][data-v=q]'); await p.locator('.qsw-b').scrollIntoViewIfNeeded(); await shot('qswap'); await p.click('.qsw-b'); await shot('qswapped');
     await p.click('#t-mem'); await p.click('[data-act=mem-tab][data-v=lt]'); await p.click('[data-act=l-new]');

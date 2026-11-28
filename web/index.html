@@ -837,6 +837,41 @@ ol.steps.big li{margin:10px 0;font-size:16px}
 .sth.mini{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:5px;vertical-align:-2px}
 .sitem.bon{box-shadow:inset 0 0 0 2px #ff9fbb}
 .ytools .btn{padding-left:8px;padding-right:8px}
+
+/* food on the lawn and eating */
+.yfood{position:absolute;width:1em;height:1em;transform:translate(-50%,-88%);pointer-events:none;filter:drop-shadow(0 2px 1.5px rgba(60,40,50,.18))}
+.yfood svg,.yfood .femo{position:absolute;left:0;top:0;width:1em;height:1em}
+.yfood .femo{font-size:.62em;width:auto;height:auto;left:50%;top:18%;transform:translateX(-50%)}
+.yfood .fdish{transform:translateY(-16%) scale(.8);transform-origin:50% 92%;transition:transform .25s}
+.yfood.fnew.b0 .fdish{animation:fdrop .6s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes fdrop{0%{transform:translateY(-120%) scale(.8);opacity:0}100%{transform:translateY(-16%) scale(.8);opacity:1}}
+.yfood.b1 .fdish{transform:translateY(-14%) scale(.74);-webkit-mask:radial-gradient(circle at 82% 30%,transparent 15%,#000 16%);mask:radial-gradient(circle at 82% 30%,transparent 15%,#000 16%)}
+.yfood.b2 .fdish{transform:translateY(-10%) scale(.64);-webkit-mask:radial-gradient(circle at 82% 30%,transparent 17%,#000 18%),radial-gradient(circle at 20% 40%,transparent 16%,#000 17%);-webkit-mask-composite:source-in;mask:radial-gradient(circle at 82% 30%,transparent 17%,#000 18%),radial-gradient(circle at 20% 40%,transparent 16%,#000 17%);mask-composite:intersect}
+.yfood.b3 .fdish{transform:translateY(-4%) scale(.46);-webkit-mask:radial-gradient(circle at 82% 30%,transparent 22%,#000 23%),radial-gradient(circle at 18% 42%,transparent 20%,#000 21%),radial-gradient(circle at 50% 8%,transparent 18%,#000 19%);-webkit-mask-composite:source-in;mask:radial-gradient(circle at 82% 30%,transparent 22%,#000 23%),radial-gradient(circle at 18% 42%,transparent 20%,#000 21%),radial-gradient(circle at 50% 8%,transparent 18%,#000 19%);mask-composite:intersect}
+.yfood.b1,.yfood.b2,.yfood.b3{animation:fwob .3s ease-out}
+@keyframes fwob{0%{transform:translate(-50%,-88%) scale(1)}40%{transform:translate(-50%,-88%) scale(1.08,.92)}100%{transform:translate(-50%,-88%) scale(1)}}
+.yfood.gone{animation:fgone .6s ease-in forwards}
+@keyframes fgone{to{transform:translate(-50%,-88%) scale(.3);opacity:0}}
+.cr.eat .cbody{animation:cchew .5s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes cchew{0%,100%{transform:scale(1,1)}50%{transform:translateY(2px) scale(1.07,.9)}}
+.ycrumb{position:absolute;width:5px;height:5px;border-radius:50%;background:#ffd36b;z-index:120;pointer-events:none;animation:ycrumb .9s ease-out forwards}
+.ycrumb.c1{background:#ff9fbb;width:4px;height:4px}.ycrumb.c2{background:#fff;box-shadow:0 0 0 1px #f2d3dd}
+@keyframes ycrumb{0%{transform:translate(0,0) scale(1);opacity:1}40%{transform:translate(var(--dx,6px),-14px)}100%{transform:translate(calc(var(--dx,6px) * 2),10px) scale(.6);opacity:0}}
+.ycrumb:nth-of-type(2n){--dx:-7px}.ycrumb:nth-of-type(3n){--dx:9px}
+/* thank-you letters */
+.clbanner{display:flex;align-items:center;gap:8px;width:100%;margin:0 0 10px;padding:9px 12px;border:0;border-radius:16px;background:linear-gradient(90deg,#fff0f5,#ffe4ee);color:#5a2b40;font:inherit;font-weight:700;text-align:left;cursor:pointer;box-shadow:0 0 0 2px #ffc2d6 inset;animation:clpulse 2.4s ease-in-out infinite}
+.clbanner span:nth-child(2){flex:1}.clbanner b{color:#ff4f82;font-size:.92em;white-space:nowrap}
+@keyframes clpulse{0%,100%{box-shadow:0 0 0 2px #ffc2d6 inset}50%{box-shadow:0 0 0 2px #ff8fb1 inset,0 4px 14px rgba(255,111,152,.25)}}
+.clrow{display:flex;align-items:center;gap:10px;width:100%;padding:6px 0;border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.clrow .clt{flex:1;display:flex;flex-direction:column}
+.clsheet{background:#fff8fb}
+.clpaper{position:relative;padding:22px 20px 18px;border-radius:18px;background:repeating-linear-gradient(180deg,#fff 0 30px,#ffe1ea 30px 31px);box-shadow:0 0 0 2px #ffd3e1 inset;color:#5a2b40}
+.clpic{width:92px;margin:-6px auto 2px}
+.clpic svg{display:block;width:100%;height:auto;overflow:visible}
+.clto{margin:0;font-weight:800}
+.clbody{margin:6px 0 10px;line-height:31px;white-space:pre-wrap;word-break:keep-all}
+.clfrom{margin:0;text-align:right;font-weight:800}.clfrom small{display:block;font-weight:500;opacity:.7}
+@media(prefers-reduced-motion:reduce){.yfood,.yfood .fdish,.cr.eat .cbody,.ycrumb,.clbanner{animation:none!important}}
 </style>
 </head>
 <body>
@@ -1014,6 +1049,7 @@ const W = {
   yard: (id, d) => guard(async () => { if (db) await db.doc('yard/' + id).set(d); else { S.yard = [...S.yard.filter(x => x.id !== id), {...d, id}]; render(); } }),
   yardUpd: (id, d) => guard(async () => { S.yard = S.yard.map(x => x.id === id ? {...x, ...d} : x); render(); if (db) await db.doc('yard/' + id).update(d); }),
   ycfg: d => guard(async () => { S.ycfg = d; render(); if (db) await db.doc('yardcfg/main').set(d); }),
+  feedEat: id => guard(async () => { S.feeds = S.feeds.map(f => f.id === id ? {...f, eaten: true, eatenAt: Date.now()} : f); if (db) await db.doc('feeds/' + id).update({eaten: true, eatenAt: Date.now()}); }),
   feedIt: (id, d) => guard(async () => { S.feeds = [...S.feeds, {...d, id}]; render(); if (db) await db.doc('feeds/' + id).set(d); }),
   checkin: (id, d) => guard(async () => { S.checkins = [...S.checkins.filter(c => c.id !== id), {...d, id}]; if (db) await db.doc('checkins/' + id).set(d); }),
   cmt: (id, d) => guard(async () => { S.comments = [...S.comments.filter(c => c.id !== id), {...d, id}]; render(); if (db) await db.doc('comments/' + id).set(d); }),
@@ -1458,9 +1494,65 @@ async function spinRoulette() {
   S.roul = pick; render(); burst(10);
 }
 
+// every few meals you give a character, it writes you a thank-you letter (made from the feeds, nothing extra stored)
+const CL_MS = [3, 10, 20, 35, 50, 75, 100];
+const clMs = n => { const o = CL_MS.filter(m => m <= n); for (let m = 150; m <= n; m += 50) o.push(m); return o; };
+const hasB = t => { const c = t.charCodeAt(t.length - 1); return c >= 0xac00 && c <= 0xd7a3 && (c - 0xac00) % 28 > 0; };
+const jo = (t, a, b) => t + (hasB(t) ? a : b);
+function charLetters() {
+  const me = S.who, out = [];
+  for (const w of ['me', 'partner']) {
+    if (w !== me && !paired()) continue;
+    const fs = feedsSince().filter(f => f.by === me && f.to === w).sort((a, b) => a.at - b.at);
+    for (const m of clMs(fs.length)) {
+      const part = fs.slice(0, m), cnt = {};
+      part.forEach(f => { cnt[f.name] = (cnt[f.name] || 0) + 1; });
+      const fav = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a])[0] || '밥', last = fs[m - 1];
+      out.push({id: `${w}_${m}`, w, m, at: last.at, fid: last.eaten || last.x == null ? null : last.id, fav, last: last.name || '밥'});
+      if (last.x != null && !last.eaten && !EATEN.has(last.id)) out.pop(); // the letter comes once that meal is eaten
+    }
+  }
+  return out.sort((a, b) => b.at - a.at);
+}
+function clText(l) {
+  const me = S.who, to = nm(me), voc = jo(to, '아', '야'), mine = l.w === me, W2 = nm(l.w), you = jo(to, '이', ''), pn = nm(other());
+  const owner = mine ? '' : `우리 ${jo(W2, '이', '')}도 ${you} 엄청 좋아해. `;
+  const together = mine ? `${jo(pn, '이', '')}랑 오래오래 행복하게 지내.` : `${jo(W2, '이', '')}랑 늘 사이좋게 지내 줘서 고마워.`;
+  const T = {
+    3: `${voc}! 나 꼬마 ${jo(W2, '이야', '야')}. 처음으로 편지 써 봐. ${jo(l.last, '을', '를')} 줘서 고마워. 배가 따뜻해지니까 마당에서 더 신나게 뛰어놀 수 있었어. ${owner}앞으로도 자주 놀러 와 줄 거지? 💗`,
+    10: `${voc}, 벌써 밥을 열 번이나 받았어! 그중에 ${jo(l.fav, '이', '가')} 제일 맛있었어. 요즘 배가 든든해서 마당에서 꼬마 ${jo(nm(l.w === 'me' ? 'partner' : 'me'), '이', '')}랑 더 많이 놀아. 늘 챙겨 줘서 고마워.`,
+    20: `${voc}, 스무 번째 밥 고마워! ${you}가 마당에 밥을 올려 두면 멀리서도 냄새 맡고 달려가. 사실 밥보다 ${you}가 나를 생각해 주는 게 더 좋아. ${together}`,
+    35: `${voc}! 오늘 ${jo(l.fav, '을', '를')} 또 먹고 싶다고 생각하고 있었는데 마음이 통했나 봐. 서른다섯 번이나 밥을 챙겨 준 건 ${you}밖에 없어. 너희 둘이 웃는 거 보면 나도 기분이 좋아져.`,
+    50: `${voc}, 밥 쉰 번 기념 편지야! 🎉 처음 만났을 때보다 나 많이 컸지? 다 ${you} 덕분이야. ${owner}앞으로 백 번, 천 번도 같이 먹자.`,
+    75: `${voc}, 요즘 마당이 너무 좋아. 밥도 맛있고, 꽃도 피고, 무엇보다 너희 둘이 자주 와서 좋아. 일흔다섯 번째 밥도 고마워. 오늘은 내가 ${you}한테 하트 백 개 보낼게 💗×100`,
+    100: `${voc}!!! 밥 백 번!!! 💯 이건 정말 특별한 편지야. 나는 ${you}랑 ${jo(pn, '이', '')}의 마음이 모여서 자란 아이야. 그러니까 둘이 오래오래 행복해야 돼. 약속!`,
+  };
+  return T[l.m] || `${voc}, 밥 ${l.m}번째 고마워! 오늘도 ${jo(l.fav, '을', '를')} 생각하면서 마당을 뛰어다녔어. ${together}`;
+}
+const clRead = () => { try { return new Set(JSON.parse(ls.get('ud-clr-' + S.who) || '[]')); } catch (e) { return new Set(); } };
+const clUnread = () => { const r = clRead(); return charLetters().filter(l => !r.has(l.id)); };
+function clNext() {
+  const me = S.who;
+  return ['me', 'partner'].filter(w => w === me || paired()).map(w => { const n = feedsSince().filter(f => f.by === me && f.to === w).length, nx = [...CL_MS, ...Array.from({length: 40}, (_, i) => 150 + i * 50)].find(m => m > n); return {w, left: nx - n}; });
+}
+function vCharMail() {
+  if (S.real && !paired()) return '';
+  const all = charLetters(), r = clRead();
+  return `<p class="sh">캐릭터 편지함</p><div class="card clbox">
+  ${all.length ? `<ul class="list">${all.map(l => `<li><button type="button" class="clrow" data-act="cl-open" data-v="${l.id}"><span class="clav">${mini(l.w, 30)}</span><span class="clt"><b>꼬마 ${esc(nm(l.w))}의 편지${r.has(l.id) ? '' : ' <span class="eb new">NEW</span>'}</b><span class="note">밥 ${l.m}번 고마워요 · ${when(l.at)}</span></span><span aria-hidden="true">💌</span></button></li>`).join('')}</ul>` : `<p class="empty" style="margin:4px 0">아직 편지가 없어요. 마당에 밥을 차려 주면 캐릭터들이 고맙다고 편지를 써요.</p>`}
+  <p class="note" style="margin-top:8px">${clNext().map(x => `꼬마 ${esc(nm(x.w))}에게 밥을 ${x.left}번 더 주면 편지가 와요`).join('<br>')}</p></div>`;
+}
+function vCharLetter() {
+  const l = charLetters().find(x => x.id === S.cl); if (!l) return '';
+  const st = hStage(hearts(l.w).total);
+  return `<div class="sheet-bg" data-act="cl-close-bg"><div class="sheet clsheet" role="dialog" aria-label="꼬마 ${esc(nm(l.w))}의 편지">
+  <div class="clpaper"><div class="clpic">${charSVG(l.w, st, 'happy')}</div>
+  <p class="clto">To. ${esc(nm(S.who))}</p><p class="clbody">${esc(clText(l))}</p><p class="clfrom">From. 꼬마 ${esc(nm(l.w))} <small>${dotd(ymd(new Date(l.at)))}</small></p></div>
+  <button class="btn" type="button" data-act="cl-close" style="width:100%;margin-top:12px">나도 고마워 💗</button></div></div>`;
+}
 function vGrowTab() {
   const lock = S.real && !paired();
-  return `<div class="sec">${lock ? `<div class="card glock"><b>🌱 ${esc(nm(other()))}님이 연결되면 같이 키우기 시작해요</b><p class="note" style="margin-top:4px">연결된 순간부터 둘이 동시에 아기 단계로 시작해서, 각자 활동할 때마다 하트가 쌓여요.</p></div>` : ''}<p class="sh">우리 마당</p>${vGrow()}</div>`;
+  return `<div class="sec">${lock ? `<div class="card glock"><b>🌱 ${esc(nm(other()))}님이 연결되면 같이 키우기 시작해요</b><p class="note" style="margin-top:4px">연결된 순간부터 둘이 동시에 아기 단계로 시작해서, 각자 활동할 때마다 하트가 쌓여요.</p></div>` : ''}<p class="sh">우리 마당</p>${vGrow()}${vCharMail()}</div>`;
 }
 function vQuestion() {
   const td = ymd(today()), mine = ans(td, S.who), theirs = ans(td, other());
@@ -1850,7 +1942,8 @@ function vYard(big) {
     const roam = (it.anim === 'walk' || (it.anim === 'fly' && it.cat !== 'sky')) && !(S.yedit && big), ps = roam ? petState(y.id, x0, y0) : null, x = ps ? ps.x : x0, yy = ps ? ps.y : y0;
     const sz = it.size * (big ? 1 : .85) * (it.cat === 'sky' ? .8 : ydepth(yy)), pic = artSVG(y.k, '1em');
     return `<span class="yi${it.anim ? ' a-' + it.anim : ''}${roam ? ' roam' : ''}${pic ? '' : ' emo'}" data-yid="${esc(y.id)}"${roam ? ` data-act="pet-tap" data-v="${esc(y.id)}"` : ''} style="left:${x}%;top:${yy}%;z-index:${Math.round(yy) + 2};font-size:${sz.toFixed(1)}px;${it.cat === 'sky' && pic ? `margin-top:${(sz * .45).toFixed(1)}px;` : ''}--d:${-(hue(y.id) % 9)}s;--f:${(ps ? ps.f : 1) * (FACE_L[y.k] ? -1 : 1)}" title="${esc(it.name)}">${pic || it.e}</span>`; }).join('')}
-  ${who.map(w => { const p = YS[w]; return `<button type="button" class="cr" data-act="cr-tap" data-v="${w}" data-w="${w}" aria-label="${esc(nm(w))} 캐릭터 쓰다듬기" style="left:${p.x}%;top:${p.y}%;z-index:${Math.round(p.y) + 3};--f:${p.f};--s:${ydepth(p.y).toFixed(3)}">${(() => { const md = moodOfChar(w); return charSVG(w, w === 'me' ? sa : sb, md) + (md === 'sleep' ? '<span class="czz" aria-hidden="true">💤</span>' : md === 'hungry' ? '<span class="czz hg" aria-hidden="true">🍙?</span>' : ''); })()}<span class="crn">${esc(cut(nm(w), 5))}</span></button>`; }).join('')}
+  ${pendingFoods().filter(f => who.includes(f.to)).map(f => { const step = FS[f.id] || 0, sz = 46 * (big ? 1 : .85) * ydepth(f.y), dish = artSVG('food_' + f.k, '1em', 'fdish'); return `<span class="yfood b${step}${Date.now() - f.at < 2500 ? ' fnew' : ''}" data-fid="${esc(f.id)}" style="left:${Number(f.x)}%;top:${Number(f.y)}%;z-index:${Math.round(f.y) + 2};font-size:${sz.toFixed(1)}px" aria-label="${esc(f.name || '밥')}">${artSVG('plate', '1em', 'fplate')}${dish || `<span class="femo">${esc(f.e || '🍙')}</span>`}</span>`; }).join('')}
+  ${who.map(w => { const p = YS[w]; return `<button type="button" class="cr${p.eat && p.eat.phase === 'eat' ? ' eat' : ''}" data-act="cr-tap" data-v="${w}" data-w="${w}" aria-label="${esc(nm(w))} 캐릭터 쓰다듬기" style="left:${p.x}%;top:${p.y}%;z-index:${Math.round(p.y) + 3};--f:${p.f};--s:${ydepth(p.y).toFixed(3)}">${(() => { const md = moodOfChar(w); return charSVG(w, w === 'me' ? sa : sb, md) + (md === 'sleep' ? '<span class="czz" aria-hidden="true">💤</span>' : md === 'hungry' ? '<span class="czz hg" aria-hidden="true">🍙?</span>' : ''); })()}<span class="crn">${esc(cut(nm(w), 5))}</span></button>`; }).join('')}
   </div>`;
 }
 function vYardTools() {
@@ -1868,7 +1961,7 @@ function vFeed() {
   <div class="calh"><h2 style="text-align:left;justify-content:flex-start">🍙 ${to === me ? '내 캐릭터 밥 먹기' : esc(nm(to)) + '님 캐릭터 밥 주기'}</h2><button class="btn line" type="button" data-act="feed-close">닫기</button></div>
   <div class="feedwho" role="group" aria-label="누구에게">${['me', 'partner'].filter(w => w === me || paired()).map(w => `<button type="button" class="chip${to === w ? ' on' : ''}" data-act="feed-to" data-v="${w}" aria-pressed="${to === w}">${esc(nm(w))} 캐릭터</button>`).join('')}</div>
   <div class="wallet"><span class="wl">배부름 ${f}% · ${esc(nm(me))}님이 쓸 수 있는 하트</span><b>💗 ${left.toLocaleString('ko-KR')}</b><span class="note">배부름은 이틀쯤 지나면 바닥나요. 배가 부르면 표정이 밝아지고, 배고프면 천천히 걸어요.</span></div>
-  <div class="sgrid">${MEALS.map(([k, e, name, price, full]) => `<div class="sitem"><span class="se" aria-hidden="true">${e}</span><b>${name}</b><small class="note">배부름 +${full}</small><button class="btn sbuy" type="button" data-act="feed-buy" data-v="${k}"${left < price || f >= 100 ? ' disabled' : ''}>${f >= 100 ? '배불러요' : left < price ? `💗${price - left} 더 필요` : `💗 ${price}`}</button></div>`).join('')}</div></div></div>`;
+  <div class="sgrid">${MEALS.map(([k, e, name, price, full]) => `<div class="sitem"><span class="se" aria-hidden="true">${artSVG('food_' + k, 48) || e}</span><b>${name}</b><small class="note">배부름 +${full}</small><button class="btn sbuy" type="button" data-act="feed-buy" data-v="${k}"${left < price || f >= 100 ? ' disabled' : ''}>${f >= 100 ? '배불러요' : left < price ? `💗${price - left} 더 필요` : `💗 ${price}`}</button></div>`).join('')}</div></div></div>`;
 }
 function vBox() {
   const th = yTheme(), thName = (THEMES.find(x => x[0] === th) || [])[1] || '';
@@ -1928,6 +2021,46 @@ function petTick(now) {
     el.classList.add('walk'); clearTimeout(el._w); el._w = setTimeout(() => el.classList.remove('walk'), dur * 1000);
   }
 }
+// food put on the lawn waits there until its character walks over and eats it (older feeds, with no spot, count as eaten)
+const FS = {}, EATEN = new Set();
+const pendingFoods = () => feedsSince().filter(f => f.x != null && !f.eaten && !EATEN.has(f.id)).sort((a, b) => a.at - b.at);
+const foodFor = w => pendingFoods().find(f => f.to === w);
+const MUNCH = ['냠', '냠냠', '쩝쩝', '오물오물'];
+function yfx(yard, cls, x, y, txt, ms = 1200) { if (!yard) return; const e = document.createElement('span'); e.className = cls; if (txt) e.textContent = txt; e.style.left = x + '%'; e.style.top = y + '%'; yard.appendChild(e); setTimeout(() => e.remove(), ms); return e; }
+function crBubble(el, txt, ms = 900) { const b = document.createElement('span'); b.className = 'crb'; b.textContent = txt; el.appendChild(b); setTimeout(() => b.remove(), ms); }
+function eatTick(el, w, st, f, now) {
+  const yard = el.closest('.yard');
+  if ((!st.eat || st.eat.id !== f.id) && moodOfChar(w) === 'sleep') { st.woke = now + 60e3; st.eat = {id: f.id, phase: 'wake', next: now + 1200}; render(); const e2 = document.querySelector(`.yard .cr[data-w="${w}"]`); if (e2) crBubble(e2, '음냐… 밥 냄새?', 1200); return; }
+  if (!st.eat || st.eat.id !== f.id || (st.eat.phase === 'wake' && now >= st.eat.next)) {
+    const tx = Math.min(88, Math.max(12, f.x + (st.x <= f.x ? -9 : 9))), ty = Math.min(92, Math.max(32, f.y + 1.5));
+    const dur = Math.min(6, Math.max(0.7, Math.hypot(tx - st.x, (ty - st.y) * 2) / 16));
+    st.eat = {id: f.id, phase: 'walk', next: now + dur * 1000 + 250};
+    st.f = tx < st.x ? -1 : 1; st.x = tx; st.y = ty;
+    el.style.transition = `left ${dur}s linear, top ${dur}s linear, width ${dur}s linear`; el.style.left = tx + '%'; el.style.top = ty + '%'; el.style.zIndex = Math.round(ty) + 3; el.style.setProperty('--f', st.f); el.style.setProperty('--s', ydepth(ty).toFixed(3));
+    el.classList.add('walk'); clearTimeout(el._w); el._w = setTimeout(() => el.classList.remove('walk'), dur * 1000);
+    crBubble(el, moodOfChar(w) === 'hungry' ? '밥이다!!' : '앗 밥이다!', 1100);
+    return;
+  }
+  st.woke = Math.max(st.woke || 0, now + 60e3); // the smell of food keeps them awake
+  const E = st.eat; if (now < E.next) return;
+  if (E.phase === 'walk') { E.phase = 'eat'; E.step = 0; st.f = f.x >= st.x ? 1 : -1; el.style.setProperty('--f', st.f); el.classList.add('eat'); E.next = now + 350; return; }
+  E.step++; FS[f.id] = E.step; el.classList.add('eat');
+  const fe = yard && yard.querySelector(`.yfood[data-fid="${CSS.escape(f.id)}"]`);
+  if (E.step < 4) {
+    if (fe) { fe.className = 'yfood b' + E.step; }
+    crBubble(el, MUNCH[(E.step - 1) % MUNCH.length], 800);
+    for (let i = 0; i < 4; i++) yfx(yard, 'ycrumb c' + (i % 3), f.x + (Math.random() - 0.5) * 5, f.y - 4 - Math.random() * 3, '', 900);
+    E.next = now + 1000; return;
+  }
+  // all gone
+  if (fe) fe.className = 'yfood gone';
+  el.classList.remove('eat'); el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop');
+  crBubble(el, '잘 먹었어요! 💗', 1600);
+  for (let i = 0; i < 5; i++) setTimeout(() => yfx(yard, 'ymeet', st.x + (Math.random() - 0.5) * 10, st.y - 22 - Math.random() * 6, ['💗', '💕', '✨'][i % 3], 1800), i * 140);
+  EATEN.add(f.id); st.eat = null; st.t = now + 2200;
+  W.feedEat(f.id);
+  if (f.by === S.who) { const l = charLetters().find(x => x.w === f.to && x.at === f.at); if (l) setTimeout(() => { toast(`💌 꼬마 ${nm(l.w)}가 ${nm(S.who)}님에게 편지를 보냈어요!`); render(); }, 1700); else setTimeout(render, 900); } else setTimeout(render, 900);
+}
 function yardTick() {
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) petTick(Date.now());
   const els = document.querySelectorAll('.yard .cr'); if (!els.length) return;
@@ -1935,7 +2068,11 @@ function yardTick() {
   const now = Date.now();
   for (const el of els) {
     const w = el.dataset.w, st = YS[w], o = YS[w === 'me' ? 'partner' : 'me'];
-    if (now < st.t || el.closest('.edit') || el.classList.contains('held')) continue;
+    if (el.closest('.edit') || el.classList.contains('held')) continue;
+    const food = foodFor(w);
+    if (food) { eatTick(el, w, st, food, now); continue; }
+    if (st.eat) { st.eat = null; el.classList.remove('eat'); }
+    if (now < st.t) continue;
     const md = moodOfChar(w);
     if (md === 'sleep') { st.t = now + 5000; continue; }
     const r = Math.random();
@@ -2013,7 +2150,8 @@ function vGrow() {
   };
   const daily = ['checkin', 'answer', 'both', 'mood', 'note', 'photo'], anytime = ['memory', 'letter', 'event', 'bucket', 'bdone', 'rate', 'comment'];
   const done = k => k === 'photo' ? hm.photosToday >= 5 : hm.kinds.has(k);
-  return `<div class="card grow">${vYard(true)}${vYardTools()}
+  const ul = paired() || !S.real ? clUnread() : [];
+  return `<div class="card grow">${ul.length ? `<button type="button" class="clbanner" data-act="cl-open" data-v="${ul[0].id}"><span>${mini(ul[0].w, 26)}</span><span>💌 꼬마 ${esc(nm(ul[0].w))}의 편지가 도착했어요${ul.length > 1 ? ` 외 ${ul.length - 1}통` : ''}</span><b>열어 보기</b></button>` : ''}${vYard(true)}${vYardTools()}
   <div class="gcols">${col(me, hm, sm)}${paired() ? col(pt, hp, sp) : ''}</div>
   ${HT[sm + 1] ? `<p class="gift">🎁 다음 선물: ${esc(nm(me))}님 캐릭터가 ${GIFT[sm + 1]}</p>` : ''}
   <p class="f" style="margin-top:14px">오늘 하트 모으기 <small class="note">매일 새로 받아요</small></p>
@@ -2164,7 +2302,7 @@ function heartWatch() {
 function render() {
   markPhotosSeen();
   $('.app').dataset.look = S.look;
-  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter || S.mcal || S.shop || S.box || S.feed) ? 'hidden' : '';
+  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter || S.mcal || S.shop || S.box || S.feed || S.cl) ? 'hidden' : '';
   const lt = $('#l-text'); if (lt) growTA(lt);
   heartWatch();
   const a = document.activeElement, aid = a && a.id, ss = a && a.selectionStart;
@@ -2185,7 +2323,7 @@ function render() {
   if (S.clearNote) { delete keep.pnote; S.clearNote = false; }
   $('.app').classList.toggle('gated', !!S.gate || !S.loaded || !S.couple);
   $('#view').innerHTML = S.gate ? vGate() : !S.loaded ? vLoading() : S.err ? `<div class="empty">${esc(S.err)}</div>` : !S.couple ? vSetup() : ({home: vHome, grow: vGrowTab, cal: vCal, mem: vMem, ph: vPh, us: vUs})[S.tab]();
-  $('#ov').innerHTML = S.feed ? vFeed() : S.shop ? vShop() : S.box ? vBox() : S.mcal ? vMoodCal() : S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
+  $('#ov').innerHTML = S.cl ? vCharLetter() : S.feed ? vFeed() : S.shop ? vShop() : S.box ? vBox() : S.mcal ? vMoodCal() : S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
   if (S.recap && S.recap.jump != null) { const tr = $('#rct'); if (tr) tr.scrollLeft = S.recap.jump * tr.clientWidth; S.recap.jump = null; }
   for (const k in keep) { const el = document.getElementById(k); if (el) { if (el.type === 'checkbox') el.checked = keep[k]; else el.value = keep[k]; } }
   tick();
@@ -2248,7 +2386,7 @@ document.addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
   const act = b.dataset.act, v = b.dataset.v;
   if (act === 'tab') { if (v === 'q') { S.memTab = 'q'; go('mem'); } else go(v); }
-  else if (act === 'who') { S.feed = null; S.shop = null; S.box = null; S.phMark = null; S.yedit = false; S.hPrev = null; S.mcal = null; S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
+  else if (act === 'who') { S.cl = null; S.feed = null; S.shop = null; S.box = null; S.phMark = null; S.yedit = false; S.hPrev = null; S.mcal = null; S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
   else if (act === 'save-ans') {
     const text = (S.draft || '').trim(); if (!text) { toast('답을 먼저 적어 주세요'); return; }
     const td = ymd(today());
@@ -2359,6 +2497,8 @@ document.addEventListener('click', async e => {
     el.appendChild(bub); setTimeout(() => bub.remove(), 1500); YS[v].t = Date.now() + 1600;
   }
   else if (act === 'feed-open' && S.real && !paired()) { toast(`${nm(other())}님이 연결되면 밥을 줄 수 있어요`); }
+  else if (act === 'cl-open') { S.cl = v; const r = clRead(); r.add(v); ls.set('ud-clr-' + S.who, JSON.stringify([...r])); render(); }
+  else if (act === 'cl-close' || (act === 'cl-close-bg' && e.target === b)) { S.cl = null; render(); }
   else if (act === 'feed-open') { S.feed = {to: v || S.who}; render(); }
   else if (act === 'feed-to') { S.feed.to = v; render(); }
   else if (act === 'feed-close' || (act === 'feed-close-bg' && e.target === b)) { S.feed = null; render(); }
@@ -2368,11 +2508,13 @@ document.addEventListener('click', async e => {
     if (left < price) { toast(`하트가 ${price - left}개 더 필요해요`); return; }
     if (fullness(to) >= 100) { toast('배가 불러서 더 못 먹어요'); return; }
     const id = 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-    if (await W.feedIt(id, {to, by: S.who, k, e: e2, name, price, full, at: Date.now()})) {
-      S.feed = null; render();
-      const el = document.querySelector(`.yard .cr[data-w="${to}"]`);
-      if (el) { const fo = document.createElement('span'); fo.className = 'cfood'; fo.textContent = e2; el.appendChild(fo); const bub = document.createElement('span'); bub.className = 'crb'; bub.textContent = '냠냠! 💗'; setTimeout(() => { el.appendChild(bub); el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop'); }, 700); setTimeout(() => { fo.remove(); bub.remove(); }, 2400); YS[to].t = Date.now() + 2500; }
-      burst(10); toast(to === S.who ? `${e2} ${name} 냠냠! 배부름 +${full}` : `${nm(to)}님 캐릭터에게 ${e2} ${name}을(를) 줬어요`);
+    // put it on the lawn, a little away from the character, who then walks over to eat it
+    const c = YS[to] || {x: 50, y: 70}; let fx = 0, fy = 0;
+    for (let i = 0; i < 8; i++) { fx = 18 + Math.random() * 64; fy = 46 + Math.random() * 40; if (Math.hypot(fx - c.x, (fy - c.y) * 1.6) > 22) break; }
+    if (await W.feedIt(id, {to, by: S.who, k, e: e2, name, price, full, x: Math.round(fx), y: Math.round(fy), at: Date.now()})) {
+      S.feed = null; if (S.tab !== 'grow') go('grow'); else render();
+      setTimeout(() => { const el = document.querySelector('.yard.big .yfood[data-fid="' + id + '"]'); if (el) el.scrollIntoView({block: 'center', behavior: 'smooth'}); }, 80);
+      burst(8); toast(to === S.who ? `마당에 ${name}을(를) 올려 뒀어요. 꼬마 ${nm(to)}가 먹으러 가요!` : `${nm(to)}님 캐릭터에게 ${name}을(를) 차려 줬어요`);
     }
   }
   else if (act === 'shop-open' && S.real && !paired()) { toast(`${nm(other())}님이 연결되면 상점이 열려요`); }
@@ -2577,6 +2719,7 @@ document.addEventListener('keydown', e => {
   if (e.target.matches && e.target.matches('label[for=m-file]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#m-file').click(); return; }
   if (S.feed && e.key === 'Escape') { S.feed = null; render(); return; }
   if (S.shop && e.key === 'Escape') { S.shop = null; render(); return; }
+  if (S.cl && e.key === 'Escape') { S.cl = null; render(); return; }
   if (S.box && e.key === 'Escape') { S.box = null; render(); return; }
   if (S.mcal && e.key === 'Escape') { S.mcal = null; render(); return; }
   if (S.sheet && e.key === 'Escape') { S.sheet = null; S.sheetDel = false; render(); return; }
