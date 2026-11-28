@@ -121,7 +121,7 @@ async function run(label, device, scheme, look) {
       try {
         const el = p.locator(sel).first();
         if (!(await el.isVisible())) continue;
-        await el.click({ timeout: 1500, force: a.act === 'cr-tap' }); if (a.act === 'di-open') await p.waitForTimeout(900);
+        await el.click({ timeout: 1500, force: a.act === 'cr-tap' || a.act === 'pet-tap' }); if (a.act === 'di-open') await p.waitForTimeout(900);
         await p.waitForTimeout(150);
         await check(`${t} → ${a.act}${a.v ? '(' + a.v + ')' : ''}`);
         // look at overlays briefly, then close them

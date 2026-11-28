@@ -124,7 +124,7 @@ async function drawYard(Y, W, H) {
 
   // a moment in the yard: widgets cannot move, so each refresh shows the two of them doing something
   // animal friends have wandered somewhere new each time the widget refreshes
-  const PETS = new Set(["ladybug", "snail", "bee", "bfly", "frog", "chick", "hamster", "duck", "turtle", "squirrel", "hedgehog", "penguin", "bunny", "fox", "dog", "cat", "panda", "unicorn"]), FACE_L = { turtle: 1, squirrel: 1, bee: 1 };
+  const PETS = new Set(["ladybug", "snail", "bee", "bfly", "frog", "chick", "hamster", "duck", "turtle", "squirrel", "hedgehog", "penguin", "bunny", "fox", "dog", "cat", "panda", "unicorn"]), FACE_L = { squirrel: 1 };
   const things = (Y.items || []).map(it => {
     const t = { kind: 'item', ...it, y: it.cat === 'sky' ? Math.min(it.y, 15) : Math.max(it.y, 24) };
     if (PETS.has(t.k)) { t.x = Math.min(90, Math.max(10, t.x + (Math.random() - 0.5) * 40)); t.y = Math.min(92, Math.max(30, t.y + (Math.random() - 0.5) * 26)); t.flip = (Math.random() < 0.5) !== !!FACE_L[t.k]; }
