@@ -73,8 +73,11 @@ Deno.serve(async (req) => {
   const stageOf = (r: Role) => { const n = Number((docs.find((x) => x.coll === 'stages' && x.id === r)?.data as any)?.stage); return since != null && n >= 0 && n <= 8 ? Math.floor(n) : 0; };
   const yard = {
     theme,
-    items: bought.filter((y) => y.placed && y.cat !== 'theme' && typeof y.e === 'string' && y.e.length <= 8)
-      .map((y) => ({ k: String(y.k || '').slice(0, 20), e: y.e, cat: String(y.cat || ''), x: Math.min(97, Math.max(3, Number(y.x) || 50)), y: Math.min(97, Math.max(3, Number(y.y) || 70)) })).slice(0, 60),
+    // each theme has its own layout (spots[theme]); older things without spots sit where placed/x/y say
+    items: bought.filter((y) => y.cat !== 'theme' && typeof y.e === 'string' && y.e.length <= 8)
+      .map((y) => ({ y, at: y.spots && typeof y.spots === 'object' ? y.spots[theme] : y.placed ? { x: y.x, y: y.y } : null }))
+      .filter((o) => o.at)
+      .map(({ y, at }) => ({ k: String(y.k || '').slice(0, 20), e: y.e, cat: String(y.cat || ''), x: Math.min(97, Math.max(3, Number(at.x) || 50)), y: Math.min(97, Math.max(3, Number(at.y) || 70)) })).slice(0, 60),
     chars: (['me', 'partner'] as Role[]).filter((r) => r === 'me' || c.partner).map((r) => ({ role: r, name: main[r]?.name || (r === 'me' ? '나' : '상대'), stage: stageOf(r) })),
   };
 

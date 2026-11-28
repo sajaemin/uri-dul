@@ -833,6 +833,10 @@ ol.steps.big li{margin:10px 0;font-size:16px}
 .sitem .se svg{display:block;margin:0 auto}
 .ysb svg{display:block;margin:0 auto}
 @media(prefers-reduced-motion:reduce){.yi.roam svg{animation:none!important}}
+.ythemes{margin:10px 0 0}
+.sth.mini{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:5px;vertical-align:-2px}
+.sitem.bon{box-shadow:inset 0 0 0 2px #ff9fbb}
+.ytools .btn{padding-left:8px;padding-right:8px}
 </style>
 </head>
 <body>
@@ -897,8 +901,23 @@ const ans = (ds, w) => S.answers[ds + '_' + w];
 const src = p => S.real ? (p.url || '') : (p.assetId ? '/_blob/' + encodeURIComponent(p.assetId) : p.url);
 const received = () => S.photos.filter(p => p.from === other());
 const sent = () => S.photos.filter(p => p.from === S.who);
-const isNew = p => !(p.savedBy && p.savedBy[S.who]);
-const newCount = () => received().filter(isNew).length;
+// NEW = a photo I haven't looked at yet (opening 사진함 counts); saving is tracked on its own
+const unsaved = p => !(p.savedBy && p.savedBy[S.who]);
+const seenAt = () => Number((S.seen[S.who] || {}).photosAt) || 0;
+const phMark = () => S.phMark != null ? S.phMark : seenAt();
+const isNew = p => unsaved(p) && (Number(p.at) || 0) > phMark();
+const unsavedCount = () => received().filter(unsaved).length;
+const newCount = () => received().filter(p => unsaved(p) && (Number(p.at) || 0) > seenAt()).length;
+// called on every render: while 사진함 is open the NEW marks stay put; leaving it (or opening a photo) clears them
+function markPhotosSeen() {
+  if (!S.who || (S.real && !S.seenLoaded)) return;
+  const onPh = S.tab === 'ph' && S.phTab === 'in';
+  if (!onPh) { S.phMark = null; return; }
+  if (S.phMark == null) S.phMark = seenAt();
+  const last = Math.max(0, ...received().map(p => Number(p.at) || 0));
+  if (last > seenAt()) W.seen(S.who, {photosAt: last});
+  if (S.viewer) S.phOpened.add(S.viewer);
+}
 const ago = t => { const m = Math.floor((Date.now() - t) / 6e4); return m < 1 ? '방금' : m < 60 ? m + '분 전' : Math.floor(m / 60) + '시간 전'; };
 const when = t => { const d = new Date(t); return dotd(ymd(d)) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes()); };
 
@@ -925,7 +944,7 @@ const dlab = d => { const n = diff(today(), d); return n === 0 ? '오늘' : n > 
 S.diAlways = ls.get('ud-di') !== '0'; S.diExp = false; S.look = 'cute';
 S.memories = []; S.bucket = []; S.memTab = 'tl'; S.mapView = 'kr'; S.mapSel = null; S.memFilter = ''; S.memPlace = ''; S.msheet = null; S.msheetDel = false; S.recap = null;
 S.events = []; S.calMode = 'month'; S.sheet = null; S.sheetDel = false;
-S.moods = {}; S.feeds = []; S.checkins = []; S.feed = null; S.comments = []; S.cmtOpen = ''; S.stages = {}; S.yard = []; S.ycfg = null; S.yedit = false; S.shop = null; S.qswap = {}; S.prefs = {}; S.mcal = null; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
+S.moods = {}; S.seen = {}; S.phMark = null; S.phOpened = new Set(); S.feeds = []; S.checkins = []; S.feed = null; S.comments = []; S.cmtOpen = ''; S.stages = {}; S.yard = []; S.ycfg = null; S.yedit = false; S.shop = null; S.box = null; S.yardLoaded = false; S.ycfgLoaded = false; S.qswap = {}; S.prefs = {}; S.mcal = null; S.letters = []; S.lsheet = null; S.letter = null; S.letterDel = false; S.roulKind = 'do'; S.roul = null;
 { const t = today(); S.calMonth = new Date(t.getFullYear(), t.getMonth(), 1); S.calSel = ymd(t); }
 function starts(ev, s0, from, to) {
   const r = ev.repeat || 'none', res = [];
@@ -979,6 +998,7 @@ const W = {
   couple: d => guard(async () => { if (db) await db.doc('couple/main').set(d); else { S.couple = d; render(); } }),
   answer: (id, d) => guard(async () => { if (db) await db.doc('answers/' + id).set(d); else { S.answers = {...S.answers, [id]: d}; render(); } }),
   addPhoto: d => guard(async () => { const {id, ...body} = d; if (db) await db.collection('photos').doc(id).set(body); else { S.photos = [d, ...S.photos]; render(); } }),
+  seen: (w, d) => guard(async () => { S.seen = {...S.seen, [w]: {...(S.seen[w] || {}), ...d}}; if (db) await db.doc('seen/' + w).set({...(S.seen[w] || {})}); }),
   savedBy: (id, w) => guard(async () => { if (db) await db.doc('photos/' + id).update({savedBy: {[w]: true}}); else { S.photos = S.photos.map(p => p.id === id ? {...p, savedBy: {...(p.savedBy || {}), [w]: true}} : p); render(); } }),
   delPhoto: p => guard(async () => { if (db) await db.doc('photos/' + p.id).delete(); else { S.photos = S.photos.filter(x => x.id !== p.id); render(); } if (assets && p.assetId) { const id = p.assetId; setTimeout(() => { assets.delete(id).catch(() => {}); }, 5000); } }), // the file goes a little after the record, so the other phone stops showing it first
   event: (id, d) => guard(async () => { if (db) await db.doc('events/' + id).set(d); else { S.events = [...S.events.filter(x => x.id !== id), {...d, id}]; render(); } }),
@@ -1250,11 +1270,15 @@ async function sendCmt(ref) {
 }
 
 /* ---------- which notifications each person wants ---------- */
-const NKINDS = [['answers', '질문 답', '상대가 답하거나 둘 다 답했을 때'], ['moods', '기분', '상대가 기분이나 한마디를 남겼을 때'], ['photos', '사진', '새 사진이 올라왔을 때'], ['pokes', '콕 찌르기', '상대가 콕 찔렀을 때'], ['events', '일정', '새 데이트나 일정이 잡혔을 때'], ['memories', '추억', '새 추억, 둘 다 또 갈래'], ['bucket', '버킷리스트', '담거나 함께 해냈을 때'], ['letters', '편지', '편지가 오거나 열리는 날'], ['yard', '마당 꾸미기', '상대가 마당에 새 물건을 들였을 때'], ['comments', '댓글', '일정·사진·추억·버킷리스트에 댓글이 달렸을 때'], ['feeds', '밥 주기', '상대가 내 캐릭터에게 밥을 줬을 때'], ['morning', '아침 9시 알림', '기념일·생일·데이트·1년 전 오늘'], ['evening', '저녁 6시 알림', '아직 오늘의 질문에 답하지 않았을 때']];
+const NKINDS = [['answers', '질문 답', '상대가 답하거나 둘 다 답했을 때'], ['moods', '기분', '상대가 기분이나 한마디를 남겼을 때'], ['photos', '사진', '새 사진이 올라왔을 때'], ['pokes', '콕 찌르기', '상대가 콕 찔렀을 때'], ['events', '일정', '새 데이트나 일정이 잡혔을 때'], ['memories', '추억', '새 추억, 둘 다 또 갈래'], ['bucket', '버킷리스트', '담거나 함께 해냈을 때'], ['letters', '편지', '편지가 오거나 열리는 날'], ['yard', '마당 꾸미기', '상대가 마당에 새 물건을 들였을 때'], ['comments', '댓글', '일정·사진·추억·버킷리스트에 댓글이 달렸을 때'], ['feeds', '밥 주기', '상대가 내 캐릭터에게 밥을 줬을 때'], ['morning', '아침 9시 알림', '편지 도착, 1년 전 오늘, 다가오는 날(아래에서 주기 선택)'], ['evening', '저녁 6시 알림', '아직 오늘의 질문에 답하지 않았을 때']];
 const nOff = () => ((S.prefs[S.who] || {}).off || []);
+const EVFREQ = [['all', '일정마다 정한 대로'], ['near', '전날과 당일만'], ['day', '당일 아침만'], ['off', '안 받기']];
+const evFreq = () => { const f = (S.prefs[S.who] || {}).evFreq; return EVFREQ.some(x => x[0] === f) ? f : 'all'; };
 function vNotifChoices() {
   const off = nOff();
   return `<p class="f" style="margin:16px 0 2px">받을 알림 고르기</p><ul class="list ntog">${NKINDS.map(([k, t, d]) => { const on = !off.includes(k); return `<li><span class="nt"><b>${t}</b><span class="note">${d}</span></span><button type="button" class="tgl${on ? ' on' : ''}" role="switch" aria-checked="${on}" aria-label="${t} 알림" data-act="ntog" data-v="${k}"><i></i></button></li>`; }).join('')}</ul>
+  <p class="f" style="margin:16px 0 2px">데이트·기념일 미리 알림</p><p class="note" style="margin:0 0 6px">아침 9시에 다가오는 날을 언제부터 알려 줄지 골라요</p>
+  <div class="chips" role="group" aria-label="데이트·기념일 미리 알림">${EVFREQ.map(([k, t]) => `<button type="button" class="chip${evFreq() === k ? ' on' : ''}" data-act="evfreq" data-v="${k}" aria-pressed="${evFreq() === k}">${t}</button>`).join('')}</div>
   <p class="note" style="margin-top:6px">${esc(nm(S.who))}님 폰에만 적용돼요. 끈 알림은 앱 안에서는 그대로 보여요.</p>`;
 }
 
@@ -1453,18 +1477,18 @@ function vQuestion() {
 }
 function tiles(list, kind) {
   return `<div class="grid">${list.map(p => {
-    const b = kind === 'in' ? (isNew(p) ? '<span class="tb">NEW</span>' : '<span class="tb ok">저장함</span>') : (p.savedBy && p.savedBy[other()] ? '<span class="tb ok">받아감</span>' : '<span class="tb">대기</span>');
+    const b = kind === 'in' ? (isNew(p) && !S.phOpened.has(p.id) ? '<span class="tb">NEW</span>' : unsaved(p) ? '' : '<span class="tb ok">저장함</span>') : (p.savedBy && p.savedBy[other()] ? '<span class="tb ok">받아감</span>' : '<span class="tb">대기</span>');
     return `<button class="tile" type="button" data-act="open" data-v="${esc(p.id)}" data-k="${kind}" aria-label="${when(p.at)} 사진 열기"><img src="${esc(src(p))}" alt="" loading="lazy" decoding="async">${b}${cmtsOf('photos/' + p.id).length ? `<span class="tcm">💬${cmtsOf('photos/' + p.id).length}</span>` : ''}</button>`;
   }).join('')}</div>`;
 }
 function vPh() {
-  const rin = received(), rout = sent(), nc = newCount(), list = S.phTab === 'in' ? rin : rout;
+  const rin = received(), rout = sent(), nc = rin.filter(p => isNew(p) && !S.phOpened.has(p.id)).length, nu = unsavedCount(), list = S.phTab === 'in' ? rin : rout;
   return `<div class="sec"><div class="up"><p style="margin:0;font-weight:600">평소 찍은 사진, 일단 올려 두세요</p><p class="note">${esc(nm(other()))}님이 시간 날 때 골라서 저장해요</p>
   <input type="text" id="pnote" maxlength="60" placeholder="한마디 남기기 (선택)" style="margin-top:10px">
   ${S.busy ? `<p class="note" style="margin-top:10px">${esc(S.busy)}</p>` : `<label class="btn" for="file" tabindex="0">사진 고르기</label>`}
   <input type="file" id="file" accept="image/*" multiple hidden></div>
   <div class="seg" role="group" aria-label="사진 종류"><button type="button" data-act="seg" data-v="in" aria-pressed="${S.phTab === 'in'}">받은 사진 ${rin.length}${nc ? ` · 새 ${nc}` : ''}</button><button type="button" data-act="seg" data-v="out" aria-pressed="${S.phTab === 'out'}">보낸 사진 ${rout.length}</button></div>
-  ${S.phTab === 'in' && nc ? `<button class="btn wide" type="button" data-act="save-all" style="margin-bottom:12px">새 사진 ${nc}장 모두 저장</button>` : ''}
+  ${S.phTab === 'in' && nu ? `<button class="btn wide" type="button" data-act="save-all" style="margin-bottom:12px">저장 안 한 사진 ${nu}장 모두 저장</button>` : ''}
   ${list.length ? tiles(list, S.phTab) : `<div class="empty">${emptyArt()}${S.phTab === 'in' ? `${esc(nm(other()))}님이 올린 사진이 아직 없어요.${S.real ? `<br>${esc(nm(other()))}님이 사진을 올리면 여기 모이고 알림이 가요.` : `<br>테스트하려면 오른쪽 위에서 '${esc(nm(other()))}'로 바꿔 사진을 올려 보세요.`}` : '아직 올린 사진이 없어요.'}</div>`}
   ${!dl && S.loaded ? '<p class="note" style="margin-top:12px">이 화면에서는 저장 버튼이 막혀 있어요. 사진을 열고 길게 눌러 저장할 수 있어요.</p>' : ''}</div>`;
 }
@@ -1755,11 +1779,11 @@ function streak() {
 
 /* ---------- the yard: both characters live here; hearts buy things to put in it ---------- */
 const SHOP = [
-  ['flower', '꽃·나무', [['tulip', '🌷', '튤립', 10, 30, 'sway'], ['daisy', '🌼', '데이지', 8, 28, 'sway'], ['sunf', '🌻', '해바라기', 12, 40, 'sway'], ['rose', '🌹', '장미', 12, 30, 'sway'], ['hibis', '🌺', '히비스커스', 12, 32, 'sway'], ['hyac', '🪻', '히아신스', 10, 30, 'sway'], ['blossom', '🌸', '벚꽃', 15, 34, 'sway'], ['lotus', '🪷', '연꽃', 15, 36, ''], ['clover', '🍀', '네잎클로버', 5, 22, ''], ['maple', '🍁', '단풍잎', 8, 24, 'sway'], ['mush', '🍄', '버섯', 8, 30, ''], ['pot', '🪴', '화분', 15, 34, ''], ['cactus', '🌵', '선인장', 15, 40, ''], ['bamboo', '🎋', '대나무', 25, 58, 'sway'], ['tree', '🌳', '나무', 30, 72, 'sway'], ['pine', '🌲', '소나무', 30, 68, ''], ['palm', '🌴', '야자수', 35, 74, 'sway'], ['xmas', '🎄', '트리', 40, 66, '']]],
-  ['play', '놀이', [['ball', '⚽', '축구공', 8, 22, ''], ['bball', '🏀', '농구공', 8, 22, ''], ['yoyo', '🪀', '요요', 6, 24, 'bob'], ['balloon', '🎈', '풍선', 12, 40, 'bob'], ['dart', '🎯', '다트', 12, 38, ''], ['skate', '🛹', '스케이트보드', 18, 36, ''], ['pinata', '🪅', '피냐타', 20, 40, 'sway'], ['kite', '🪁', '연', 25, 42, 'bob'], ['bike', '🚲', '자전거', 30, 48, ''], ['parasol', '⛱️', '파라솔', 35, 58, ''], ['canoe', '🛶', '카누', 40, 52, ''], ['slide', '🛝', '미끄럼틀', 50, 62, ''], ['tent', '🎪', '서커스 텐트', 60, 76, ''], ['carousel', '🎠', '회전목마', 100, 76, 'bob'], ['ferris', '🎡', '관람차', 120, 88, 'spin'], ['coaster', '🎢', '롤러코스터', 130, 84, '']]],
-  ['home', '집·소품', [['candle', '🕯️', '촛불', 8, 24, ''], ['books', '📚', '책', 8, 28, ''], ['gift', '🎁', '선물상자', 10, 30, ''], ['log', '🪵', '통나무', 10, 34, ''], ['bell', '🎐', '풍경', 10, 32, 'sway'], ['pumpkin', '🎃', '호박', 10, 36, ''], ['chair', '🪑', '의자', 15, 38, ''], ['teddy', '🧸', '곰인형', 15, 36, ''], ['lantern', '🏮', '등불', 18, 34, 'sway'], ['basket', '🧺', '피크닉 바구니', 20, 32, ''], ['post', '📮', '우체통', 25, 42, ''], ['snowman', '⛄', '눈사람', 25, 48, ''], ['bath', '🛁', '욕조', 30, 48, ''], ['sofa', '🛋️', '소파', 45, 52, ''], ['car', '🚗', '자동차', 50, 56, ''], ['camp', '⛺', '캠핑 텐트', 60, 64, ''], ['fountain', '⛲', '분수', 80, 62, ''], ['hut', '🛖', '오두막', 90, 78, ''], ['house', '🏡', '우리 집', 120, 90, ''], ['castle', '🏰', '작은 성', 150, 96, '']]],
-  ['pet', '친구들', [['ladybug', '🐞', '무당벌레', 5, 18, 'fly'], ['snail', '🐌', '달팽이', 5, 22, 'walk'], ['bee', '🐝', '꿀벌', 8, 22, 'fly'], ['bfly', '🦋', '나비', 15, 28, 'fly'], ['frog', '🐸', '개구리', 15, 30, 'walk'], ['chick', '🐥', '병아리', 25, 26, 'walk'], ['hamster', '🐹', '햄스터', 25, 26, 'walk'], ['duck', '🦆', '오리', 35, 34, 'walk'], ['turtle', '🐢', '거북이', 35, 34, 'walk'], ['squirrel', '🐿️', '다람쥐', 40, 36, 'walk'], ['hedgehog', '🦔', '고슴도치', 40, 34, 'walk'], ['penguin', '🐧', '펭귄', 45, 36, 'walk'], ['bunny', '🐰', '토끼', 50, 38, 'walk'], ['fox', '🦊', '여우', 55, 40, 'walk'], ['dog', '🐶', '강아지', 60, 40, 'walk'], ['cat', '🐱', '고양이', 60, 38, 'walk'], ['panda', '🐼', '판다', 70, 44, 'walk'], ['unicorn', '🦄', '유니콘', 90, 46, 'walk']]],
-  ['sky', '하늘', [['sparkle', '✨', '반짝이', 6, 26, 'twinkle'], ['cloud', '☁️', '구름', 8, 52, 'drift'], ['star', '⭐', '별', 10, 28, 'twinkle'], ['suncloud', '🌤️', '구름 낀 해', 20, 52, 'drift'], ['shoot', '🌠', '별똥별', 25, 42, 'drift'], ['dove', '🕊️', '비둘기', 30, 36, 'fly'], ['fire', '🎆', '불꽃놀이', 30, 46, 'twinkle'], ['sun', '☀️', '해', 40, 56, 'spin'], ['planet', '🪐', '토성', 40, 48, 'bob'], ['moon', '🌙', '달', 45, 48, 'bob'], ['rocket', '🚀', '로켓', 50, 46, 'bob'], ['ufo', '🛸', 'UFO', 60, 52, 'drift'], ['rainbow', '🌈', '무지개', 80, 76, '']]],
+  ['flower', '꽃·나무', [['tulip', '🌷', '튤립', 10, 34, 'sway'], ['daisy', '🌼', '데이지', 8, 32, 'sway'], ['sunf', '🌻', '해바라기', 12, 40, 'sway'], ['rose', '🌹', '장미', 12, 34, 'sway'], ['hibis', '🌺', '히비스커스', 12, 32, 'sway'], ['hyac', '🪻', '히아신스', 10, 30, 'sway'], ['blossom', '🌸', '벚꽃', 15, 34, 'sway'], ['lotus', '🪷', '연꽃', 15, 36, ''], ['clover', '🍀', '네잎클로버', 5, 32, ''], ['maple', '🍁', '단풍잎', 8, 32, 'sway'], ['mush', '🍄', '버섯', 8, 34, ''], ['pot', '🪴', '화분', 15, 34, ''], ['cactus', '🌵', '선인장', 15, 40, ''], ['bamboo', '🎋', '대나무', 25, 58, 'sway'], ['tree', '🌳', '나무', 30, 72, 'sway'], ['pine', '🌲', '소나무', 30, 68, ''], ['palm', '🌴', '야자수', 35, 74, 'sway'], ['xmas', '🎄', '트리', 40, 66, '']]],
+  ['play', '놀이', [['ball', '⚽', '축구공', 8, 28, ''], ['bball', '🏀', '농구공', 8, 28, ''], ['yoyo', '🪀', '요요', 6, 30, 'bob'], ['balloon', '🎈', '풍선', 12, 40, 'bob'], ['dart', '🎯', '다트', 12, 38, ''], ['skate', '🛹', '스케이트보드', 18, 36, ''], ['pinata', '🪅', '피냐타', 20, 40, 'sway'], ['kite', '🪁', '연', 25, 42, 'bob'], ['bike', '🚲', '자전거', 30, 48, ''], ['parasol', '⛱️', '파라솔', 35, 58, ''], ['canoe', '🛶', '카누', 40, 52, ''], ['slide', '🛝', '미끄럼틀', 50, 62, ''], ['tent', '🎪', '서커스 텐트', 60, 76, ''], ['carousel', '🎠', '회전목마', 100, 76, 'bob'], ['ferris', '🎡', '관람차', 120, 88, 'spin'], ['coaster', '🎢', '롤러코스터', 130, 84, '']]],
+  ['home', '집·소품', [['candle', '🕯️', '촛불', 8, 30, ''], ['books', '📚', '책', 8, 34, ''], ['gift', '🎁', '선물상자', 10, 34, ''], ['log', '🪵', '통나무', 10, 34, ''], ['bell', '🎐', '풍경', 10, 38, 'sway'], ['pumpkin', '🎃', '호박', 10, 40, ''], ['chair', '🪑', '의자', 15, 38, ''], ['teddy', '🧸', '곰인형', 15, 36, ''], ['lantern', '🏮', '등불', 18, 38, 'sway'], ['basket', '🧺', '피크닉 바구니', 20, 36, ''], ['post', '📮', '우체통', 25, 42, ''], ['snowman', '⛄', '눈사람', 25, 48, ''], ['bath', '🛁', '욕조', 30, 48, ''], ['sofa', '🛋️', '소파', 45, 52, ''], ['car', '🚗', '자동차', 50, 56, ''], ['camp', '⛺', '캠핑 텐트', 60, 64, ''], ['fountain', '⛲', '분수', 80, 62, ''], ['hut', '🛖', '오두막', 90, 78, ''], ['house', '🏡', '우리 집', 120, 90, ''], ['castle', '🏰', '작은 성', 150, 96, '']]],
+  ['pet', '친구들', [['ladybug', '🐞', '무당벌레', 5, 26, 'fly'], ['snail', '🐌', '달팽이', 5, 30, 'walk'], ['bee', '🐝', '꿀벌', 8, 28, 'fly'], ['bfly', '🦋', '나비', 15, 32, 'fly'], ['frog', '🐸', '개구리', 15, 34, 'walk'], ['chick', '🐥', '병아리', 25, 30, 'walk'], ['hamster', '🐹', '햄스터', 25, 30, 'walk'], ['duck', '🦆', '오리', 35, 34, 'walk'], ['turtle', '🐢', '거북이', 35, 34, 'walk'], ['squirrel', '🐿️', '다람쥐', 40, 36, 'walk'], ['hedgehog', '🦔', '고슴도치', 40, 34, 'walk'], ['penguin', '🐧', '펭귄', 45, 36, 'walk'], ['bunny', '🐰', '토끼', 50, 38, 'walk'], ['fox', '🦊', '여우', 55, 40, 'walk'], ['dog', '🐶', '강아지', 60, 40, 'walk'], ['cat', '🐱', '고양이', 60, 38, 'walk'], ['panda', '🐼', '판다', 70, 44, 'walk'], ['unicorn', '🦄', '유니콘', 90, 46, 'walk']]],
+  ['sky', '하늘', [['sparkle', '✨', '반짝이', 6, 32, 'twinkle'], ['cloud', '☁️', '구름', 8, 52, 'drift'], ['star', '⭐', '별', 10, 34, 'twinkle'], ['suncloud', '🌤️', '구름 낀 해', 20, 52, 'drift'], ['shoot', '🌠', '별똥별', 25, 42, 'drift'], ['dove', '🕊️', '비둘기', 30, 36, 'fly'], ['fire', '🎆', '불꽃놀이', 30, 46, 'twinkle'], ['sun', '☀️', '해', 40, 56, 'spin'], ['planet', '🪐', '토성', 40, 48, 'bob'], ['moon', '🌙', '달', 45, 48, 'bob'], ['rocket', '🚀', '로켓', 50, 46, 'bob'], ['ufo', '🛸', 'UFO', 60, 52, 'drift'], ['rainbow', '🌈', '무지개', 80, 76, '']]],
 ];
 const THEMES = [['spring', '봄 들판', 0], ['sakura', '벚꽃 동산', 80], ['autumn', '가을 단풍', 80], ['beach', '바닷가', 100], ['snow', '눈 오는 겨울', 100], ['candy', '솜사탕 나라', 120], ['night', '밤하늘', 120]];
 const ITEM = {}; SHOP.forEach(([cat, , list]) => list.forEach(([k, e, name, price, size, anim]) => { ITEM[k] = {k, e, name, price, size, anim, cat}; }));
@@ -1816,13 +1840,13 @@ function yplotSVG() {
 }
 function vYard(big) {
   const th = yTheme(), sa = heartStage('me'), sb = heartStage('partner');
-  const items = yardItems().filter(y => y.placed && ITEM[y.k]);
+  const items = yardItems().filter(y => ITEM[y.k] && spotOf(y, th));
   const who = ['me', 'partner'].filter(w => w === S.who || paired());
   const HH = 'M12 21s-8-4.6-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 6.4-8 11-8 11z';
   return `<div class="yard th-${th}${big ? ' big' : ''}${S.yedit && big ? ' edit' : ''}" aria-label="우리 마당">
   <svg class="ydeco" viewBox="0 0 360 56" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="ycl" fill="#fff"><ellipse cx="58" cy="26" rx="26" ry="9"/><ellipse cx="76" cy="20" rx="16" ry="11"/><ellipse cx="300" cy="22" rx="24" ry="8"/><ellipse cx="316" cy="17" rx="13" ry="9"/></g><g class="floaty" fill="#ff9fbb"><path transform="translate(150 14) scale(.5)" d="${HH}"/><path transform="translate(226 22) scale(.36)" d="${HH}" opacity=".75"/></g></svg>${yplotSVG()}
   ${Math.min(sa, sb) >= 7 ? '<span class="yrain" aria-hidden="true"></span>' : ''}${th === 'snow' ? '<span class="ysnow" aria-hidden="true"></span>' : th === 'night' ? '<span class="ystars" aria-hidden="true"></span>' : th === 'sakura' ? '<span class="ypetal" aria-hidden="true"></span>' : th === 'autumn' ? '<span class="ypetal yleaf" aria-hidden="true"></span>' : ''}
-  ${items.map(y => { const it = ITEM[y.k], x0 = Math.min(96, Math.max(4, Number(y.x) || 50)), raw = Math.min(97, Math.max(4, Number(y.y) || 80)), y0 = it.cat === 'sky' ? Math.min(raw, 15) : Math.max(raw, 24);
+  ${items.map(y => { const it = ITEM[y.k], sp = spotOf(y, th), x0 = Math.min(96, Math.max(4, Number(sp.x) || 50)), raw = Math.min(97, Math.max(4, Number(sp.y) || 80)), y0 = it.cat === 'sky' ? Math.min(raw, 15) : Math.max(raw, 24);
     const roam = (it.anim === 'walk' || (it.anim === 'fly' && it.cat !== 'sky')) && !(S.yedit && big), ps = roam ? petState(y.id, x0, y0) : null, x = ps ? ps.x : x0, yy = ps ? ps.y : y0;
     const sz = it.size * (big ? 1 : .85) * (it.cat === 'sky' ? .8 : ydepth(yy)), pic = artSVG(y.k, '1em');
     return `<span class="yi${it.anim ? ' a-' + it.anim : ''}${roam ? ' roam' : ''}${pic ? '' : ' emo'}" data-yid="${esc(y.id)}"${roam ? ` data-act="pet-tap" data-v="${esc(y.id)}"` : ''} style="left:${x}%;top:${yy}%;z-index:${Math.round(yy) + 2};font-size:${sz.toFixed(1)}px;${it.cat === 'sky' && pic ? `margin-top:${(sz * .45).toFixed(1)}px;` : ''}--d:${-(hue(y.id) % 9)}s;--f:${(ps ? ps.f : 1) * (FACE_L[y.k] ? -1 : 1)}" title="${esc(it.name)}">${pic || it.e}</span>`; }).join('')}
@@ -1830,11 +1854,13 @@ function vYard(big) {
   </div>`;
 }
 function vYardTools() {
-  if (!S.yedit) return `<div class="row ytools"><button class="btn" type="button" data-act="shop-open">🛍️ 꾸미기 상점</button><button class="btn line" type="button" data-act="yedit">✏️ 마당 꾸미기</button></div>`;
-  const store = yardItems().filter(y => !y.placed && ITEM[y.k]);
+  const owned = THEMES.filter(([t]) => ownsTheme(t));
+  const thChips = owned.length > 1 ? `<div class="chips ythemes" role="group" aria-label="마당 테마">${owned.map(([t, name]) => `<button type="button" class="chip${yTheme() === t ? ' on' : ''}" data-act="theme-use" data-v="${t}" aria-pressed="${yTheme() === t}"><span class="sth mini th-${t}" aria-hidden="true"></span>${name}</button>`).join('')}</div><p class="note" style="margin:2px 0 0">테마마다 마당을 따로 꾸밀 수 있어요</p>` : '';
+  if (!S.yedit) return `${thChips}<div class="row ytools"><button class="btn" type="button" data-act="shop-open">🛍️ 상점</button><button class="btn line" type="button" data-act="box-open">📦 보관함</button><button class="btn line" type="button" data-act="yedit">✏️ 꾸미기</button></div>`;
+  const store = yardItems().filter(y => ITEM[y.k] && !spotOf(y));
   return `<div class="yedit-bar"><p class="note" style="margin:0">물건을 끌어서 옮기고, 톡 누르면 보관함에 들어가요.</p>
   ${store.length ? `<p class="f" style="margin:10px 0 4px">보관함 <small class="note">눌러서 마당에 놓기</small></p><div class="ystore">${store.map(y => `<button type="button" class="ysb" data-act="y-place" data-v="${esc(y.id)}" aria-label="${esc(ITEM[y.k].name)} 마당에 놓기">${artSVG(y.k, 34) || ITEM[y.k].e}</button>`).join('')}</div>` : ''}
-  <div class="row"><button class="btn" type="button" data-act="yedit" style="flex:1">다 했어요</button><button class="btn line" type="button" data-act="shop-open">🛍️ 상점</button></div></div>`;
+  <div class="row"><button class="btn" type="button" data-act="yedit" style="flex:1">다 했어요</button><button class="btn line" type="button" data-act="box-open">📦 보관함</button></div></div>`;
 }
 function vFeed() {
   const to = S.feed.to, me = S.who, left = heartsLeft(me), f = fullness(to);
@@ -1843,6 +1869,22 @@ function vFeed() {
   <div class="feedwho" role="group" aria-label="누구에게">${['me', 'partner'].filter(w => w === me || paired()).map(w => `<button type="button" class="chip${to === w ? ' on' : ''}" data-act="feed-to" data-v="${w}" aria-pressed="${to === w}">${esc(nm(w))} 캐릭터</button>`).join('')}</div>
   <div class="wallet"><span class="wl">배부름 ${f}% · ${esc(nm(me))}님이 쓸 수 있는 하트</span><b>💗 ${left.toLocaleString('ko-KR')}</b><span class="note">배부름은 이틀쯤 지나면 바닥나요. 배가 부르면 표정이 밝아지고, 배고프면 천천히 걸어요.</span></div>
   <div class="sgrid">${MEALS.map(([k, e, name, price, full]) => `<div class="sitem"><span class="se" aria-hidden="true">${e}</span><b>${name}</b><small class="note">배부름 +${full}</small><button class="btn sbuy" type="button" data-act="feed-buy" data-v="${k}"${left < price || f >= 100 ? ' disabled' : ''}>${f >= 100 ? '배불러요' : left < price ? `💗${price - left} 더 필요` : `💗 ${price}`}</button></div>`).join('')}</div></div></div>`;
+}
+function vBox() {
+  const th = yTheme(), thName = (THEMES.find(x => x[0] === th) || [])[1] || '';
+  const mine = yardItems().filter(y => ITEM[y.k]).sort((a, b) => (Number(b.at) || 0) - (Number(a.at) || 0));
+  const cat = S.box.cat || 'all', tabs = [['all', '전체'], ...SHOP.map(c => [c[0], c[1]])].filter(([k]) => k === 'all' || mine.some(y => ITEM[y.k].cat === k));
+  const list = mine.filter(y => cat === 'all' || ITEM[y.k].cat === cat), out = list.filter(y => spotOf(y, th)).length;
+  const owned = THEMES.filter(([t]) => ownsTheme(t));
+  return `<div class="sheet-bg" data-act="box-close-bg"><div class="sheet shop" role="dialog" aria-label="보관함">
+  <div class="calh"><h2 style="text-align:left;justify-content:flex-start">📦 보관함</h2><button class="btn line" type="button" data-act="box-close">닫기</button></div>
+  ${owned.length > 1 ? `<p class="f" style="margin:4px 0 4px">어느 마당을 꾸밀까요?</p><div class="chips stabs" role="group" aria-label="마당 테마">${owned.map(([t, name]) => `<button type="button" class="chip${th === t ? ' on' : ''}" data-act="theme-use" data-v="${t}" aria-pressed="${th === t}"><span class="sth mini th-${t}" aria-hidden="true"></span>${name}</button>`).join('')}</div>` : ''}
+  ${(() => { if (mine.some(y => spotOf(y, th))) return ''; const from = owned.map(([t, n]) => [t, n, mine.filter(y => spotOf(y, t)).length]).filter(x => x[0] !== th && x[2]).sort((a, b) => b[2] - a[2])[0]; return from ? `<button class="btn line" type="button" data-act="box-copy" data-v="${from[0]}" style="width:100%;margin:4px 0 8px">${esc(from[1])} 마당 그대로 가져오기 (${from[2]}개)</button>` : ''; })()}
+  <p class="note" style="margin:6px 0 10px">지금 <b>${esc(thName)}</b> 마당에 ${mine.filter(y => spotOf(y, th)).length}개 나와 있어요. 꺼내기와 넣기는 이 테마에만 적용되고, 다른 테마 마당은 그대로예요.</p>
+  ${mine.length ? `<div class="chips stabs" role="group" aria-label="종류">${tabs.map(([k, t]) => `<button type="button" class="chip${cat === k ? ' on' : ''}" data-act="box-cat" data-v="${k}" aria-pressed="${cat === k}">${t}</button>`).join('')}</div>
+  <div class="sgrid">${list.map(y => { const it = ITEM[y.k], on = !!spotOf(y, th); return `<div class="sitem${on ? ' bon' : ''}"><span class="se" aria-hidden="true">${artSVG(y.k, 48) || it.e}</span><b>${esc(it.name)}</b>${on ? `<button class="btn line sbuy" type="button" data-act="box-in" data-v="${esc(y.id)}">넣기</button><small class="note">마당에 있어요</small>` : `<button class="btn sbuy" type="button" data-act="box-out" data-v="${esc(y.id)}">꺼내기</button><small class="note">보관 중</small>`}</div>`; }).join('')}</div>`
+    : `<p class="empty">아직 산 물건이 없어요. 상점에서 하트로 사 보세요.</p><button class="btn" type="button" data-act="shop-open" style="width:100%">🛍️ 상점 가기</button>`}
+  </div></div>`;
 }
 function vShop() {
   const me = S.who, earned = hearts(me).total, spent = spentBy(me), left = earned - spent, cat = S.shop.cat || 'flower';
@@ -1923,6 +1965,22 @@ const GIFT = ['', '새싹이 돋아요', '꽃봉오리가 맺혀요', '꽃이 �
 const hStage = n => HT.reduce((s, t, i) => n >= t ? i : s, 0);
 const dayOf = at => at > 1e12 ? ymd(new Date(at)) : '';
 const growSince = () => !S.real ? 0 : !(S.info && S.info.partner_joined) ? Infinity : (Number(S.info.joined_at) || 0);
+// where a thing sits in a theme's yard ({x, y}), or null when it is in the storage box for that theme.
+// Older things (no spots yet) count as placed in the current theme, until migrateSpots() writes their spots.
+const spotsOf = y => y.spots && typeof y.spots === 'object' ? y.spots : (y.placed ? {[yTheme()]: {x: y.x, y: y.y}} : {});
+const spotOf = (y, th = yTheme()) => spotsOf(y)[th] || null;
+function setSpot(id, pos) {
+  const y = S.yard.find(x => x.id === id); if (!y) return false;
+  const sp = {...spotsOf(y)}, th = yTheme();
+  if (pos) sp[th] = {x: Math.round(pos.x * 10) / 10, y: Math.round(pos.y * 10) / 10}; else delete sp[th];
+  return W.yardUpd(id, {spots: sp, placed: !!pos, ...(pos ? {x: sp[th].x, y: sp[th].y} : {})});
+}
+let spotsDone = false;
+function migrateSpots() {
+  if (spotsDone || !S.yardLoaded || !S.ycfgLoaded) return;
+  spotsDone = true;
+  for (const y of yardItems()) if (ITEM[y.k] && !(y.spots && typeof y.spots === 'object')) W.yardUpd(y.id, {spots: spotsOf(y)});
+}
 const yardItems = () => { const t = growSince(); return S.yard.filter(y => (Number(y.at) || 0) >= t); };
 function hearts(w) {
   const td = ymd(today()), log = [], o = w === 'me' ? 'partner' : 'me', since = growSince();
@@ -2077,14 +2135,14 @@ function vViewer() {
   const i = list.findIndex(p => p.id === S.viewer);
   if (i < 0) { S.viewer = null; return ''; }
   const p = list[i], mine = p.from === S.who;
-  const status = mine ? (p.savedBy && p.savedBy[other()] ? `${esc(nm(other()))}님이 저장했어요` : `${esc(nm(other()))}님이 아직 안 받았어요`) : (isNew(p) ? '아직 저장 안 함' : '저장함');
+  const status = mine ? (p.savedBy && p.savedBy[other()] ? `${esc(nm(other()))}님이 저장했어요` : `${esc(nm(other()))}님이 아직 안 받았어요`) : (unsaved(p) ? '아직 저장 안 함' : '저장함');
   return `<div class="ov" role="dialog" aria-label="사진 보기"><div class="bar"><button type="button" data-act="close" aria-label="닫기">닫기</button><span style="margin-left:auto;opacity:.8">${i + 1} / ${list.length}</span><button type="button" data-act="set-cover">위젯 배경으로</button></div>
   <div class="pic"><img src="${esc(src(p))}" alt="${when(p.at)}에 ${esc(nm(p.from))}님이 올린 사진"></div>
   <p class="meta">${esc(nm(p.from))} · ${when(p.at)} · ${status}${p.note ? `<br>“${esc(p.note)}”` : ''}</p>
   ${S.confirmDel ? '' : cmtThread('photos/' + p.id, true)}
   ${S.confirmDel ? `<p class="meta">이 사진을 지울까요? ${esc(nm(other()))}님도 더 이상 볼 수 없어요.</p><div class="row" style="margin:0"><button class="btn" type="button" data-act="del-yes">지우기</button><button class="btn ghost" type="button" data-act="del-no">취소</button></div>`
   : `<div class="row" style="margin:0"><button class="btn ghost" type="button" data-act="prev" ${i ? '' : 'disabled'} aria-label="이전 사진">이전</button>
-  ${mine ? '<button class="btn ghost" type="button" data-act="del">삭제</button>' : (dl ? `<button class="btn" type="button" data-act="save-one" style="flex:1">${isNew(p) ? '내 폰에 저장' : '다시 저장'}</button>` : (isNew(p) ? '<button class="btn" type="button" data-act="mark" style="flex:1">받음으로 표시</button>' : '<span style="flex:1"></span>'))}
+  ${mine ? '<button class="btn ghost" type="button" data-act="del">삭제</button>' : (dl ? `<button class="btn" type="button" data-act="save-one" style="flex:1">${unsaved(p) ? '내 폰에 저장' : '다시 저장'}</button>` : (isNew(p) ? '<button class="btn" type="button" data-act="mark" style="flex:1">받음으로 표시</button>' : '<span style="flex:1"></span>'))}
   <button class="btn ghost" type="button" data-act="next" ${i < list.length - 1 ? '' : 'disabled'} aria-label="다음 사진">다음</button></div>`}</div>`;
 }
 
@@ -2104,8 +2162,9 @@ function heartWatch() {
   if (hStage(t) > hStage(prev)) setTimeout(() => { burst(30); toast(`레벨업! '${STN[hStage(t)]}' 단계가 됐어요 🎉`); }, 900);
 }
 function render() {
+  markPhotosSeen();
   $('.app').dataset.look = S.look;
-  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter || S.mcal || S.shop || S.feed) ? 'hidden' : '';
+  document.body.style.overflow = (S.viewer || S.sheet || S.msheet || S.recap || S.lsheet || S.letter || S.mcal || S.shop || S.box || S.feed) ? 'hidden' : '';
   const lt = $('#l-text'); if (lt) growTA(lt);
   heartWatch();
   const a = document.activeElement, aid = a && a.id, ss = a && a.selectionStart;
@@ -2126,7 +2185,7 @@ function render() {
   if (S.clearNote) { delete keep.pnote; S.clearNote = false; }
   $('.app').classList.toggle('gated', !!S.gate || !S.loaded || !S.couple);
   $('#view').innerHTML = S.gate ? vGate() : !S.loaded ? vLoading() : S.err ? `<div class="empty">${esc(S.err)}</div>` : !S.couple ? vSetup() : ({home: vHome, grow: vGrowTab, cal: vCal, mem: vMem, ph: vPh, us: vUs})[S.tab]();
-  $('#ov').innerHTML = S.feed ? vFeed() : S.shop ? vShop() : S.mcal ? vMoodCal() : S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
+  $('#ov').innerHTML = S.feed ? vFeed() : S.shop ? vShop() : S.box ? vBox() : S.mcal ? vMoodCal() : S.sheet ? vSheet() : S.msheet ? vMemSheet() : S.lsheet ? vLetterSheet() : S.letter ? vLetterView() : S.recap ? vRecap() : vViewer();
   if (S.recap && S.recap.jump != null) { const tr = $('#rct'); if (tr) tr.scrollLeft = S.recap.jump * tr.clientWidth; S.recap.jump = null; }
   for (const k in keep) { const el = document.getElementById(k); if (el) { if (el.type === 'checkbox') el.checked = keep[k]; else el.value = keep[k]; } }
   tick();
@@ -2171,7 +2230,7 @@ async function savePhoto(p) {
     let blob = RB.get(p.id);
     if (!blob) { if (S.real) { await blobOf(p); toast('준비됐어요. 한 번 더 눌러 주세요'); return false; } const r = await fetch(src(p)); if (!r.ok) throw {code: 'fetch'}; blob = await r.blob(); }
     await dl.save({filename: `photo_${ymd(new Date(p.at)).replace(/-/g, '')}_${p.id.slice(-5)}.${extOf(p.type)}`, data: blob});
-    if (isNew(p)) await W.savedBy(p.id, S.who);
+    if (unsaved(p)) await W.savedBy(p.id, S.who);
     return true;
   } catch (e) {
     const c = e && e.code;
@@ -2189,7 +2248,7 @@ document.addEventListener('click', async e => {
   const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
   const act = b.dataset.act, v = b.dataset.v;
   if (act === 'tab') { if (v === 'q') { S.memTab = 'q'; go('mem'); } else go(v); }
-  else if (act === 'who') { S.feed = null; S.shop = null; S.yedit = false; S.hPrev = null; S.mcal = null; S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
+  else if (act === 'who') { S.feed = null; S.shop = null; S.box = null; S.phMark = null; S.yedit = false; S.hPrev = null; S.mcal = null; S.lsheet = null; S.letter = null; S.letterDel = false; S.roul = null; S.who = v; S.draft = ''; S.editing = false; S.viewer = null; S.phTab = 'in'; S.sheet = null; S.sheetDel = false; S.msheet = null; S.recap = null; ls.set('ud-who', v); render(); toast(`이제 ${nm(v)}님 폰으로 보고 있어요`); }
   else if (act === 'save-ans') {
     const text = (S.draft || '').trim(); if (!text) { toast('답을 먼저 적어 주세요'); return; }
     const td = ymd(today());
@@ -2206,12 +2265,12 @@ document.addEventListener('click', async e => {
   else if (act === 'save-one') { const p = S.photos.find(x => x.id === S.viewer); if (p && await savePhoto(p)) toast('저장했어요'); }
   else if (act === 'mark') { const p = S.photos.find(x => x.id === S.viewer); if (p) await W.savedBy(p.id, S.who); }
   else if (act === 'save-all' && S.real && dl && dl.saveMany) {
-    const list = received().filter(isNew), blobs = list.map(p => RB.get(p.id));
+    const list = received().filter(unsaved), blobs = list.map(p => RB.get(p.id));
     if (blobs.some(x => !x)) { b.disabled = true; try { await Promise.all(list.map(blobOf)); toast('준비됐어요. 한 번 더 눌러 주세요'); } catch (e) { toast('사진을 불러오지 못했어요'); } b.disabled = false; return; }
     try { await dl.saveMany(list.map((p, k) => ({filename: `photo_${ymd(new Date(p.at)).replace(/-/g, '')}_${p.id.slice(-5)}.${extOf(p.type)}`, data: blobs[k]}))); for (const p of list) await W.savedBy(p.id, S.who); burst(12); toast(`${list.length}장 저장했어요`); }
     catch (e) { toast(e && e.code === 'declined' ? '저장을 취소했어요' : '한 번 더 눌러 주세요'); }
   }
-  else if (act === 'save-all') { const list = received().filter(isNew); let n = 0; for (const p of list) { if (!(await savePhoto(p))) break; n++; } if (n) toast(`${n}장 저장했어요`); }
+  else if (act === 'save-all') { const list = received().filter(unsaved); let n = 0; for (const p of list) { if (!(await savePhoto(p))) break; n++; } if (n) toast(`${n}장 저장했어요`); }
   else if (act === 'mem-tab') { S.memTab = v; render(); }
   else if (act === 'cmt-open') { S.cmtOpen = S.cmtOpen === v ? '' : v; render(); if (S.cmtOpen) { const n = document.querySelector(`[data-cref="${CSS.escape(v)}"]`); if (n) n.focus({preventScroll: true}); } }
   else if (act === 'cmt-send') await sendCmt(v);
@@ -2317,7 +2376,7 @@ document.addEventListener('click', async e => {
     }
   }
   else if (act === 'shop-open' && S.real && !paired()) { toast(`${nm(other())}님이 연결되면 상점이 열려요`); }
-  else if (act === 'shop-open') { S.shop = {cat: (S.shop && S.shop.cat) || 'flower'}; render(); }
+  else if (act === 'shop-open') { S.box = null; S.shop = {cat: (S.shop && S.shop.cat) || 'flower'}; render(); }
   else if (act === 'shop-cat') { S.shop.cat = v; render(); }
   else if (act === 'shop-close' || (act === 'shop-close-bg' && e.target === b)) { S.shop = null; render(); }
   else if (act === 'shop-buy') {
@@ -2328,16 +2387,21 @@ document.addEventListener('click', async e => {
     const id = 'y' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     const sky = it && it.cat === 'sky';
     const d = th ? {k: v, e: '🎨', name: th[1], price, cat: 'theme', placed: false, x: 0, y: 0, by: S.who, at: Date.now()}
-      : {k: v, e: it.e, name: it.name, price, cat: it.cat, placed: true, x: Math.round(10 + Math.random() * 80), y: Math.round(sky ? 5 + Math.random() * 9 : 34 + Math.random() * 54), by: S.who, at: Date.now()};
+      : (() => { const x = Math.round(10 + Math.random() * 80), y = Math.round(sky ? 5 + Math.random() * 9 : 34 + Math.random() * 54); return {k: v, e: it.e, name: it.name, price, cat: it.cat, placed: true, x, y, spots: {[yTheme()]: {x, y}}, by: S.who, at: Date.now()}; })();
     if (await W.yard(id, d)) {
       burst(14);
       if (th) { await W.ycfg({theme: th[0], by: S.who, at: Date.now()}); toast(`마당이 '${th[1]}'(으)로 바뀌었어요!`); }
       else toast(`${it.name}을(를) 마당에 놓았어요! '마당 꾸미기'로 자리를 옮길 수 있어요`);
     }
   }
-  else if (act === 'theme-use') { if (ownsTheme(v)) { await W.ycfg({theme: v, by: S.who, at: Date.now()}); toast('마당 테마를 바꿨어요'); } }
+  else if (act === 'theme-use') { if (ownsTheme(v)) { await W.ycfg({theme: v, by: S.who, at: Date.now()}); toast(`${(THEMES.find(x => x[0] === v) || [])[1]} 마당이에요`); } }
   else if (act === 'yedit') { S.yedit = !S.yedit; render(); if (S.yedit) toast('끌어서 옮기고, 톡 누르면 보관함에 들어가요'); }
-  else if (act === 'y-place') { const y = S.yard.find(x => x.id === v); if (y) { const sky = y.cat === 'sky'; await W.yardUpd(v, {placed: true, x: 50, y: sky ? 10 : 62}); } }
+  else if (act === 'y-place' || act === 'box-out') { const y = S.yard.find(x => x.id === v); if (y) { const sky = y.cat === 'sky'; if (await setSpot(v, {x: 22 + Math.random() * 56, y: sky ? 5 + Math.random() * 9 : 40 + Math.random() * 44}) && act === 'box-out') toast(`${ITEM[y.k] ? ITEM[y.k].name : ''}을(를) 마당에 꺼냈어요`); } }
+  else if (act === 'box-in') { const y = S.yard.find(x => x.id === v); if (y && await setSpot(v, null)) toast(`${ITEM[y.k] ? ITEM[y.k].name : ''}을(를) 보관함에 넣었어요`); }
+  else if (act === 'box-copy') { const list = yardItems().filter(y => ITEM[y.k] && spotOf(y, v) && !spotOf(y)); for (const y of list) await setSpot(y.id, spotOf(y, v)); if (list.length) toast(`${list.length}개를 똑같이 놓았어요. 여기서부터 따로 꾸며 보세요`); }
+  else if (act === 'box-open') { S.box = {cat: 'all'}; render(); }
+  else if (act === 'box-cat') { S.box = {...S.box, cat: v}; render(); }
+  else if (act === 'box-close' || (act === 'box-close-bg' && e.target === b)) { S.box = null; render(); }
   else if (act === 'mcal-open') { const t = today(); S.mcal = {y: t.getFullYear(), m: t.getMonth(), sel: ymd(t)}; render(); }
   else if (act === 'mcal-nav') { const d = new Date(S.mcal.y, S.mcal.m + Number(v), 1); if (d <= today()) { S.mcal = {y: d.getFullYear(), m: d.getMonth(), sel: ''}; render(); } }
   else if (act === 'mcal-day') { S.mcal.sel = S.mcal.sel === v ? '' : v; render(); }
@@ -2349,10 +2413,11 @@ document.addEventListener('click', async e => {
     S.draft = '';
     if (await W.qswap(td, {n: 1, by: S.who, at: Date.now()})) { burst(8); toast(paired() ? `새 질문이에요. ${nm(other())}님 화면도 같이 바뀌었어요` : '새 질문으로 바꿨어요'); }
   }
+  else if (act === 'evfreq') { if (await W.prefs(S.who, {...(S.prefs[S.who] || {}), evFreq: v})) toast(v === 'off' ? '데이트·기념일 미리 알림을 껐어요' : `이제 ${(EVFREQ.find(x => x[0] === v) || [])[1]} 알려 드려요`); }
   else if (act === 'ntog') {
     const off = nOff(), next = off.includes(v) ? off.filter(k => k !== v) : [...off, v];
     const t = (NKINDS.find(k => k[0] === v) || [])[1];
-    if (await W.prefs(S.who, {off: next})) toast(next.includes(v) ? `${t} 알림을 껐어요` : `${t} 알림을 켰어요`);
+    if (await W.prefs(S.who, {...(S.prefs[S.who] || {}), off: next})) toast(next.includes(v) ? `${t} 알림을 껐어요` : `${t} 알림을 켰어요`);
   }
   else if (act === 'l-when') { const el = $('#l-open'); if (el) el.value = v; if (S.lsheet) S.lsheet.openAt = v; }
   else if (act === 'l-read') {
@@ -2473,8 +2538,8 @@ document.addEventListener('pointermove', e => {
 document.addEventListener('pointerup', async () => {
   if (!ydrag) return;
   const {id, moved, x, y, el} = ydrag; ydrag = null; el.classList.remove('drag');
-  if (moved) await W.yardUpd(id, {x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10});
-  else { await W.yardUpd(id, {placed: false}); toast('보관함에 넣었어요'); }
+  if (moved) await setSpot(id, {x, y});
+  else { await setSpot(id, null); toast('보관함에 넣었어요'); }
 });
 let stk = null;
 document.addEventListener('pointerdown', e => {
@@ -2512,6 +2577,7 @@ document.addEventListener('keydown', e => {
   if (e.target.matches && e.target.matches('label[for=m-file]') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); $('#m-file').click(); return; }
   if (S.feed && e.key === 'Escape') { S.feed = null; render(); return; }
   if (S.shop && e.key === 'Escape') { S.shop = null; render(); return; }
+  if (S.box && e.key === 'Escape') { S.box = null; render(); return; }
   if (S.mcal && e.key === 'Escape') { S.mcal = null; render(); return; }
   if (S.sheet && e.key === 'Escape') { S.sheet = null; S.sheetDel = false; render(); return; }
   if (S.msheet && e.key === 'Escape') { S.msheet = null; S.msheetDel = false; render(); return; }
@@ -2753,7 +2819,7 @@ function blobOf(p) {
 function prefetchPhotos() {
   if (!S.real || !dl) return;
   if (S.viewer) { const p = S.photos.find(x => x.id === S.viewer); if (p) blobOf(p).catch(() => {}); }
-  if (S.tab === 'ph') received().filter(isNew).slice(0, 30).forEach(p => blobOf(p).catch(() => {}));
+  if (S.tab === 'ph') received().filter(unsaved).slice(0, 30).forEach(p => blobOf(p).catch(() => {}));
 }
 
 async function boot() {
@@ -2780,11 +2846,12 @@ function attachDB(timer) {
   db.doc('pokes/latest').onSnapshot(s => { S.poke = s.exists ? s.data() : null; render(); }, () => {});
   db.collection('moods').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.moods = m; render(); }, () => {});
   db.collection('feeds').onSnapshot(s => { S.feeds = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
+  db.collection('seen').onSnapshot(s => { const o = {}; s.docs.forEach(d => { o[d.id] = d.data(); }); S.seen = o; S.seenLoaded = true; render(); }, () => {});
   db.collection('checkins').onSnapshot(s => { S.checkins = s.docs.map(d => ({...d.data(), id: d.id})); S.checkinsLoaded = true; render(); }, () => {});
   db.collection('comments').onSnapshot(s => { S.comments = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
   db.collection('stages').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.stages = m; }, () => {});
-  db.collection('yard').onSnapshot(s => { S.yard = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});
-  db.doc('yardcfg/main').onSnapshot(s => { S.ycfg = s.exists ? s.data() : null; render(); }, () => {});
+  db.collection('yard').onSnapshot(s => { S.yard = s.docs.map(d => ({...d.data(), id: d.id})); S.yardLoaded = true; render(); migrateSpots(); }, () => {});
+  db.doc('yardcfg/main').onSnapshot(s => { S.ycfg = s.exists ? s.data() : null; S.ycfgLoaded = true; render(); migrateSpots(); }, () => {});
   db.collection('qswaps').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.qswap = m; render(); }, () => {});
   db.collection('prefs').onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data(); }); S.prefs = m; render(); }, () => {});
   db.collection('letters').onSnapshot(s => { S.letters = s.docs.map(d => ({...d.data(), id: d.id})); render(); }, () => {});

@@ -2,6 +2,11 @@
 import { addDays, admin, coupleNames, cors, diffDays, fmtTime, json, nextStart, sendToUser, todayKST, trusted, wants, type Ev, type Role } from '../_shared/common.ts';
 
 const dl = (n: number) => (n === 0 ? '오늘' : `D-${n}`);
+async function evFreq(coupleId: string, role: Role): Promise<'all' | 'near' | 'day' | 'off'> {
+  const { data } = await admin.from('docs').select('data').eq('couple_id', coupleId).eq('coll', 'prefs').eq('id', role).maybeSingle();
+  const f = (data?.data as any)?.evFreq;
+  return f === 'near' || f === 'day' || f === 'off' ? f : 'all';
+}
 const sameMD = (a: string, b: string) => a.slice(5) === b.slice(5);
 
 Deno.serve(async (req) => {
@@ -43,29 +48,28 @@ Deno.serve(async (req) => {
     const { data: docs } = await admin.from('docs').select('coll, id, data').eq('couple_id', c.id).in('coll', ['couple', 'events', 'memories']);
     const main = (docs ?? []).find((d) => d.coll === 'couple' && d.id === 'main')?.data as any;
     if (!main?.start) continue;
-    const items: string[] = [];
+    const items: { k: number; t: string; date?: boolean }[] = [];
     let dateToday: string | null = null;
-    let dateIdx = -1;
-
+    
     for (const d of (docs ?? []).filter((x) => x.coll === 'events')) {
       const ev = d.data as Ev;
       const s = nextStart(ev, today);
       if (!s) continue;
       const k = diffDays(today, s);
       if (!(ev.alerts ?? []).includes(k)) continue;
-      items.push(`${dl(k)} ${ev.title}${ev.time ? ` (${fmtTime(ev.time)})` : ''}`);
-      if (k === 0 && ev.kind === 'date' && !dateToday) { dateToday = `${ev.title}${ev.time ? ' ' + fmtTime(ev.time) : ''}`; dateIdx = items.length - 1; }
+      items.push({ k, t: `${dl(k)} ${ev.title}${ev.time ? ` (${fmtTime(ev.time)})` : ''}` });
+      if (k === 0 && ev.kind === 'date' && !dateToday) { dateToday = `${ev.title}${ev.time ? ' ' + fmtTime(ev.time) : ''}`; items[items.length - 1].date = true; }
     }
     const dayNo = diffDays(main.start, today) + 1;
     for (const k of [0, 1, 7]) {
       const n = dayNo + k;
-      if (main.autoAnniv !== false && n > 0 && n % 100 === 0) items.push(`${dl(k)} ${n.toLocaleString('ko-KR')}일`);
+      if (main.autoAnniv !== false && n > 0 && n % 100 === 0) items.push({ k, t: `${dl(k)} ${n.toLocaleString('ko-KR')}일` });
       const day = addDays(today, k);
       const years = Number(day.slice(0, 4)) - Number(main.start.slice(0, 4));
-      if (years > 0 && sameMD(day, main.start)) items.push(`${dl(k)} ${years}주년`);
+      if (years > 0 && sameMD(day, main.start)) items.push({ k, t: `${dl(k)} ${years}주년` });
       for (const role of ['me', 'partner'] as Role[]) {
         const b = main[role]?.birthday;
-        if (b && sameMD(day, b)) items.push(`${dl(k)} ${names[role]} 생일`);
+        if (b && sameMD(day, b)) items.push({ k, t: `${dl(k)} ${names[role]} 생일` });
       }
     }
     // 1년 전 오늘: a memory from this day in an earlier year
@@ -73,15 +77,21 @@ Deno.serve(async (req) => {
       .filter((m) => typeof m?.date === 'string' && m.date < today && sameMD(m.date, today))
       .sort((a, b) => b.date.localeCompare(a.date))[0];
     const memLine = past ? `📸 ${Number(today.slice(0, 4)) - Number(past.date.slice(0, 4))}년 전 오늘: ${past.title}` : '';
-    if (!items.length && !memLine) continue;
-    const body = dateToday ? [dateToday, ...items.filter((_, i) => i !== dateIdx)].join(' · ') : items.join(' · ');
-    const msg = {
-      title: dateToday ? '오늘은 데이트 날!' : items.length ? '오늘의 알림' : `${memLine.split(':')[0].slice(3)}의 우리`,
-      body: [body, memLine].filter(Boolean).join('\n'),
-      tag: `daily-${today}`,
-      url: items.length ? './#cal' : './#home',
-    };
-    for (const role of ['me', 'partner'] as Role[]) if (await wants(c.id, role, 'morning')) sent += await sendToUser(c[role], msg);
+    // each person picks how early date reminders start (prefs.evFreq): as set on each event, the day before and the day, only the day, or none
+    for (const role of ['me', 'partner'] as Role[]) {
+      if (!(await wants(c.id, role, 'morning'))) continue;
+      const freq = await evFreq(c.id, role);
+      const mine = items.filter((it) => freq === 'all' || (freq === 'near' && it.k <= 1) || (freq === 'day' && it.k === 0));
+      if (!mine.length && !memLine) continue;
+      const date = mine.find((it) => it.date);
+      const body = date ? [dateToday, ...mine.filter((it) => it !== date).map((it) => it.t)].join(' · ') : mine.map((it) => it.t).join(' · ');
+      sent += await sendToUser(c[role], {
+        title: date ? '오늘은 데이트 날!' : mine.length ? '오늘의 알림' : `${memLine.split(':')[0].slice(3)}의 우리`,
+        body: [body, memLine].filter(Boolean).join('\n'),
+        tag: `daily-${today}`,
+        url: mine.length ? './#cal' : './#home',
+      });
+    }
   }
   return json({ slot, today, sent });
 });
