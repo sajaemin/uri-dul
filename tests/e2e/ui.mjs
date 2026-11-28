@@ -242,11 +242,12 @@ try {
     await A.click('[data-act=feed-buy][data-v=rice]');
     await tab(B, 'grow');
     await B.locator('.gcol.mine', { hasText: '주먹밥 줬어요' }).waitFor();
-    // the rice sits on the lawn until B's character walks over and eats it; then it is marked eaten for both
+    // the rice waits on the lawn: a new character is not hungry yet, so it is left for later
     await B.locator('.yard.big .yfood').first().waitFor();
+    await B.locator('.gcol.mine', { hasText: '배고파지면 먹어요' }).waitFor();
     await shot(B, '11b-B-fed');
-    await B.locator('.yard.big .yfood').first().waitFor({ state: 'detached', timeout: 30000 });
-    await A.waitForFunction(() => !document.querySelector('.yard.big .yfood'), null, { timeout: 15000 });
+    await B.waitForTimeout(4000);
+    if (!(await B.locator('.yard.big .yfood').count())) throw new Error('a full character ate the food');
   });
 
   await step('B copies the widget code and the widget shows today', async () => {

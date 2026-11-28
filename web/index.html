@@ -1887,11 +1887,15 @@ const ownsTheme = t => t === 'spring' || yardItems().some(y => y.k === 'th_' + t
 const YS = {me: {x: 36, y: 70, f: 1, t: 0}, partner: {x: 62, y: 74, f: -1, t: 0}};
 const MEALS = [['milk', '🥛', '우유', 4, 12], ['rice', '🍙', '주먹밥', 5, 20], ['straw', '🍓', '딸기', 6, 18], ['icecream', '🍦', '아이스크림', 8, 18], ['ramen', '🍜', '라면', 10, 35], ['tteok', '🍡', '경단', 10, 28], ['cake', '🍰', '케이크', 15, 40], ['pizza', '🍕', '피자', 18, 55], ['chicken', '🍗', '치킨', 20, 60], ['feast', '🍱', '도시락 한 상', 30, 100]];
 const FULL_DRAIN = 100 / (48 * 3600e3); // full to empty in about two days
+const EAT_BELOW = 50, FOOD_MAX = 3; // they only go for the food once fullness drops under this; at most this many plates waiting each
+// when a meal was eaten: older meals (handed straight over) at once, plates on the lawn when the character finished them; null = still waiting
+const eatAt = f => f.x == null ? f.at : f.eaten ? (Number(f.eatenAt) || f.at) : null;
+const lastEaten = w => feedsSince().filter(f => f.to === w && eatAt(f) != null).sort((a, b) => eatAt(b) - eatAt(a))[0];
 function fullness(w) {
   const since = growSince(); if (since === Infinity) return 70;
-  const fs = feedsSince().filter(f => f.to === w).sort((a, b) => a.at - b.at);
+  const fs = feedsSince().filter(f => f.to === w && eatAt(f) != null).map(f => ({full: f.full, at: eatAt(f)})).sort((a, b) => a.at - b.at);
   let lv = 70, t = since || (fs[0] ? fs[0].at : Date.now());
-  for (const f of fs) { lv = Math.max(0, lv - FULL_DRAIN * (f.at - t)); lv = Math.min(100, lv + (Number(f.full) || 0)); t = f.at; }
+  for (const f of fs) { lv = Math.max(0, lv - FULL_DRAIN * Math.max(0, f.at - t)); lv = Math.min(100, lv + (Number(f.full) || 0)); t = Math.max(t, f.at); }
   return Math.round(Math.max(0, Math.min(100, lv - FULL_DRAIN * Math.max(0, Date.now() - t))));
 }
 const lastFeed = w => feedsSince().filter(f => f.to === w).sort((a, b) => b.at - a.at)[0];
@@ -1899,8 +1903,8 @@ const kstHour = () => (new Date().getUTCHours() + 9) % 24;
 const asleepNow = () => { const h = kstHour(); return h >= 23 || h < 7; };
 function moodOfChar(w) {
   if (asleepNow() && !(YS[w] && YS[w].woke > Date.now())) return 'sleep';
-  const f = fullness(w), lf = lastFeed(w);
-  if (lf && Date.now() - lf.at < 15 * 60e3) return 'happy';
+  const f = fullness(w), lf = lastEaten(w);
+  if (lf && Date.now() - eatAt(lf) < 15 * 60e3) return 'happy';
   return f < 30 ? 'hungry' : f >= 75 ? 'happy' : 'ok';
 }
 const YLINES = ['헤헤', '오늘도 좋아!', '놀아줘~', '배고파…', '💗', '같이 산책할래?', '쓰담쓰담 해줘', '보고 싶었어!', '하트 더 모으자!', '꺄르르'];
@@ -1956,12 +1960,12 @@ function vYardTools() {
   <div class="row"><button class="btn" type="button" data-act="yedit" style="flex:1">다 했어요</button><button class="btn line" type="button" data-act="box-open">📦 보관함</button></div></div>`;
 }
 function vFeed() {
-  const to = S.feed.to, me = S.who, left = heartsLeft(me), f = fullness(to);
+  const to = S.feed.to, me = S.who, left = heartsLeft(me), f = fullness(to), waiting = pendingFoods().filter(x => x.to === to).length;
   return `<div class="sheet-bg" data-act="feed-close-bg"><div class="sheet shop" role="dialog" aria-label="밥 주기">
   <div class="calh"><h2 style="text-align:left;justify-content:flex-start">🍙 ${to === me ? '내 캐릭터 밥 먹기' : esc(nm(to)) + '님 캐릭터 밥 주기'}</h2><button class="btn line" type="button" data-act="feed-close">닫기</button></div>
   <div class="feedwho" role="group" aria-label="누구에게">${['me', 'partner'].filter(w => w === me || paired()).map(w => `<button type="button" class="chip${to === w ? ' on' : ''}" data-act="feed-to" data-v="${w}" aria-pressed="${to === w}">${esc(nm(w))} 캐릭터</button>`).join('')}</div>
-  <div class="wallet"><span class="wl">배부름 ${f}% · ${esc(nm(me))}님이 쓸 수 있는 하트</span><b>💗 ${left.toLocaleString('ko-KR')}</b><span class="note">배부름은 이틀쯤 지나면 바닥나요. 배가 부르면 표정이 밝아지고, 배고프면 천천히 걸어요.</span></div>
-  <div class="sgrid">${MEALS.map(([k, e, name, price, full]) => `<div class="sitem"><span class="se" aria-hidden="true">${artSVG('food_' + k, 48) || e}</span><b>${name}</b><small class="note">배부름 +${full}</small><button class="btn sbuy" type="button" data-act="feed-buy" data-v="${k}"${left < price || f >= 100 ? ' disabled' : ''}>${f >= 100 ? '배불러요' : left < price ? `💗${price - left} 더 필요` : `💗 ${price}`}</button></div>`).join('')}</div></div></div>`;
+  <div class="wallet"><span class="wl">배부름 ${f}% · ${esc(nm(me))}님이 쓸 수 있는 하트</span><b>💗 ${left.toLocaleString('ko-KR')}</b><span class="note">${waiting ? `마당에 밥이 ${waiting}접시 기다리고 있어요 (최대 ${FOOD_MAX}접시). ` : ''}${f >= EAT_BELOW ? `지금은 배불러서, 마당에 놓아 두면 배부름이 ${EAT_BELOW}% 아래로 내려갈 때 먹으러 가요.` : '배고파서 놓자마자 먹으러 가요!'} 배부름은 이틀쯤 지나면 바닥나요.</span></div>
+  <div class="sgrid">${MEALS.map(([k, e, name, price, full]) => `<div class="sitem"><span class="se" aria-hidden="true">${artSVG('food_' + k, 48) || e}</span><b>${name}</b><small class="note">배부름 +${full}</small><button class="btn sbuy" type="button" data-act="feed-buy" data-v="${k}"${left < price || waiting >= FOOD_MAX ? ' disabled' : ''}>${waiting >= FOOD_MAX ? '접시가 가득해요' : left < price ? `💗${price - left} 더 필요` : `💗 ${price}`}</button></div>`).join('')}</div></div></div>`;
 }
 function vBox() {
   const th = yTheme(), thName = (THEMES.find(x => x[0] === th) || [])[1] || '';
@@ -2070,9 +2074,17 @@ function yardTick() {
     const w = el.dataset.w, st = YS[w], o = YS[w === 'me' ? 'partner' : 'me'];
     if (el.closest('.edit') || el.classList.contains('held')) continue;
     const food = foodFor(w);
-    if (food) { eatTick(el, w, st, food, now); continue; }
+    if (food && ((st.eat && st.eat.id === food.id && st.eat.phase !== 'wake') || fullness(w) < EAT_BELOW)) { eatTick(el, w, st, food, now); continue; }
     if (st.eat) { st.eat = null; el.classList.remove('eat'); }
+    if (st.sniff && now >= st.sniff) { st.sniff = 0; crBubble(el, ['아직 배불러~ 이따 먹을게', '배고파지면 먹어야지 🤤', '킁킁… 맛있겠다'][Math.floor(Math.random() * 3)], 1600); st.t = now + 1800; continue; }
     if (now < st.t) continue;
+    if (food && moodOfChar(w) !== 'sleep' && Math.random() < 0.12) {
+      const tx = Math.min(88, Math.max(12, food.x + (st.x <= food.x ? -11 : 11))), ty = Math.min(92, Math.max(32, food.y + 1)), dur = Math.min(6, Math.max(0.8, Math.hypot(tx - st.x, (ty - st.y) * 2) / 13));
+      st.f = tx < st.x ? -1 : 1; st.x = tx; st.y = ty; st.t = now + dur * 1000 + 2400; st.sniff = now + dur * 1000 + 200;
+      el.style.transition = `left ${dur}s linear, top ${dur}s linear, width ${dur}s linear`; el.style.left = tx + '%'; el.style.top = ty + '%'; el.style.zIndex = Math.round(ty) + 3; el.style.setProperty('--f', st.f); el.style.setProperty('--s', ydepth(ty).toFixed(3));
+      el.classList.add('walk'); clearTimeout(el._w); el._w = setTimeout(() => el.classList.remove('walk'), dur * 1000);
+      continue;
+    }
     const md = moodOfChar(w);
     if (md === 'sleep') { st.t = now + 5000; continue; }
     const r = Math.random();
@@ -2146,7 +2158,7 @@ function vGrow() {
     return `<div class="gcol${w === me ? ' mine' : ''}"><p class="gn">${S.look === 'cute' ? mini(w, 20) : ''}${esc(nm(w))}${w === me ? ' (나)' : ''}</p><b class="gs">${STN[st]}</b>
     <p class="gh">💗 ${h.total.toLocaleString('ko-KR')}${h.today ? `<small> 오늘 +${h.today}</small>` : ''}</p><div class="pbar"><i style="width:${pct}%"></i></div>
     <p class="note gx">${nx ? `'${STN[st + 1]}'까지 💗${(nx - h.total).toLocaleString('ko-KR')}` : '최고 단계예요!'}</p><p class="note gx">🛍️ 쓸 수 있는 하트 ${heartsLeft(w).toLocaleString('ko-KR')}</p>
-    ${(() => { const f = fullness(w), lf = lastFeed(w), md = moodOfChar(w); return `<p class="gfull"><span>🍽️ 배부름 ${f}%</span><span class="gmood">${md === 'sleep' ? '쿨쿨 자는 중' : md === 'hungry' ? '배고파요…' : md === 'happy' ? '기분 최고!' : '괜찮아요'}</span></p><div class="pbar fbar${f < 30 ? ' low' : ''}"><i style="width:${f}%"></i></div>${lf ? `<p class="note gx">${esc(nm(lf.by))}님이 ${lf.e} ${esc(lf.name)} 줬어요 · ${cago(lf.at)}</p>` : ''}<button type="button" class="feedb" data-act="feed-open" data-v="${w}">🍙 ${w === me ? '밥 먹기' : '밥 주기'}</button>`; })()}</div>`;
+    ${(() => { const f = fullness(w), lf = lastFeed(w), md = moodOfChar(w); return `<p class="gfull"><span>🍽️ 배부름 ${f}%</span><span class="gmood">${md === 'sleep' ? '쿨쿨 자는 중' : md === 'hungry' ? '배고파요…' : md === 'happy' ? '기분 최고!' : '괜찮아요'}</span></p><div class="pbar fbar${f < 30 ? ' low' : ''}"><i style="width:${f}%"></i></div>${lf ? `<p class="note gx">${esc(nm(lf.by))}님이 ${lf.e} ${esc(lf.name)} 줬어요 · ${cago(lf.at)}</p>` : ''}${(() => { const n = pendingFoods().filter(x => x.to === w).length; return n ? `<p class="note gx">🍽️ 마당에 밥 ${n}접시 · ${f < EAT_BELOW ? '먹으러 가는 중' : '배고파지면 먹어요'}</p>` : ''; })()}<button type="button" class="feedb" data-act="feed-open" data-v="${w}">🍙 ${w === me ? '밥 먹기' : '밥 주기'}</button>`; })()}</div>`;
   };
   const daily = ['checkin', 'answer', 'both', 'mood', 'note', 'photo'], anytime = ['memory', 'letter', 'event', 'bucket', 'bdone', 'rate', 'comment'];
   const done = k => k === 'photo' ? hm.photosToday >= 5 : hm.kinds.has(k);
@@ -2506,7 +2518,7 @@ document.addEventListener('click', async e => {
     const fd = MEALS.find(x => x[0] === v), to = S.feed && S.feed.to; if (!fd || !to) return;
     const [k, e2, name, price, full] = fd, left = heartsLeft(S.who);
     if (left < price) { toast(`하트가 ${price - left}개 더 필요해요`); return; }
-    if (fullness(to) >= 100) { toast('배가 불러서 더 못 먹어요'); return; }
+    if (pendingFoods().filter(x => x.to === to).length >= FOOD_MAX) { toast(`마당에 밥이 ${FOOD_MAX}접시나 있어요. 먼저 먹고 나서 줄게요`); return; }
     const id = 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     // put it on the lawn, a little away from the character, who then walks over to eat it
     const c = YS[to] || {x: 50, y: 70}; let fx = 0, fy = 0;
@@ -2514,7 +2526,7 @@ document.addEventListener('click', async e => {
     if (await W.feedIt(id, {to, by: S.who, k, e: e2, name, price, full, x: Math.round(fx), y: Math.round(fy), at: Date.now()})) {
       S.feed = null; if (S.tab !== 'grow') go('grow'); else render();
       setTimeout(() => { const el = document.querySelector('.yard.big .yfood[data-fid="' + id + '"]'); if (el) el.scrollIntoView({block: 'center', behavior: 'smooth'}); }, 80);
-      burst(8); toast(to === S.who ? `마당에 ${name}을(를) 올려 뒀어요. 꼬마 ${nm(to)}가 먹으러 가요!` : `${nm(to)}님 캐릭터에게 ${name}을(를) 차려 줬어요`);
+      burst(8); toast(fullness(to) < EAT_BELOW ? `마당에 ${name}을(를) 차려 줬어요. 꼬마 ${nm(to)}가 먹으러 가요!` : `마당에 ${name}을(를) 놓아 뒀어요. 꼬마 ${nm(to)}는 지금 배불러서 배고파지면 먹을 거예요`);
     }
   }
   else if (act === 'shop-open' && S.real && !paired()) { toast(`${nm(other())}님이 연결되면 상점이 열려요`); }
