@@ -236,6 +236,15 @@ try {
     await shot(B, '11-B-yard');
   });
 
+  await step('A feeds B\'s character; B sees who fed it', async () => {
+    await tab(A, 'grow');
+    await A.locator('.gcol:not(.mine) [data-act=feed-open]').click();
+    await A.click('[data-act=feed-buy][data-v=rice]');
+    await tab(B, 'grow');
+    await B.locator('.gcol.mine', { hasText: '주먹밥 줬어요' }).waitFor();
+    await shot(B, '11b-B-fed');
+  });
+
   await step('B copies the widget code and the widget shows today', async () => {
     await B.context().grantPermissions(['clipboard-read', 'clipboard-write'], { origin: new URL(base).origin });
     await B.click('#t-us');

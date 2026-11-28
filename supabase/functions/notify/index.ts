@@ -75,6 +75,14 @@ Deno.serve(async (req) => {
       msg = { title: `${n}님이 ${what}에 댓글을 남겼어요 💬`, body: String(d.text || '').slice(0, 80), tag: `cmt-${on}`, url };
       break;
     }
+    case 'feeds': {
+      if (!isInsert) break;
+      const toName = d.to === 'me' || d.to === 'partner' ? (names as any)[d.to] || '' : '';
+      msg = d.to === actor
+        ? { title: `${n}님이 ${d.e || ''} ${d.name || '밥'}을(를) 먹었어요`, body: '우리 마당에서 냠냠 중이에요', tag: `feed-${r.id}`, url: './#grow' }
+        : { title: `${n}님이 ${toName ? toName + ' ' : ''}캐릭터에게 ${d.e || ''} ${d.name || '밥'}을(를) 줬어요 🍙`, body: '배부름이 올라갔어요', tag: `feed-${r.id}`, url: './#grow' };
+      break;
+    }
     case 'yard':
       if (!isInsert) break;
       msg = d.cat === 'theme'

@@ -63,9 +63,11 @@ const YC = {
   sakura: ['#ffe0ee', '#fff6fa', '#ffd3e2', '#ffc2d6', '#efa3bd', '#ffe8f0', '#ffffff'],
   beach: ['#bfe4ff', '#eef8ff', '#ffe7b6', '#ffdda0', '#e9bf7a', '#9fd8f2', '#fff8e8'],
   snow: ['#dce8f8', '#f5f9ff', '#ffffff', '#eef4ff', '#c9d8ee', '#e6effb', '#ffffff'],
+  autumn: ['#ffd9b8', '#fff3e6', '#f3d9a4', '#ecc98a', '#d6a865', '#f7e6c4', '#ffffff'],
+  candy: ['#e6d9ff', '#fdf0ff', '#ffd6ec', '#d9f1ff', '#e7b3d6', '#f3e8ff', '#ffffff'],
   night: ['#2e2f63', '#5d4f92', '#4f8a77', '#467e6c', '#2c5a4c', '#34525e', '#d9d4ee'],
 };
-const YSIZE = { tulip: 26, daisy: 24, sunf: 30, clover: 22, mush: 26, pot: 30, cactus: 34, tree: 50, pine: 50, blossom: 28, kite: 30, balloon: 30, parasol: 44, slide: 46, tent: 52, carousel: 50, ferris: 60, canoe: 40, house: 62, hut: 54, camp: 48, fountain: 50, chair: 30, sofa: 40, basket: 28, lantern: 28, post: 32, log: 30, dog: 30, cat: 30, bunny: 28, chick: 24, duck: 28, squirrel: 28, turtle: 28, bfly: 24, cloud: 40, star: 22, sun: 44, moon: 38, dove: 28, rainbow: 56 }; // the same sizes as the app's shop
+const YSIZE = { tulip: 26, daisy: 24, sunf: 30, rose: 26, hibis: 26, hyac: 26, blossom: 28, lotus: 28, clover: 22, maple: 22, mush: 26, pot: 30, cactus: 34, bamboo: 46, tree: 50, pine: 50, palm: 52, xmas: 50, ball: 22, bball: 22, yoyo: 22, balloon: 30, dart: 28, skate: 30, pinata: 32, kite: 30, bike: 38, parasol: 44, canoe: 40, slide: 46, tent: 52, carousel: 50, ferris: 60, coaster: 60, candle: 22, books: 26, gift: 26, log: 30, bell: 26, pumpkin: 30, chair: 30, teddy: 28, lantern: 28, basket: 28, post: 32, snowman: 42, bath: 38, sofa: 40, car: 40, camp: 48, fountain: 50, hut: 54, house: 62, castle: 64, ladybug: 18, snail: 20, bee: 20, bfly: 24, frog: 24, chick: 24, hamster: 22, duck: 28, turtle: 28, squirrel: 28, hedgehog: 26, penguin: 28, bunny: 28, fox: 30, dog: 30, cat: 30, panda: 32, unicorn: 34, sparkle: 22, cloud: 40, star: 22, suncloud: 38, shoot: 34, dove: 28, fire: 40, sun: 44, planet: 36, moon: 38, rocket: 34, ufo: 34, rainbow: 56 }; // the same sizes as the app's shop
 const CSIZE = { flower: 28, play: 36, home: 34, pet: 30, sky: 30 };
 function hexMix(a, b, t) { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const x = p(a), y = p(b); return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join(''); }
 async function drawYard(Y, W, H) {

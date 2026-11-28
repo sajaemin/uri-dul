@@ -49,6 +49,8 @@ const docs = {
   'comments/c3': { on: 'photos/p1', by: 'me', text: '이 사진 너무 좋다', at: Date.now() - 86400e3 },
   'comments/c4': { on: 'events/e1', by: 'partner', text: '몇 시에 만나?', at: Date.now() - 7200e3 },
   'comments/c5': { on: 'bucket/b1', by: 'partner', text: XSS, at: Date.now() - 100e3 },
+  'feeds/f1': { to: 'partner', by: 'me', k: 'cake', e: '🍰', name: '케이크', price: 15, full: 40, at: Date.now() - 3 * 3600e3 },
+  ...Object.fromEntries([1, 2, 3, 4, 5, 6].map(n => [`checkins/${kst(-n)}_me`, { date: kst(-n), who: 'me', at: Date.now() - n * 864e5 }])),
   'yard/y1': { k: 'tree', e: '🌳', name: '나무', price: 60, cat: 'flower', placed: true, x: 18, y: 38, by: 'partner', at: 1764000000000 },
   'yard/y2': { k: 'dog', e: '🐶', name: '강아지', price: 150, cat: 'pet', placed: true, x: 78, y: 84, by: 'partner', at: 1764000000001 },
   'yard/y3': { k: 'cloud', e: '☁️', name: '구름', price: 20, cat: 'sky', placed: true, x: 70, y: 8, by: 'me', at: 1764000000002 },
@@ -150,6 +152,10 @@ async function run(label, device, scheme, look) {
     const shot = async n => { await p.waitForTimeout(300); await p.screenshot({ path: `${out}/${label}-x-${n}.png` }); };
     await p.keyboard.press('Escape'); await p.keyboard.press('Escape');
     await p.click('#t-home'); await p.click('[data-act=mcal-open]'); await shot('mcal'); await p.keyboard.press('Escape');
+    // feeding and picking up
+    await p.click('#t-grow'); await p.locator('[data-act=feed-open]').first().click(); await shot('feed'); await p.click('[data-act=feed-buy][data-v=rice]'); await p.waitForTimeout(900); await shot('fed');
+    { const c = p.locator('.yard .cr').first(), bb = await c.boundingBox(); await p.mouse.move(bb.x + bb.width / 2, bb.y + bb.height / 2); await p.mouse.down(); await p.waitForTimeout(500); await p.mouse.move(bb.x + bb.width / 2 + 60, bb.y + bb.height / 2 + 30, { steps: 6 }); await shot('held'); await p.mouse.up(); }
+    await p.click('[data-act=shop-open]'); await p.click('[data-act=shop-cat][data-v=pet]'); await shot('shop-pets'); await p.keyboard.press('Escape');
     // comment threads
     await p.click('#t-mem'); await p.click('[data-act=mem-tab][data-v=tl]');
     await p.locator('article.mem').first().locator('[data-act=cmt-open]').click(); await p.locator('article.mem').first().locator('[data-cref]').fill('나도 좋아');

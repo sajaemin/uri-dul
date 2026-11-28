@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
   // the yard: things bought since the two connected, the theme, and each character's stage (kept up to date by the app)
   const since = c.partner && c.partner_joined_at ? Date.parse(c.partner_joined_at) : null;
   const bought = since == null ? [] : docs.filter((x) => x.coll === 'yard' && Number((x.data as any).at) >= since).map((x) => x.data as any);
-  const THEMES = ['spring', 'sakura', 'beach', 'snow', 'night'];
+  const THEMES = ['spring', 'sakura', 'autumn', 'beach', 'snow', 'candy', 'night'];
   const want = String((docs.find((x) => x.coll === 'yardcfg' && x.id === 'main')?.data as any)?.theme || 'spring');
   const theme = THEMES.includes(want) && (want === 'spring' || bought.some((y) => y.k === 'th_' + want)) ? want : 'spring';
   const stageOf = (r: Role) => { const n = Number((docs.find((x) => x.coll === 'stages' && x.id === r)?.data as any)?.stage); return since != null && n >= 0 && n <= 8 ? Math.floor(n) : 0; };
