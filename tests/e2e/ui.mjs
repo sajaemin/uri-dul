@@ -28,8 +28,8 @@ async function phone(name) {
   const ctx = await browser.newContext({ ...devices['iPhone 13'], locale: 'ko-KR', timezoneId: 'Asia/Seoul' });
   const page = await ctx.newPage();
   page.on('pageerror', e => errors.push(`${name}: ${e.message}`));
-  page.on('console', m => { if (m.type() === 'error' && !/favicon|fonts\.g/.test(m.text())) errors.push(`${name} console: ${m.text()}`); });
-  page.on('response', r => { if (r.status() >= 400) errors.push(`${name} got ${r.status()} for ${r.url().replace(/token=[^&]+/, 'token=…').slice(0, 160)} (step: ${current})`); });
+  page.on('console', m => { if (m.type() === 'error' && current !== 'cleanup' && !/favicon|fonts\.g/.test(m.text())) errors.push(`${name} console: ${m.text()}`); });
+  page.on('response', r => { if (r.status() >= 400 && current !== 'cleanup') errors.push(`${name} got ${r.status()} for ${r.url().replace(/token=[^&]+/, 'token=…').slice(0, 160)} (step: ${current})`); });
   page.setDefaultTimeout(20000);
   return page;
 }
@@ -37,7 +37,7 @@ const shot = (p, n) => p.screenshot({ path: SHOTS + n + '.png', fullPage: false 
 const tab = async (p, t) => { if (t === 'q') { await p.click('#t-mem'); await p.click('[data-act=mem-tab][data-v=q]'); } else await p.click(`#t-${t}`); };
 let nfail = 0;
 let current = 'start';
-const step = async (label, fn) => { current = label; try { await fn(); ok(true, label); } catch (e) { ok(false, `${label} — ${e.message.split('\n')[0]}`); nfail++; await shot(A, `fail-${nfail}-A`); await shot(B, `fail-${nfail}-B`); } };
+const step = async (label, fn) => { current = label; try { await fn(); ok(true, label); } catch (e) { ok(false, `${label} — ${e.message.split('\n')[0]} ${(e.message.split('\n').find(l => /waiting for|locator\(/.test(l)) || '').trim().slice(0, 200)}`); nfail++; await shot(A, `fail-${nfail}-A`); await shot(B, `fail-${nfail}-B`); } };
 
 const A = await phone('A'), B = await phone('B');
 let code = '';
@@ -283,6 +283,7 @@ try {
     await A.waitForTimeout(6000); // the file itself is removed a few seconds after the record
   });
 } finally {
+  current = 'cleanup'; // the test couple is deleted now; the phones may still react to that
   const uids = [];
   for (const p of [A, B]) { try { const s = await p.evaluate(() => localStorage.getItem('ud-auth')); const u = s && JSON.parse(s).user; if (u) uids.push(u.id); } catch (e) {} }
   if (REF) {
