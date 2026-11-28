@@ -99,6 +99,11 @@ try {
   }
   ok(rows2.some(r => /"muted"/.test(r.content || '')) && !rows2.some(r => /"sent":1/.test(r.content || '')), 'a notification kind B turned off is not sent');
   await doc(B, 'prefs', 'partner', { off: [] });
+  // a time-capsule letter is not handed to the other person before its day
+  await doc(A, 'letters', 'cap1', { from: 'me', openAt: '2099-01-01', text: 'secret', title: 't' });
+  const capB = await B.c.from('docs').select('id').eq('couple_id', cid).eq('coll', 'letters').eq('id', 'cap1');
+  const capA = await A.c.from('docs').select('id').eq('couple_id', cid).eq('coll', 'letters').eq('id', 'cap1');
+  ok(capB.data && capB.data.length === 0 && capA.data && capA.data.length === 1, 'a sealed letter is hidden from the other person until its day');
   const fn = u => fetch(`${URL0}/functions/v1/${u}`, { method: 'POST', headers: { 'x-notify-secret': NOTIFY_SECRET, 'Content-Type': 'application/json', apikey: KEY }, body: '{}' });
   const dm = await fn(`daily?slot=morning&couple=${cid}`), de = await fn(`daily?slot=evening&couple=${cid}`);
   const again = await (await fn(`daily?slot=morning&couple=${cid}`)).json().catch(() => ({}));

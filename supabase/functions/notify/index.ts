@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
         ? { title: `${n}님이 답장을 보냈어요 💌`, body: d.title || '지금 열어 볼 수 있어요', tag: `letter-${r.id}`, url: './#mem' }
         : d.openAt <= todayKST()
         ? { title: `${n}님이 편지를 보냈어요 💌`, body: d.title || '지금 열어 볼 수 있어요', tag: `letter-${r.id}`, url: './#mem' }
-        : { title: `${n}님이 편지를 남겼어요 💌`, body: `${fmtDate(d.openAt)}에 열려요. 그날 아침에 알려 드릴게요`, tag: `letter-${r.id}`, url: './#mem' };
+        : null; // a time-capsule letter: say nothing now, the 9am job tells them on its open day
       break;
     case 'comments': {
       if (!isInsert) break;

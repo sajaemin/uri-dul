@@ -129,6 +129,24 @@ end $$;
 select private.call_daily('evening');
 do $$ begin assert (select url from net.calls order by id desc limit 1) = 'https://test.local/functions/v1/daily?slot=evening', 'daily url'; end $$;
 
+-- ---- a time-capsule letter: B cannot see, change or delete A's letter before its open day
+select set_config('request.jwt.claim.sub', :'A', false);
+set role authenticated;
+insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'letters', 'sealed', '{"from":"me","openAt":"2099-01-01","text":"secret"}');
+insert into public.docs (couple_id, coll, id, data) values (public.my_couple(), 'letters', 'opened', '{"from":"me","openAt":"2020-01-01","text":"hello"}');
+do $$ begin assert (select count(*) from public.docs where coll = 'letters' and id in ('sealed', 'opened')) = 2, 'the writer sees both letters'; end $$;
+reset role;
+select set_config('request.jwt.claim.sub', :'B', false);
+set role authenticated;
+do $$ begin
+  assert (select count(*) from public.docs where coll = 'letters' and id = 'sealed') = 0, 'B cannot see the sealed letter';
+  assert (select count(*) from public.docs where coll = 'letters' and id = 'opened') = 1, 'B sees the letter whose day has come';
+end $$;
+update public.docs set data = data || '{"readAt":1}' where coll = 'letters' and id = 'sealed';
+delete from public.docs where coll = 'letters' and id = 'sealed';
+reset role;
+do $$ begin assert (select data->>'readAt' from public.docs where coll = 'letters' and id = 'sealed') is null, 'B could not touch it'; end $$;
+
 -- ---- D: a new phone that first started a couple by mistake, then recovers A's place
 select set_config('request.jwt.claim.sub', :'D', false);
 set role authenticated;
@@ -137,7 +155,7 @@ select public.expect_error(format('select public.recover_couple(%L, %L)', :'code
 select public.recover_couple(:'code', :'rc_a');
 do $$ declare i jsonb := public.my_info(); begin
   assert i->>'role' = 'me', 'D took A''s place';
-  assert (select count(*) from public.docs) = 7, 'D sees the couple''s docs';
+  assert (select count(*) from public.docs) = 9, 'D sees the couple''s docs (both letters too: D is the writer now)';
 end $$;
 select public.my_info()->>'rc' as rc_d \gset
 reset role;

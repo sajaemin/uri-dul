@@ -48,6 +48,8 @@ Deno.serve(async (req) => {
       const from = (l.data as any).from as Role;
       if (from !== 'me' && from !== 'partner') continue;
       const to: Role = from === 'me' ? 'partner' : 'me';
+      // touch it so a phone that is already open gets it live (the database only shows it from today on)
+      await admin.from('docs').update({ data: { ...(l.data as any), arrived: today } }).eq('couple_id', c.id).eq('coll', 'letters').eq('id', l.id);
       if (!(await wants(c.id, to, 'letters'))) continue;
       sent += await sendToUser(c[to], { title: '편지가 도착했어요 💌', body: `${names[from]}님이 남긴 편지가 오늘 열렸어요`, tag: `letter-${l.id}`, url: './#mem' });
     }

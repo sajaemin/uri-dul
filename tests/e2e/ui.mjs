@@ -139,14 +139,20 @@ try {
     await tab(A, 'mem'); await A.click('[data-act=mem-tab][data-v=lt]');
     await A.click('[data-act=l-new]');
     await A.fill('#l-title', '미래 편지'); await A.fill('#l-text', '사흘 뒤에 읽어 줘'); await A.fill('#l-open', ymdKST(3));
+    await A.click('[data-act=l-paper][data-v=mint]'); // redrawing the sheet must keep the picked day
+    if ((await A.inputValue('#l-open')) !== ymdKST(3)) throw new Error('the open day was reset');
     await A.click('#lf button[type=submit]');
+    await A.locator('.env', { hasText: '미래 편지' }).filter({ hasText: 'D-3' }).waitFor();
     await A.click('[data-act=l-new]');
     await A.fill('#l-title', '오늘 편지'); await A.fill('#l-text', '오늘 읽는 편지야');
-    await A.click('#lf button[type=submit]');
+    await A.click('#lf button[type=submit]'); // no day picked: not sent
+    if (!(await A.locator('#lf').count())) throw new Error('a letter went out without an open day');
+    await A.fill('#l-open', ymdKST(0)); await A.click('#lf button[type=submit]');
     await tab(B, 'mem'); await B.click('[data-act=mem-tab][data-v=lt]');
-    await B.locator('.env.sealed', { hasText: '미래 편지' }).waitFor();
-    await B.locator('.env.sealed', { hasText: '미래 편지' }).click();
-    if (await B.locator('.paper').count()) throw new Error('sealed letter opened');
+    await B.locator('.env', { hasText: '오늘 편지' }).waitFor();
+    // B must not even know the future letter exists
+    if (await B.locator('.env', { hasText: '미래 편지' }).count()) throw new Error('B can see the sealed letter');
+    if (await B.evaluate(() => document.body.innerText.includes('잠겨 있어요'))) throw new Error('B is told a letter is waiting');
     await B.locator('.env', { hasText: '오늘 편지' }).click();
     await B.locator('.paper', { hasText: '오늘 읽는 편지야' }).waitFor();
     await shot(B, '07-B-letter');
@@ -159,14 +165,14 @@ try {
     await A.click('[data-act=l-new]');
     await A.click('[data-act=l-paper][data-v=mint]'); await A.click('[data-act=l-ink][data-v=blue]');
     await A.click('[data-act=l-stk][data-v="🍓"]'); await A.click('[data-act=l-stk][data-v="🐰"]');
-    await A.fill('#l-title', '꾸민 편지'); await A.fill('#l-text', '스티커 붙인 편지야');
+    await A.fill('#l-title', '꾸민 편지'); await A.fill('#l-text', '스티커 붙인 편지야'); await A.fill('#l-open', ymdKST(0));
     await A.click('#lf button[type=submit]');
     await B.locator('.env', { hasText: '꾸민 편지' }).click();
     await B.locator('.paper.pp-mint .lstk', { hasText: '🍓' }).waitFor();
     await B.locator('.paper.pp-mint .lstk', { hasText: '🐰' }).waitFor();
     await shot(B, '07b-B-decorated-letter');
     await B.click('[data-act=l-reply]');
-    await B.fill('#l-text', '답장이야');
+    await B.fill('#l-text', '답장이야'); await B.fill('#l-open', ymdKST(0));
     await B.click('#lf button[type=submit]');
     await A.locator('.env', { hasText: 'Re: 꾸민 편지' }).filter({ hasText: '답장' }).waitFor();
   });

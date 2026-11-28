@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
   const newPhotos = docs.filter((d) => d.coll === 'photos' && (d.data as any).from === other && !((d.data as any).savedBy || {})[role]).length;
   const letters = docs.filter((d) => d.coll === 'letters' && (d.data as any).from === other);
   const unread = letters.filter((d) => (d.data as any).openAt <= today && !(d.data as any).readAt).length;
-  const sealed = letters.filter((d) => (d.data as any).openAt > today).map((d) => (d.data as any).openAt as string).sort();
+  const sealed: string[] = []; // letters not open yet stay a secret until their day
 
   // what's coming up: dates, plans, anniversaries and birthdays, soonest first
   const upcoming: { title: string; days: number; date: string; kind: string; time: string }[] = [];

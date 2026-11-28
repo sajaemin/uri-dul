@@ -1357,7 +1357,7 @@ const inkOf = l => (INKS.find(x => x[0] === (l && l.ink)) || INKS[0])[1];
 const stkOf = l => (Array.isArray(l && l.stickers) ? l.stickers : []).filter(k => k && STICKERS.includes(k.e)).slice(0, 12);
 const stkHTML = l => stkOf(l).map((k, i) => `<span class="lstk" data-i="${i}" style="left:${Number(k.x) || 50}%;top:${Number(k.y) || 50}%;--r:${Number(k.r) || 0}deg" aria-hidden="true">${k.e}</span>`).join('');
 const lOpen = l => l.openAt <= ymd(today());
-const lIn = () => S.letters.filter(l => l.from === other());
+const lIn = () => S.letters.filter(l => l.from === other() && lOpen(l));
 const lOut = () => S.letters.filter(l => l.from === S.who);
 const lUnread = () => lIn().filter(l => lOpen(l) && !l.readAt);
 const lSort = list => [...list].sort((a, b) => (lOpen(a) && !a.readAt ? 0 : 1) - (lOpen(b) && !b.readAt ? 0 : 1) || (a.openAt < b.openAt ? 1 : a.openAt > b.openAt ? -1 : (b.at || 0) - (a.at || 0)));
@@ -1441,8 +1441,9 @@ function vLetterSheet() {
   <p class="f">글씨 색</p><div class="links" role="group" aria-label="글씨 색">${INKS.map(([k, c, t]) => `<button type="button" class="lnk" data-act="l-ink" data-v="${k}" aria-pressed="${ink === k}" aria-label="${t}" style="--c:${c}"></button>`).join('')}</div>
   <p class="f">스티커 <small class="note">눌러서 붙이고, 끌어서 옮기고, 붙인 걸 톡 누르면 떼요 (${stkOf(L).length}/12)</small></p><div class="lstks">${STICKERS.map(e => `<button type="button" class="lsb" data-act="l-stk" data-v="${e}" aria-label="스티커 ${e} 붙이기">${e}</button>`).join('')}</div>
   <label class="f" for="l-text">편지</label><div class="paper lpaper pp-${pp}" style="--lk:${inkOf(L)}"><span class="to">${esc(nm(other()))}에게</span><textarea id="l-text" maxlength="3000" placeholder="하고 싶은 말을 천천히 적어 보세요" required>${esc(L.text || '')}</textarea><span class="fr">${dotd(ymd(today()))} · ${esc(nm(S.who))}</span>${stkHTML(L)}</div>
-  <label class="f" for="l-open">여는 날</label><input type="date" id="l-open" min="${td}" value="${esc(L.openAt || td)}" required>
-  <div class="chips" style="margin-top:8px">${opts.map(o => `<button type="button" class="chip" data-act="l-when" data-v="${o[1]}">${esc(o[0])}</button>`).join('')}</div>
+  <label class="f" for="l-open">여는 날</label><input type="date" id="l-open" min="${td}" value="${esc(L.openAt || '')}" required>
+  <p class="note lwhen-n">${!L.openAt ? '언제 열릴지 골라 주세요' : L.openAt <= td ? `오늘 바로 ${esc(nm(other()))}님에게 보여요` : `${esc(nm(other()))}님은 ${fmtD(L.openAt)} 아침까지 이 편지가 있는 줄도 몰라요. 그날 9시에 알림이 가요`}</p>
+  <div class="chips" style="margin-top:8px">${opts.map(o => `<button type="button" class="chip" data-act="l-when" data-v="${o[1]}" aria-pressed="${L.openAt === o[1]}">${esc(o[0])}</button>`).join('')}</div>
   <p class="note" style="margin-top:10px">여는 날 전까지 ${esc(nm(other()))}님에게는 봉투만 보이고, 그날 아침 9시에 알림이 가요.</p>
   <div class="row"><button class="btn" type="submit" style="flex:1">편지 넣기</button><button class="btn line" type="button" data-act="l-cancel">취소</button></div></form></div>`;
 }
@@ -2573,7 +2574,7 @@ document.addEventListener('click', async e => {
     const t = (NKINDS.find(k => k[0] === v) || [])[1];
     if (await W.prefs(S.who, {...(S.prefs[S.who] || {}), off: next})) toast(next.includes(v) ? `${t} 알림을 껐어요` : `${t} 알림을 켰어요`);
   }
-  else if (act === 'l-when') { const el = $('#l-open'); if (el) el.value = v; if (S.lsheet) S.lsheet.openAt = v; }
+  else if (act === 'l-when') { const el = $('#l-open'); if (el) el.value = v; if (S.lsheet) { S.lsheet.openAt = v; render(); } }
   else if (act === 'l-read') {
     const l = S.letters.find(x => x.id === v); if (!l) return;
     if (l.from !== S.who && !lOpen(l)) { const n = diff(today(), parse(l.openAt)); toast(`${fmtD(l.openAt)}에 열려요 · ${n === 1 ? '내일이에요' : n + '일 남았어요'}`); burst(4); return; }
@@ -2723,7 +2724,8 @@ document.addEventListener('keydown', e => {
   const ref = e.target && e.target.dataset && e.target.dataset.cref;
   if (ref && e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); sendCmt(ref); }
 }, true);
-document.addEventListener('input', e => { if (e.target.id === 'ans') S.draft = e.target.value; if (S.lsheet && e.target.id === 'l-text') { S.lsheet.text = e.target.value; growTA(e.target); } if (S.lsheet && e.target.id === 'l-title') S.lsheet.title = e.target.value; if (e.target.id === 'm-place') { if (S.msheet) S.msheet.place = e.target.value; const sel = ($('#m-geo') || {}).value || ''; const l = $('#m-geo-l'); if (l && !sel) l.textContent = geoLabel(geoFind(e.target.value), sel); } });
+document.addEventListener('change', e => { if (S.lsheet && e.target.id === 'l-open') { S.lsheet.openAt = e.target.value; render(); } });
+document.addEventListener('input', e => { if (e.target.id === 'ans') S.draft = e.target.value; if (S.lsheet && e.target.id === 'l-text') { S.lsheet.text = e.target.value; growTA(e.target); } if (S.lsheet && e.target.id === 'l-title') S.lsheet.title = e.target.value; if (S.lsheet && e.target.id === 'l-open') S.lsheet.openAt = e.target.value; if (e.target.id === 'm-place') { if (S.msheet) S.msheet.place = e.target.value; const sel = ($('#m-geo') || {}).value || ''; const l = $('#m-geo-l'); if (l && !sel) l.textContent = geoLabel(geoFind(e.target.value), sel); } });
 document.addEventListener('scroll', e => { if (e.target && e.target.id === 'rct') rcSync(); }, true);
 document.addEventListener('change', e => { if (e.target.id === 'm-file') { const f = [...e.target.files]; e.target.value = ''; uploadMem(f); return; } if (e.target.id === 'm-geo') { const sel = e.target.value, pl = $('#m-place'); if (S.msheet) S.msheet.geo = sel; const l = $('#m-geo-l'); if (l) l.textContent = geoLabel(sel && sel !== '-' ? geoByName(sel) : geoFind(pl ? pl.value : ''), sel); return; } if (e.target.id === 'di-always') { S.diAlways = e.target.checked; ls.set('ud-di', S.diAlways ? '1' : '0'); tick(); return; } if (e.target.id === 'file') { const f = [...e.target.files]; e.target.value = ''; upload(f); } });
 document.addEventListener('keydown', e => {
@@ -2758,6 +2760,7 @@ document.addEventListener('submit', async e => {
     e.preventDefault(); const g = id => document.getElementById(id);
     const text = g('l-text').value.trim(), openAt = g('l-open').value, title = g('l-title').value.trim(), td = ymd(today());
     if (!text) { toast('편지 내용을 적어 주세요'); g('l-text').focus(); return; }
+    if (!openAt) { toast('언제 열릴지 골라 주세요'); g('l-open').focus(); return; }
     if (!isDate(openAt) || openAt < td) { toast('여는 날은 오늘이나 그 뒤로 골라 주세요'); return; }
     const id = 'l' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     const L = S.lsheet || {};
