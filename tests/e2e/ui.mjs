@@ -232,7 +232,7 @@ try {
     await A.locator('.wallet b').filter({ hasNotText: before }).waitFor();
     await A.click('[data-act=shop-close]');
     await tab(B, 'grow');
-    await B.locator('.yard .yi', { hasText: '🌷' }).waitFor();
+    await B.locator('.yard .yi[title="튤립"]').waitFor();
     await shot(B, '11-B-yard');
   });
 

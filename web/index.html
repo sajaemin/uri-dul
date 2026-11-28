@@ -26,6 +26,7 @@
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
 <script src="backend.js"></script>
+<script src="art.js"></script>
 <title>우리 둘</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -816,6 +817,22 @@ ol.steps.big li{margin:10px 0;font-size:16px}
 @keyframes cfood{0%{transform:translate(-50%,-40px) scale(1.2);opacity:0}30%{opacity:1}80%{transform:translate(-50%,26px) scale(.8);opacity:1}100%{transform:translate(-50%,34px) scale(.2);opacity:0}}
 .ypetal.yleaf{background-image:radial-gradient(ellipse 4px 2.5px at 30% 40%,#e8823a 70%,transparent 72%),radial-gradient(ellipse 3px 2px at 70% 20%,#f2b44a 70%,transparent 72%)}
 @media(prefers-reduced-motion:reduce){.cr.held svg,.czz,.cfood{animation:none!important}}
+
+/* drawn yard things */
+.yi svg{display:block;width:1em;height:1em;overflow:visible}
+.yi.emo{line-height:1}
+.yi{transform:translate(-50%,-94%)}
+.yi.roam{pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.yi.roam svg{transform:scaleX(var(--f,1))}
+.yi.roam.walk svg{animation:petwalk .34s ease-in-out infinite}
+.yi.roam.hop svg{animation:pethop .6s cubic-bezier(.3,.7,.4,1)}
+.yi.a-fly.roam svg,.yi.a-fly.roam.walk svg{animation:petfly 1.6s ease-in-out infinite}
+@keyframes petwalk{0%,100%{transform:scaleX(var(--f,1)) translateY(0) rotate(-4deg)}50%{transform:scaleX(var(--f,1)) translateY(-12%) rotate(4deg)}}
+@keyframes pethop{0%,100%{transform:scaleX(var(--f,1)) translateY(0)}20%{transform:scaleX(var(--f,1)) scale(1.08,.9)}55%{transform:scaleX(var(--f,1)) translateY(-40%)}}
+@keyframes petfly{0%,100%{transform:scaleX(var(--f,1)) translateY(-30%)}50%{transform:scaleX(var(--f,1)) translateY(-60%)}}
+.sitem .se svg{display:block;margin:0 auto}
+.ysb svg{display:block;margin:0 auto}
+@media(prefers-reduced-motion:reduce){.yi.roam svg{animation:none!important}}
 </style>
 </head>
 <body>
@@ -1738,11 +1755,11 @@ function streak() {
 
 /* ---------- the yard: both characters live here; hearts buy things to put in it ---------- */
 const SHOP = [
-  ['flower', '꽃·나무', [['tulip', '🌷', '튤립', 10, 26, 'sway'], ['daisy', '🌼', '데이지', 8, 24, 'sway'], ['sunf', '🌻', '해바라기', 12, 30, 'sway'], ['rose', '🌹', '장미', 12, 26, 'sway'], ['hibis', '🌺', '히비스커스', 12, 26, 'sway'], ['hyac', '🪻', '히아신스', 10, 26, 'sway'], ['blossom', '🌸', '벚꽃', 15, 28, 'sway'], ['lotus', '🪷', '연꽃', 15, 28, ''], ['clover', '🍀', '네잎클로버', 5, 22, ''], ['maple', '🍁', '단풍잎', 8, 22, 'sway'], ['mush', '🍄', '버섯', 8, 26, ''], ['pot', '🪴', '화분', 15, 30, ''], ['cactus', '🌵', '선인장', 15, 34, ''], ['bamboo', '🎋', '대나무', 25, 46, 'sway'], ['tree', '🌳', '나무', 30, 50, 'sway'], ['pine', '🌲', '소나무', 30, 50, ''], ['palm', '🌴', '야자수', 35, 52, 'sway'], ['xmas', '🎄', '트리', 40, 50, '']]],
-  ['play', '놀이', [['ball', '⚽', '축구공', 8, 22, ''], ['bball', '🏀', '농구공', 8, 22, ''], ['yoyo', '🪀', '요요', 6, 22, 'bob'], ['balloon', '🎈', '풍선', 12, 30, 'bob'], ['dart', '🎯', '다트', 12, 28, ''], ['skate', '🛹', '스케이트보드', 18, 30, ''], ['pinata', '🪅', '피냐타', 20, 32, 'sway'], ['kite', '🪁', '연', 25, 30, 'bob'], ['bike', '🚲', '자전거', 30, 38, ''], ['parasol', '⛱️', '파라솔', 35, 44, ''], ['canoe', '🛶', '카누', 40, 40, ''], ['slide', '🛝', '미끄럼틀', 50, 46, ''], ['tent', '🎪', '서커스 텐트', 60, 52, ''], ['carousel', '🎠', '회전목마', 100, 50, 'bob'], ['ferris', '🎡', '관람차', 120, 60, 'spin'], ['coaster', '🎢', '롤러코스터', 130, 60, '']]],
-  ['home', '집·소품', [['candle', '🕯️', '촛불', 8, 22, ''], ['books', '📚', '책', 8, 26, ''], ['gift', '🎁', '선물상자', 10, 26, ''], ['log', '🪵', '통나무', 10, 30, ''], ['bell', '🎐', '풍경', 10, 26, 'sway'], ['pumpkin', '🎃', '호박', 10, 30, ''], ['chair', '🪑', '의자', 15, 30, ''], ['teddy', '🧸', '곰인형', 15, 28, ''], ['lantern', '🏮', '등불', 18, 28, 'sway'], ['basket', '🧺', '피크닉 바구니', 20, 28, ''], ['post', '📮', '우체통', 25, 32, ''], ['snowman', '⛄', '눈사람', 25, 42, ''], ['bath', '🛁', '욕조', 30, 38, ''], ['sofa', '🛋️', '소파', 45, 40, ''], ['car', '🚗', '자동차', 50, 40, ''], ['camp', '⛺', '캠핑 텐트', 60, 48, ''], ['fountain', '⛲', '분수', 80, 50, ''], ['hut', '🛖', '오두막', 90, 54, ''], ['house', '🏡', '우리 집', 120, 62, ''], ['castle', '🏰', '작은 성', 150, 64, '']]],
-  ['pet', '친구들', [['ladybug', '🐞', '무당벌레', 5, 18, 'fly'], ['snail', '🐌', '달팽이', 5, 20, 'pet'], ['bee', '🐝', '꿀벌', 8, 20, 'fly'], ['bfly', '🦋', '나비', 15, 24, 'fly'], ['frog', '🐸', '개구리', 15, 24, 'pet'], ['chick', '🐥', '병아리', 25, 24, 'pet'], ['hamster', '🐹', '햄스터', 25, 22, 'pet'], ['duck', '🦆', '오리', 35, 28, 'pet'], ['turtle', '🐢', '거북이', 35, 28, 'pet'], ['squirrel', '🐿️', '다람쥐', 40, 28, 'pet'], ['hedgehog', '🦔', '고슴도치', 40, 26, 'pet'], ['penguin', '🐧', '펭귄', 45, 28, 'pet'], ['bunny', '🐰', '토끼', 50, 28, 'pet'], ['fox', '🦊', '여우', 55, 30, 'pet'], ['dog', '🐶', '강아지', 60, 30, 'pet'], ['cat', '🐱', '고양이', 60, 30, 'pet'], ['panda', '🐼', '판다', 70, 32, 'pet'], ['unicorn', '🦄', '유니콘', 90, 34, 'pet']]],
-  ['sky', '하늘', [['sparkle', '✨', '반짝이', 6, 22, 'twinkle'], ['cloud', '☁️', '구름', 8, 40, 'drift'], ['star', '⭐', '별', 10, 22, 'twinkle'], ['suncloud', '🌤️', '구름 낀 해', 20, 38, 'drift'], ['shoot', '🌠', '별똥별', 25, 34, 'drift'], ['dove', '🕊️', '비둘기', 30, 28, 'fly'], ['fire', '🎆', '불꽃놀이', 30, 40, 'twinkle'], ['sun', '☀️', '해', 40, 44, 'spin'], ['planet', '🪐', '토성', 40, 36, 'bob'], ['moon', '🌙', '달', 45, 38, 'bob'], ['rocket', '🚀', '로켓', 50, 34, 'bob'], ['ufo', '🛸', 'UFO', 60, 34, 'drift'], ['rainbow', '🌈', '무지개', 80, 56, '']]],
+  ['flower', '꽃·나무', [['tulip', '🌷', '튤립', 10, 30, 'sway'], ['daisy', '🌼', '데이지', 8, 28, 'sway'], ['sunf', '🌻', '해바라기', 12, 40, 'sway'], ['rose', '🌹', '장미', 12, 30, 'sway'], ['hibis', '🌺', '히비스커스', 12, 32, 'sway'], ['hyac', '🪻', '히아신스', 10, 30, 'sway'], ['blossom', '🌸', '벚꽃', 15, 34, 'sway'], ['lotus', '🪷', '연꽃', 15, 36, ''], ['clover', '🍀', '네잎클로버', 5, 22, ''], ['maple', '🍁', '단풍잎', 8, 24, 'sway'], ['mush', '🍄', '버섯', 8, 30, ''], ['pot', '🪴', '화분', 15, 34, ''], ['cactus', '🌵', '선인장', 15, 40, ''], ['bamboo', '🎋', '대나무', 25, 58, 'sway'], ['tree', '🌳', '나무', 30, 72, 'sway'], ['pine', '🌲', '소나무', 30, 68, ''], ['palm', '🌴', '야자수', 35, 74, 'sway'], ['xmas', '🎄', '트리', 40, 66, '']]],
+  ['play', '놀이', [['ball', '⚽', '축구공', 8, 22, ''], ['bball', '🏀', '농구공', 8, 22, ''], ['yoyo', '🪀', '요요', 6, 24, 'bob'], ['balloon', '🎈', '풍선', 12, 40, 'bob'], ['dart', '🎯', '다트', 12, 38, ''], ['skate', '🛹', '스케이트보드', 18, 36, ''], ['pinata', '🪅', '피냐타', 20, 40, 'sway'], ['kite', '🪁', '연', 25, 42, 'bob'], ['bike', '🚲', '자전거', 30, 48, ''], ['parasol', '⛱️', '파라솔', 35, 58, ''], ['canoe', '🛶', '카누', 40, 52, ''], ['slide', '🛝', '미끄럼틀', 50, 62, ''], ['tent', '🎪', '서커스 텐트', 60, 76, ''], ['carousel', '🎠', '회전목마', 100, 76, 'bob'], ['ferris', '🎡', '관람차', 120, 88, 'spin'], ['coaster', '🎢', '롤러코스터', 130, 84, '']]],
+  ['home', '집·소품', [['candle', '🕯️', '촛불', 8, 24, ''], ['books', '📚', '책', 8, 28, ''], ['gift', '🎁', '선물상자', 10, 30, ''], ['log', '🪵', '통나무', 10, 34, ''], ['bell', '🎐', '풍경', 10, 32, 'sway'], ['pumpkin', '🎃', '호박', 10, 36, ''], ['chair', '🪑', '의자', 15, 38, ''], ['teddy', '🧸', '곰인형', 15, 36, ''], ['lantern', '🏮', '등불', 18, 34, 'sway'], ['basket', '🧺', '피크닉 바구니', 20, 32, ''], ['post', '📮', '우체통', 25, 42, ''], ['snowman', '⛄', '눈사람', 25, 48, ''], ['bath', '🛁', '욕조', 30, 48, ''], ['sofa', '🛋️', '소파', 45, 52, ''], ['car', '🚗', '자동차', 50, 56, ''], ['camp', '⛺', '캠핑 텐트', 60, 64, ''], ['fountain', '⛲', '분수', 80, 62, ''], ['hut', '🛖', '오두막', 90, 78, ''], ['house', '🏡', '우리 집', 120, 90, ''], ['castle', '🏰', '작은 성', 150, 96, '']]],
+  ['pet', '친구들', [['ladybug', '🐞', '무당벌레', 5, 18, 'fly'], ['snail', '🐌', '달팽이', 5, 22, 'walk'], ['bee', '🐝', '꿀벌', 8, 22, 'fly'], ['bfly', '🦋', '나비', 15, 28, 'fly'], ['frog', '🐸', '개구리', 15, 30, 'walk'], ['chick', '🐥', '병아리', 25, 26, 'walk'], ['hamster', '🐹', '햄스터', 25, 26, 'walk'], ['duck', '🦆', '오리', 35, 34, 'walk'], ['turtle', '🐢', '거북이', 35, 34, 'walk'], ['squirrel', '🐿️', '다람쥐', 40, 36, 'walk'], ['hedgehog', '🦔', '고슴도치', 40, 34, 'walk'], ['penguin', '🐧', '펭귄', 45, 36, 'walk'], ['bunny', '🐰', '토끼', 50, 38, 'walk'], ['fox', '🦊', '여우', 55, 40, 'walk'], ['dog', '🐶', '강아지', 60, 40, 'walk'], ['cat', '🐱', '고양이', 60, 38, 'walk'], ['panda', '🐼', '판다', 70, 44, 'walk'], ['unicorn', '🦄', '유니콘', 90, 46, 'walk']]],
+  ['sky', '하늘', [['sparkle', '✨', '반짝이', 6, 26, 'twinkle'], ['cloud', '☁️', '구름', 8, 52, 'drift'], ['star', '⭐', '별', 10, 28, 'twinkle'], ['suncloud', '🌤️', '구름 낀 해', 20, 52, 'drift'], ['shoot', '🌠', '별똥별', 25, 42, 'drift'], ['dove', '🕊️', '비둘기', 30, 36, 'fly'], ['fire', '🎆', '불꽃놀이', 30, 46, 'twinkle'], ['sun', '☀️', '해', 40, 56, 'spin'], ['planet', '🪐', '토성', 40, 48, 'bob'], ['moon', '🌙', '달', 45, 48, 'bob'], ['rocket', '🚀', '로켓', 50, 46, 'bob'], ['ufo', '🛸', 'UFO', 60, 52, 'drift'], ['rainbow', '🌈', '무지개', 80, 76, '']]],
 ];
 const THEMES = [['spring', '봄 들판', 0], ['sakura', '벚꽃 동산', 80], ['autumn', '가을 단풍', 80], ['beach', '바닷가', 100], ['snow', '눈 오는 겨울', 100], ['candy', '솜사탕 나라', 120], ['night', '밤하늘', 120]];
 const ITEM = {}; SHOP.forEach(([cat, , list]) => list.forEach(([k, e, name, price, size, anim]) => { ITEM[k] = {k, e, name, price, size, anim, cat}; }));
@@ -1805,7 +1822,10 @@ function vYard(big) {
   return `<div class="yard th-${th}${big ? ' big' : ''}${S.yedit && big ? ' edit' : ''}" aria-label="우리 마당">
   <svg class="ydeco" viewBox="0 0 360 56" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="ycl" fill="#fff"><ellipse cx="58" cy="26" rx="26" ry="9"/><ellipse cx="76" cy="20" rx="16" ry="11"/><ellipse cx="300" cy="22" rx="24" ry="8"/><ellipse cx="316" cy="17" rx="13" ry="9"/></g><g class="floaty" fill="#ff9fbb"><path transform="translate(150 14) scale(.5)" d="${HH}"/><path transform="translate(226 22) scale(.36)" d="${HH}" opacity=".75"/></g></svg>${yplotSVG()}
   ${Math.min(sa, sb) >= 7 ? '<span class="yrain" aria-hidden="true"></span>' : ''}${th === 'snow' ? '<span class="ysnow" aria-hidden="true"></span>' : th === 'night' ? '<span class="ystars" aria-hidden="true"></span>' : th === 'sakura' ? '<span class="ypetal" aria-hidden="true"></span>' : th === 'autumn' ? '<span class="ypetal yleaf" aria-hidden="true"></span>' : ''}
-  ${items.map(y => { const it = ITEM[y.k], x = Math.min(96, Math.max(4, Number(y.x) || 50)), raw = Math.min(97, Math.max(4, Number(y.y) || 80)), yy = it.cat === 'sky' ? Math.min(raw, 15) : Math.max(raw, 24), sz = it.size * (big ? 1 : .85) * (it.cat === 'sky' ? .8 : ydepth(yy)); return `<span class="yi${it.anim ? ' a-' + it.anim : ''}" data-yid="${esc(y.id)}" style="left:${x}%;top:${yy}%;z-index:${Math.round(yy) + 2};font-size:${sz.toFixed(1)}px;--d:${-(hue(y.id) % 9)}s" title="${esc(it.name)}">${it.e}</span>`; }).join('')}
+  ${items.map(y => { const it = ITEM[y.k], x0 = Math.min(96, Math.max(4, Number(y.x) || 50)), raw = Math.min(97, Math.max(4, Number(y.y) || 80)), y0 = it.cat === 'sky' ? Math.min(raw, 15) : Math.max(raw, 24);
+    const roam = (it.anim === 'walk' || (it.anim === 'fly' && it.cat !== 'sky')) && !(S.yedit && big), ps = roam ? petState(y.id, x0, y0) : null, x = ps ? ps.x : x0, yy = ps ? ps.y : y0;
+    const sz = it.size * (big ? 1 : .85) * (it.cat === 'sky' ? .8 : ydepth(yy)), pic = artSVG(y.k, '1em');
+    return `<span class="yi${it.anim ? ' a-' + it.anim : ''}${roam ? ' roam' : ''}${pic ? '' : ' emo'}" data-yid="${esc(y.id)}"${roam ? ` data-act="pet-tap" data-v="${esc(y.id)}"` : ''} style="left:${x}%;top:${yy}%;z-index:${Math.round(yy) + 2};font-size:${sz.toFixed(1)}px;${it.cat === 'sky' && pic ? `margin-top:${(sz * .45).toFixed(1)}px;` : ''}--d:${-(hue(y.id) % 9)}s;--f:${(ps ? ps.f : 1) * (FACE_L[y.k] ? -1 : 1)}" title="${esc(it.name)}">${pic || it.e}</span>`; }).join('')}
   ${who.map(w => { const p = YS[w]; return `<button type="button" class="cr" data-act="cr-tap" data-v="${w}" data-w="${w}" aria-label="${esc(nm(w))} 캐릭터 쓰다듬기" style="left:${p.x}%;top:${p.y}%;z-index:${Math.round(p.y) + 3};--f:${p.f};--s:${ydepth(p.y).toFixed(3)}">${(() => { const md = moodOfChar(w); return charSVG(w, w === 'me' ? sa : sb, md) + (md === 'sleep' ? '<span class="czz" aria-hidden="true">💤</span>' : md === 'hungry' ? '<span class="czz hg" aria-hidden="true">🍙?</span>' : ''); })()}<span class="crn">${esc(cut(nm(w), 5))}</span></button>`; }).join('')}
   </div>`;
 }
@@ -1813,7 +1833,7 @@ function vYardTools() {
   if (!S.yedit) return `<div class="row ytools"><button class="btn" type="button" data-act="shop-open">🛍️ 꾸미기 상점</button><button class="btn line" type="button" data-act="yedit">✏️ 마당 꾸미기</button></div>`;
   const store = yardItems().filter(y => !y.placed && ITEM[y.k]);
   return `<div class="yedit-bar"><p class="note" style="margin:0">물건을 끌어서 옮기고, 톡 누르면 보관함에 들어가요.</p>
-  ${store.length ? `<p class="f" style="margin:10px 0 4px">보관함 <small class="note">눌러서 마당에 놓기</small></p><div class="ystore">${store.map(y => `<button type="button" class="ysb" data-act="y-place" data-v="${esc(y.id)}" aria-label="${esc(ITEM[y.k].name)} 마당에 놓기">${ITEM[y.k].e}</button>`).join('')}</div>` : ''}
+  ${store.length ? `<p class="f" style="margin:10px 0 4px">보관함 <small class="note">눌러서 마당에 놓기</small></p><div class="ystore">${store.map(y => `<button type="button" class="ysb" data-act="y-place" data-v="${esc(y.id)}" aria-label="${esc(ITEM[y.k].name)} 마당에 놓기">${artSVG(y.k, 34) || ITEM[y.k].e}</button>`).join('')}</div>` : ''}
   <div class="row"><button class="btn" type="button" data-act="yedit" style="flex:1">다 했어요</button><button class="btn line" type="button" data-act="shop-open">🛍️ 상점</button></div></div>`;
 }
 function vFeed() {
@@ -1831,7 +1851,7 @@ function vShop() {
   const buyBtn = (k, price) => `<button class="btn sbuy" type="button" data-act="shop-buy" data-v="${k}"${left < price ? ' disabled' : ''}>${left < price ? `💗${(price - left).toLocaleString('ko-KR')} 더 필요` : `💗 ${price}`}</button>`;
   const grid = cat === 'theme'
     ? THEMES.map(([t, name, price]) => `<div class="sitem"><span class="sth th-${t}" aria-hidden="true"></span><b>${name}</b>${ownsTheme(t) ? (yTheme() === t ? '<span class="sown">사용 중</span>' : `<button class="btn line sbuy" type="button" data-act="theme-use" data-v="${t}">사용하기</button>`) : buyBtn('th_' + t, price)}</div>`).join('')
-    : (SHOP.find(c => c[0] === cat) || SHOP[0])[2].map(([k, e, name, price]) => `<div class="sitem"><span class="se" aria-hidden="true">${e}</span><b>${name}</b>${buyBtn(k, price)}${owned(k) ? `<small class="note">${owned(k)}개 있어요</small>` : ''}</div>`).join('');
+    : (SHOP.find(c => c[0] === cat) || SHOP[0])[2].map(([k, e, name, price]) => `<div class="sitem"><span class="se" aria-hidden="true">${artSVG(k, 48) || e}</span><b>${name}</b>${buyBtn(k, price)}${owned(k) ? `<small class="note">${owned(k)}개 있어요</small>` : ''}</div>`).join('');
   return `<div class="sheet-bg" data-act="shop-close-bg"><div class="sheet shop" role="dialog" aria-label="마당 상점">
   <div class="calh"><h2 style="text-align:left;justify-content:flex-start">🛍️ 마당 상점</h2><button class="btn line" type="button" data-act="shop-close">닫기</button></div>
   <div class="wallet"><span class="wl">${esc(nm(me))}님이 쓸 수 있는 하트</span><b>💗 ${left.toLocaleString('ko-KR')}</b><span class="note">모은 하트 ${earned.toLocaleString('ko-KR')} · 쓴 하트 ${spent.toLocaleString('ko-KR')} · 하트를 써도 캐릭터 단계는 그대로예요</span></div>
@@ -1839,7 +1859,35 @@ function vShop() {
   <div class="sgrid">${grid}</div>
   <p class="note" style="margin-top:12px">산 물건은 둘이 같이 쓰는 마당에 놓이고, ${esc(nm(other()))}님에게 알림이 가요.</p></div></div>`;
 }
+// animal friends wander around near where they were put
+const PS = {};
+const FACE_L = {turtle: 1, squirrel: 1, bee: 1}, PET_SPEED = {snail: .3, turtle: .45, ladybug: .6, hedgehog: .7, bfly: 1.4, bee: 1.3};
+function petState(id, x, y) {
+  const p = PS[id];
+  if (!p || p.hx !== x || p.hy !== y) PS[id] = {x, y, hx: x, hy: y, f: 1, t: Date.now() + Math.random() * 3000};
+  return PS[id];
+}
+function petTick(now) {
+  for (const el of document.querySelectorAll('.yard:not(.edit) .yi.roam')) {
+    const p = PS[el.dataset.yid]; if (!p || now < p.t) continue;
+    const r = Math.random();
+    if (r < 0.25) { el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop'); p.t = now + 1200 + Math.random() * 2500; continue; }
+    if (r < 0.45) { p.t = now + 1500 + Math.random() * 3500; continue; }
+    let nx, ny;
+    const chars = Object.values(YS);
+    if (r < 0.6 && chars.length) { const c = chars[Math.floor(Math.random() * chars.length)]; nx = c.x + (Math.random() < 0.5 ? -9 : 9); ny = c.y + (Math.random() - 0.5) * 6; }
+    else { nx = p.hx + (Math.random() - 0.5) * 44; ny = p.hy + (Math.random() - 0.5) * 30; }
+    nx = Math.min(90, Math.max(10, nx)); ny = Math.min(92, Math.max(30, ny));
+    const kk = (S.yard.find(y => y.id === el.dataset.yid) || {}).k, dur = Math.min(12, Math.max(0.8, Math.hypot(nx - p.x, (ny - p.y) * 2) / (11 * (PET_SPEED[kk] || 1))));
+    p.f = nx < p.x ? -1 : 1; p.x = nx; p.y = ny; p.t = now + dur * 1000 + 600 + Math.random() * 2500;
+    const it = ITEM[kk]; const big = !!el.closest('.yard.big');
+    el.style.transition = `left ${dur}s linear, top ${dur}s linear, font-size ${dur}s linear`; el.style.left = nx + '%'; el.style.top = ny + '%'; el.style.zIndex = Math.round(ny) + 2; el.style.setProperty('--f', p.f * (FACE_L[kk] ? -1 : 1));
+    if (it) el.style.fontSize = (it.size * (big ? 1 : .85) * ydepth(ny)).toFixed(1) + 'px';
+    el.classList.add('walk'); clearTimeout(el._w); el._w = setTimeout(() => el.classList.remove('walk'), dur * 1000);
+  }
+}
 function yardTick() {
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) petTick(Date.now());
   const els = document.querySelectorAll('.yard .cr'); if (!els.length) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const now = Date.now();
@@ -2242,6 +2290,7 @@ document.addEventListener('click', async e => {
     S.letter = null; S.letterDel = false; S.lsheet = {openAt: '', title: ('Re: ' + (l.title || '편지')).slice(0, 30), text: '', paper: paperOf(l), ink: (INKS.find(x => x[0] === l.ink) || INKS[0])[0], stickers: [], replyTo: l.id}; render();
     const t = $('#l-text'); if (t) t.focus();
   }
+  else if (act === 'pet-tap') { const el = b; el.classList.remove('hop'); void el.offsetWidth; el.classList.add('hop'); const h = document.createElement('span'); h.className = 'ymeet'; h.textContent = '💗'; h.style.left = el.style.left; h.style.top = `calc(${el.style.top} - 12%)`; el.parentElement.appendChild(h); setTimeout(() => h.remove(), 1800); if (PS[v]) PS[v].t = Date.now() + 1500; }
   else if (act === 'cr-tap' && Date.now() - (S.dropAt || 0) < 500) { /* just put down */ }
   else if (act === 'cr-tap' && moodOfChar(v) === 'sleep') { const el = b, bub = document.createElement('span'); bub.className = 'crb'; bub.textContent = '음냐… 졸려 💤'; el.appendChild(bub); setTimeout(() => bub.remove(), 1500); YS[v].woke = Date.now() + 60e3; setTimeout(render, 1600); }
   else if (act === 'cr-tap') {
@@ -2279,11 +2328,11 @@ document.addEventListener('click', async e => {
     const id = 'y' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     const sky = it && it.cat === 'sky';
     const d = th ? {k: v, e: '🎨', name: th[1], price, cat: 'theme', placed: false, x: 0, y: 0, by: S.who, at: Date.now()}
-      : {k: v, e: it.e, name: it.name, price, cat: it.cat, placed: true, x: Math.round(10 + Math.random() * 80), y: Math.round(sky ? 4 + Math.random() * 10 : 30 + Math.random() * 58), by: S.who, at: Date.now()};
+      : {k: v, e: it.e, name: it.name, price, cat: it.cat, placed: true, x: Math.round(10 + Math.random() * 80), y: Math.round(sky ? 5 + Math.random() * 9 : 34 + Math.random() * 54), by: S.who, at: Date.now()};
     if (await W.yard(id, d)) {
       burst(14);
       if (th) { await W.ycfg({theme: th[0], by: S.who, at: Date.now()}); toast(`마당이 '${th[1]}'(으)로 바뀌었어요!`); }
-      else toast(`${it.e} ${it.name}을(를) 마당에 놓았어요! '마당 꾸미기'로 자리를 옮길 수 있어요`);
+      else toast(`${it.name}을(를) 마당에 놓았어요! '마당 꾸미기'로 자리를 옮길 수 있어요`);
     }
   }
   else if (act === 'theme-use') { if (ownsTheme(v)) { await W.ycfg({theme: v, by: S.who, at: Date.now()}); toast('마당 테마를 바꿨어요'); } }

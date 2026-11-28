@@ -8,7 +8,7 @@ const src = fs.readFileSync(new URL('../../web/widget.scriptable.js', import.met
 const duoPng = fs.readFileSync(new URL('../../web/widget/duo.png', import.meta.url)).toString('base64');
 const coverPng = process.env.COVER ? fs.readFileSync(process.env.COVER).toString('base64') : null;
 const out = process.argv[2] || '/tmp/widget-preview.png';
-const CHARS = {}; for (const f of fs.readdirSync(new URL('../../web/widget/', import.meta.url))) if (f.startsWith('char-')) CHARS[f] = fs.readFileSync(new URL('../../web/widget/' + f, import.meta.url)).toString('base64');
+const CHARS = {}; for (const f of fs.readdirSync(new URL('../../web/widget/', import.meta.url))) if (f.startsWith('char-') || f.startsWith('item-')) CHARS[f] = fs.readFileSync(new URL('../../web/widget/' + f, import.meta.url)).toString('base64');
 const yard = { theme: 'spring', chars: [{ role: 'me', name: '재민', stage: 3 }, { role: 'partner', name: '은지', stage: 6 }],
   items: [{ k: 'tree', e: '🌳', cat: 'flower', x: 18, y: 38 }, { k: 'house', e: '🏡', cat: 'home', x: 78, y: 40 }, { k: 'fountain', e: '⛲', cat: 'home', x: 50, y: 52 }, { k: 'dog', e: '🐶', cat: 'pet', x: 80, y: 84 }, { k: 'sunf', e: '🌻', cat: 'flower', x: 28, y: 88 }, { k: 'cloud', e: '☁️', cat: 'sky', x: 70, y: 8 }, { k: 'tulip', e: '🌷', cat: 'flower', x: 60, y: 76 }] };
 const sample = {
@@ -36,7 +36,7 @@ function harness(dark, data, family, param, DUO, COVER) {
   class ListWidget extends Node { constructor() { super('widget'); this.dir = 'column'; this.align = 'flex-start'; this.pad = [16, 16, 16, 16]; } presentSmall() {} presentMedium() {} presentLarge() {} }
   class LinearGradient {}
   const img = { size: new Size(400, 300), b64: null };
-  class Request { constructor(u) { this.u = u; } async loadJSON() { if (data === null) throw new Error('offline'); return data; } async loadImage() { const cm = this.u.match(/(char-[a-z]+-\d(-l)?\.png)$/); if (cm && CHARS[cm[1]]) return { size: new Size(240, 240), b64: 'data:image/png;base64,' + CHARS[cm[1]] }; if (this.u.includes('duo')) return { size: new Size(396, 228), b64: 'data:image/png;base64,' + DUO }; if (COVER) return { size: new Size(1200, 900), b64: 'data:image/png;base64,' + COVER }; throw new Error('no'); } }
+  class Request { constructor(u) { this.u = u; } async loadJSON() { if (data === null) throw new Error('offline'); return data; } async loadImage() { const cm = this.u.match(/((?:char-[a-z]+-\d|item-[a-z]+)(-l)?\.png)$/); if (cm && CHARS[cm[1]]) return { size: new Size(240, 240), b64: 'data:image/png;base64,' + CHARS[cm[1]] }; if (this.u.includes('duo')) return { size: new Size(396, 228), b64: 'data:image/png;base64,' + DUO }; if (COVER) return { size: new Size(1200, 900), b64: 'data:image/png;base64,' + COVER }; throw new Error('no'); } }
   class Path { constructor() { this.d = ''; } move(p) { this.d += `M${p.x} ${p.y}`; } addQuadCurve(p, c) { this.d += `Q${c.x} ${c.y} ${p.x} ${p.y}`; } addCurve(p, c1, c2) { this.d += `C${c1.x} ${c1.y} ${c2.x} ${c2.y} ${p.x} ${p.y}`; } addLine(p) { this.d += `L${p.x} ${p.y}`; } addLines(ps) { ps.forEach((p, i) => { this.d += `${i ? 'L' : 'M'}${p.x} ${p.y}`; }); } closeSubpath() { this.d += 'Z'; }
     addRoundedRect(r, a, b) { this.d += `M${r.x + a} ${r.y}H${r.x + r.w - a}A${a} ${b} 0 0 1 ${r.x + r.w} ${r.y + b}V${r.y + r.h - b}A${a} ${b} 0 0 1 ${r.x + r.w - a} ${r.y + r.h}H${r.x + a}A${a} ${b} 0 0 1 ${r.x} ${r.y + r.h - b}V${r.y + b}A${a} ${b} 0 0 1 ${r.x + a} ${r.y}Z`; } }
   // records what is drawn and hands it back as an SVG picture

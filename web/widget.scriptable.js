@@ -67,7 +67,7 @@ const YC = {
   candy: ['#e6d9ff', '#fdf0ff', '#ffd6ec', '#d9f1ff', '#e7b3d6', '#f3e8ff', '#ffffff'],
   night: ['#2e2f63', '#5d4f92', '#4f8a77', '#467e6c', '#2c5a4c', '#34525e', '#d9d4ee'],
 };
-const YSIZE = { tulip: 26, daisy: 24, sunf: 30, rose: 26, hibis: 26, hyac: 26, blossom: 28, lotus: 28, clover: 22, maple: 22, mush: 26, pot: 30, cactus: 34, bamboo: 46, tree: 50, pine: 50, palm: 52, xmas: 50, ball: 22, bball: 22, yoyo: 22, balloon: 30, dart: 28, skate: 30, pinata: 32, kite: 30, bike: 38, parasol: 44, canoe: 40, slide: 46, tent: 52, carousel: 50, ferris: 60, coaster: 60, candle: 22, books: 26, gift: 26, log: 30, bell: 26, pumpkin: 30, chair: 30, teddy: 28, lantern: 28, basket: 28, post: 32, snowman: 42, bath: 38, sofa: 40, car: 40, camp: 48, fountain: 50, hut: 54, house: 62, castle: 64, ladybug: 18, snail: 20, bee: 20, bfly: 24, frog: 24, chick: 24, hamster: 22, duck: 28, turtle: 28, squirrel: 28, hedgehog: 26, penguin: 28, bunny: 28, fox: 30, dog: 30, cat: 30, panda: 32, unicorn: 34, sparkle: 22, cloud: 40, star: 22, suncloud: 38, shoot: 34, dove: 28, fire: 40, sun: 44, planet: 36, moon: 38, rocket: 34, ufo: 34, rainbow: 56 }; // the same sizes as the app's shop
+const YSIZE = { tulip: 30, daisy: 28, sunf: 40, rose: 30, hibis: 32, hyac: 30, blossom: 34, lotus: 36, clover: 22, maple: 24, mush: 30, pot: 34, cactus: 40, bamboo: 58, tree: 72, pine: 68, palm: 74, xmas: 66, ball: 22, bball: 22, yoyo: 24, balloon: 40, dart: 38, skate: 36, pinata: 40, kite: 42, bike: 48, parasol: 58, canoe: 52, slide: 62, tent: 76, carousel: 76, ferris: 88, coaster: 84, candle: 24, books: 28, gift: 30, log: 34, bell: 32, pumpkin: 36, chair: 38, teddy: 36, lantern: 34, basket: 32, post: 42, snowman: 48, bath: 48, sofa: 52, car: 56, camp: 64, fountain: 62, hut: 78, house: 90, castle: 96, ladybug: 18, snail: 22, bee: 22, bfly: 28, frog: 30, chick: 26, hamster: 26, duck: 34, turtle: 34, squirrel: 36, hedgehog: 34, penguin: 36, bunny: 38, fox: 40, dog: 40, cat: 38, panda: 44, unicorn: 46, sparkle: 26, cloud: 52, star: 28, suncloud: 52, shoot: 42, dove: 36, fire: 46, sun: 56, planet: 48, moon: 48, rocket: 46, ufo: 52, rainbow: 76 }; // the same sizes as the app's shop
 const CSIZE = { flower: 28, play: 36, home: 34, pet: 30, sky: 30 };
 function hexMix(a, b, t) { const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)); const x = p(a), y = p(b); return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join(''); }
 async function drawYard(Y, W, H) {
@@ -123,7 +123,13 @@ async function drawYard(Y, W, H) {
   dc.fillRect(new Rect(PX(48), PY(26), PX(264), PY(3))); dc.fillRect(new Rect(PX(48), PY(33), PX(264), PY(3)));
 
   // a moment in the yard: widgets cannot move, so each refresh shows the two of them doing something
-  const things = (Y.items || []).map(it => ({ kind: 'item', ...it, y: it.cat === 'sky' ? Math.min(it.y, 15) : Math.max(it.y, 24) }));
+  // animal friends have wandered somewhere new each time the widget refreshes
+  const PETS = new Set(["ladybug", "snail", "bee", "bfly", "frog", "chick", "hamster", "duck", "turtle", "squirrel", "hedgehog", "penguin", "bunny", "fox", "dog", "cat", "panda", "unicorn"]), FACE_L = { turtle: 1, squirrel: 1, bee: 1 };
+  const things = (Y.items || []).map(it => {
+    const t = { kind: 'item', ...it, y: it.cat === 'sky' ? Math.min(it.y, 15) : Math.max(it.y, 24) };
+    if (PETS.has(t.k)) { t.x = Math.min(90, Math.max(10, t.x + (Math.random() - 0.5) * 40)); t.y = Math.min(92, Math.max(30, t.y + (Math.random() - 0.5) * 26)); t.flip = (Math.random() < 0.5) !== !!FACE_L[t.k]; }
+    return t;
+  });
   const ground = things.filter(t => t.cat !== 'sky');
   const hourKST = (new Date().getUTCHours() + 9) % 24, asleep = hourKST >= 23 || hourKST < 7;
   const house = ground.find(t => t.k === 'house' || t.k === 'hut' || t.k === 'camp');
@@ -149,7 +155,9 @@ async function drawYard(Y, W, H) {
     const cx = t.x / 100 * W * k, fy = t.y / 100 * H * k;
     if (t.kind === 'item') {
       const sz = (YSIZE[t.k] || CSIZE[t.cat] || 30) * u * (t.cat === 'sky' ? 0.8 : depth(t.y)) * k;
-      emoji(t.e, cx, fy - sz * 0.4, sz);
+      const name = 'item-' + t.k + (t.flip ? '-l' : '') + '.png', pic = await image(APP + 'widget/' + name, name);
+      if (pic) dc.drawImageInRect(pic, new Rect(cx - sz / 2, fy - sz * (t.cat === 'sky' ? 0.5 : 0.94), sz, sz));
+      else emoji(t.e, cx, fy - sz * 0.4, sz);
     } else {
       const name = 'char-' + t.role + '-' + t.stage + (t.flip ? '-l' : '') + '.png';
       const img = await image(APP + 'widget/' + name, name);
